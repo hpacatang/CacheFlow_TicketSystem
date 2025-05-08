@@ -1,0 +1,154 @@
+@import "@fontsource/inter/index.css";
+
+/* === Global Reset === */
+*, html {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+  background-color: #F8F9FA;
+}
+
+/* === Login Page Layout === */
+#login-page {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+/* === Branding & Form Sections === */
+.branding-section,
+.form-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  height: 100%;
+}
+
+/* === Mini Containers inside each section === */
+.mini-brand,
+.mini-form {
+  flex: 1;
+  height: 100%;
+  padding: 50px 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* === Branding Design === */
+.mini-brand {
+  font-size: 30px;
+  color: white;
+  background: linear-gradient(to top, #0A0754, #2972A9);
+}
+
+/* === Form Container === */
+.mini-form {
+  background-color: #F8F9FA;
+  gap: 30px; 
+  width: 80%;
+}
+
+/* === Form Elements === */
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.form input {
+  padding: 30px 30px;
+  border-radius: 11px;
+  border: none;
+  font-size: 20px;
+  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.4);
+}
+
+/* === Input Container & Icon === */
+.input-container {
+  position: relative;
+  width: 75%;
+  height: 60px; 
+}
+.input-container input {
+  width: 100%;
+  height: 100%;
+  padding: 40px 30px 40px 80px; 
+  border-radius: 11px;
+  border: none;
+  font-size: 20px;
+  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.4);
+  line-height: 80px;
+}
+
+.input-container .icon {
+  position: absolute;
+  top: 50%;
+  left: 25px;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 40 px;
+  object-fit: contain; 
+  pointer-events: none;
+}
+
+/* === Forgot Password === */
+.forgot-password {
+  width: 75%;
+  text-align: right; 
+  margin-top: 10px; 
+  margin-bottom: 20px; 
+}
+
+.forgot-password a {
+  font-size: 20px;
+  color: #167BBB;
+  text-decoration: none;
+}
+
+/* === Form Actions (e.g. login, links) === */
+.form-actions {
+  font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.form-actions a {
+  color: #167BBB;
+  text-decoration: none;
+}
+
+/* === Login Button === */
+.login-btn {
+  width: 50%;
+  height: 70px;
+  max-width: 400px;
+  padding: 10px;
+  background-color: #167BBB;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* === Heading === */
+.form h1 {
+  font-size: 50px;
+  font-weight: 700;
+  padding-bottom: 70px;
+}

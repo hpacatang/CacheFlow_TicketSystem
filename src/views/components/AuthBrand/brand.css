@@ -1,0 +1,29 @@
+
+
+.branding-section{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  height: 100%;
+}
+
+
+.mini-brand {
+    flex: 1;
+    height: 100%;
+    padding: 50px 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 30px;
+    color: white;
+    background: linear-gradient(to top, #0A0754, #2972A9);
+}
+h1{
+  padding-bottom: 0;
+}

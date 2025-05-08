@@ -12,6 +12,10 @@ export const PATHS = {
     path: "/logout",
     label: "Logout"
   },
+  FORGOT: {
+    path: "/forgot",
+    label: "forgot"
+  },
   DASHBOARD: {
     path: "/dashboard",
     label: "Dashboard"
