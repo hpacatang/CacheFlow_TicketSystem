@@ -1,0 +1,160 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.knowledge-base-container {
+  background-color: #e8f3f9;
+  padding: 20px;
+  border-radius: 10px;
+  width: 110%;
+  max-width: none;
+  margin: 0 auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tabs-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.tabs-container .MuiTab-root {
+  flex: 1;
+  background-color: #1B65AD;
+  color: #ffffff;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  max-width: 600px; 
+  min-width: 300px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.tabs-container .MuiTab-root:hover {
+  background-color: #71C3F7;
+}
+
+.active-tab {
+  background-color: #71C3F7 !important; 
+  color: #fff !important;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 10px 20px;
+}
+
+.inactive-tab {
+  background-color: #e0e0e0; 
+  color: #000; 
+}
+
+.search-bar {
+  margin-bottom: 20px;
+  /* max-width: 600px; */
+  background-color: white;
+  border-radius: 10px;
+}
+
+.search-bar input {
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.MuiTableCell-root {
+  font-size: 14px;
+  font-weight: normal;
+  border-bottom: 1px solid #ccc;
+}
+
+.MuiTableRow-root {
+  &:hover {
+    background-color: #f9f9f9;
+  }
+}
+
+.create-article-button {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.create-button {
+  background-color: #1E90FF !important;
+  color: #fff;
+  font-weight: bold !important;
+  padding: 10px 20px;
+  border-radius: 5px;
+  width: 150px;
+  text-transform: none !important;
+}
+
+.create-button:hover {
+  background-color: #0056b3;
+}
+
+.knowledge-base-title {
+  text-align: left; 
+  margin-bottom: 15px; 
+  font-size: 2rem; 
+  font-weight: bold; 
+  color: #333;
+  margin-top: -40px;
+}
+
+.sidebar-header {
+  padding: 16px;
+  text-align: center;
+  background-color: #1976d2;
+  color: white;
+  font-weight: bold;
+}
+
+.MuiListItem-root {
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.MuiListItem-root:hover {
+  background-color: #e3f2fd;
+}
+
+.MuiListItemIcon-root {
+  color: #1976d2;
+}
+
+.MuiListItemText-primary {
+  font-size: 14px;
+  font-weight: 500;
+  color: white; /* Updated to white */
+}
+
+.MuiListItem-root.active {
+  background-color: #bbdefb;
+  font-weight: bold;
+}
+
+.sidebar-logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.sidebar-title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.custom-modal {
+  max-width: 800px;
+  width: 100%;
+  border-radius: 10px;
+}

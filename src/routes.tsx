@@ -14,6 +14,9 @@ export const AppRoutes = () => {
         <Route path={PATHS.LOGIN.path} element={<Views.Login />} />
         <Route path={PATHS.LOGOUT.path} element={<Views.Logout />} />
         <Route path={PATHS.NOT_FOUND.path} element={<Views.NotFound />} />
+        <Route path={PATHS.KNOWLEDGE_BASE.path} element={<Views.KnowledgeBase />} />
+        {/* Set KnowledgeBase as the default route */}
+        <Route path="/" element={<Views.KnowledgeBase />} />
       </Routes>
     </BrowserRouter>
   );

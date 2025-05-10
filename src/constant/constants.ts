@@ -19,8 +19,10 @@ export const PATHS = {
   NOT_FOUND: {
     path: "*",
     label: "Not Found"
-  }
-  // Add more routes here
+  },
+  KNOWLEDGE_BASE: { 
+    path: '/knowledge-base', 
+    label: 'Knowledge Base' },
 };
 
 // SIDE BAR MENU PATH
