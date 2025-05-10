@@ -23,6 +23,9 @@ export const PATHS = {
   KNOWLEDGE_BASE: { 
     path: '/knowledge-base', 
     label: 'Knowledge Base' },
+  SIGN_IN: { 
+    path: '/sign-in', 
+    label: 'Sign In' },
 };
 
 // SIDE BAR MENU PATH
