@@ -1,4 +1,3 @@
-// filepath: d:\CacheFlow_TicketSystem\src\views\containers\KnowledgeBase\KnowBase.tsx
 import React, { useState } from 'react';
 import AppBar from '../../components/AppBar';
 import DrawerHeader from '../../components/DrawerHeader';
@@ -60,6 +59,7 @@ const KnowBase = () => {
 
   const articles = [
     { title: 'Sample Article', category: 'Sample Category', views: 42069, lastUpdated: '1 Year ago' },
+    { title: 'Welcome!', category: 'Sample Category', views: 101010, lastUpdated: '1 Year ago' },
   ];
 
   const menuItems = [
@@ -84,14 +84,14 @@ const KnowBase = () => {
           '& .MuiDrawer-paper': {
             width: 270,
             boxSizing: 'border-box',
-            backgroundColor: '#1976d2',
+            backgroundColor: '#1B65AD',
             color: 'white',
           },
         }}
       >
         <div className="sidebar-header">
         <img src="/cacheflowlogo.png" alt="CacheFlow Logo" className="sidebar-logo" />
-          <h3 className="sidebar-title">CacheFlow</h3>
+          <h3 className="sidebar-title">Support Agent</h3>
         </div>
         <List>
           {menuItems.map((item, index) => (
@@ -99,7 +99,7 @@ const KnowBase = () => {
               component="button"
               key={index}
               sx={{
-                backgroundColor: '#1976d2',
+                backgroundColor: '#1B65AD',
                 border: 'none',
                 '&:hover': {
                   backgroundColor: '#1565c0',
@@ -143,7 +143,7 @@ const KnowBase = () => {
             />
           </Tabs>
 
-          <div className="search-bar">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <TextField
               placeholder="Search Articles"
               variant="outlined"
@@ -157,34 +157,61 @@ const KnowBase = () => {
                   </InputAdornment>
                 ),
               }}
-              sx={{ borderRadius: '8px', '& .MuiOutlinedInput-root': { borderRadius: '8px' } }}
+              sx={{
+                borderRadius: '8px',
+                '& .MuiOutlinedInput-root': { 
+                  borderRadius: '8px',
+                  height: '40px',},
+                marginRight: '16px', width: '100%', maxWidth: '500px',
+                backgroundColor: 'white',
+              }}
             />
+            <Button
+              variant="contained"
+              color="primary"
+              className="create-button"
+              onClick={handleModalOpen}
+            >
+              Create Article
+            </Button>
           </div>
 
           <div className="table-container">
-            <div className="create-article-button">
-              <Button
-                variant="contained"
-                color="primary"
-                className="create-button"
-                onClick={handleModalOpen}
-              >
-                Create Article
-              </Button>
-            </div>
-
             {/* Modal for Create Article */}
             <Dialog
               open={isModalOpen}
               onClose={handleModalClose}
               classes={{ paper: 'custom-modal' }}
+              sx={{
+                '& .MuiDialog-paper': {
+                  width: '900px',
+                  maxWidth: '90%',
+                  borderRadius: '16px',
+                },
+              }}
             >
-              <DialogTitle sx={{ fontWeight: 'bold', fontSize: '24px' }}>Create Article</DialogTitle>
+              <DialogTitle sx={{ fontWeight: 'bold', fontSize: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                Create Article
+                <Button
+                  onClick={handleModalClose}
+                  sx={{
+                    minWidth: 'auto',
+                    padding: 0,
+                    color: 'black',
+                    fontSize: '16px',
+                    '&:hover': {
+                      color: 'red',
+                    },
+                  }}
+                >
+                  ✕
+                </Button>
+              </DialogTitle>
               <DialogContent>
                 <Typography
                   variant="subtitle1"
-                  gutterBottom={false} // Remove extra bottom margin
-                  sx={{ marginBottom: '4px' }} // Add a smaller margin
+                  gutterBottom={false}
+                  sx={{ marginBottom: '2px' }}
                 >
                   Article Title
                 </Typography>
@@ -199,6 +226,7 @@ const KnowBase = () => {
                       '& fieldset': { borderColor: 'black' },
                       '&:hover fieldset': { borderColor: 'black' },
                       '&.Mui-focused fieldset': { borderColor: 'black' },
+                      height: '36px',
                     },
                     marginBottom: '16px',
                   }}
@@ -214,10 +242,13 @@ const KnowBase = () => {
                   variant="outlined"
                   fullWidth
                   margin="dense"
+                  multiline
+                  rows={4}
                   sx={{
                     borderRadius: '8px',
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '8px',
+                      height: '120px',
                       '& fieldset': { borderColor: 'black' },
                       '&:hover fieldset': { borderColor: 'black' },
                       '&.Mui-focused fieldset': { borderColor: 'black' },
@@ -238,9 +269,11 @@ const KnowBase = () => {
                   sx={{ marginBottom: '16px' }}
                 >
                   <Select
+                    displayEmpty
                     defaultValue=""
                     sx={{
                       borderRadius: '8px',
+                      height: '40px',
                       '& .MuiOutlinedInput-notchedOutline': {
                         borderColor: 'black',
                       },
@@ -252,18 +285,63 @@ const KnowBase = () => {
                       },
                     }}
                   >
+                    <MenuItem value="" disabled>
+                      <span style={{ color: 'gray' }}>Select Category</span>
+                    </MenuItem>
                     <MenuItem value="Technology">Technology</MenuItem>
                     <MenuItem value="Business">Business</MenuItem>
                     <MenuItem value="Education">Education</MenuItem>
                   </Select>
                 </FormControl>
+                <Typography
+                  variant="subtitle1"
+                  gutterBottom={false}
+                  sx={{ marginBottom: '4px' }}
+                >
+                  Attachments
+                </Typography>
+                <div
+                  style={{
+                    border: '2px dashed black',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    textAlign: 'center',
+                    marginBottom: '5px',
+                    backgroundColor: '#f9f9f9',
+                  }}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const files = Array.from(e.dataTransfer.files);
+                    console.log('Dropped files:', files);
+                  }}
+                >
+                  Drag and drop files here, or click to upload
+                </div>
               </DialogContent>
               <DialogActions>
-                <Button onClick={handleModalClose} color="secondary">
+                {/* <Button onClick={handleModalClose} color="secondary">
                   Cancel
-                </Button>
-                <Button onClick={handleModalClose} color="primary">
-                  Save
+                </Button> */}
+                <Button 
+                onClick={handleModalClose} 
+                color="primary" 
+                sx={{
+                  backgroundColor: '#1E90FF',
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: 'darkblue',
+                  },
+                  display: 'block',
+                  margin: '0 auto',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  textTransform: 'none',
+                  marginBottom: '10px',
+                  fontSize: '16px', 
+                }}>
+                  Create Article
                 </Button>
               </DialogActions>
             </Dialog>
