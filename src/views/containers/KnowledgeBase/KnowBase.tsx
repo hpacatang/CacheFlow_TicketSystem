@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // filepath: d:\CacheFlow_TicketSystem\src\views\containers\KnowledgeBase\KnowBase.tsx
 import React, { useState } from 'react';
 import AppBar from '../../components/AppBar';
@@ -298,3 +299,12 @@ const KnowBase = () => {
 };
 
 export default KnowBase;
+=======
+import React from 'react'
+
+export const KnowBase = () => {
+  return (
+    <div>KnowBase</div>
+  )
+}
+>>>>>>> b1f74b5f9a620f4c19ca8ccb8da0a9115b527f06
