@@ -7,3 +7,4 @@ export * from "./SignIn";
 export * from "./Analytics";
 // export * from "./KnowledgeBase";
 export { default as KnowledgeBase } from './KnowledgeBase/KnowBase';
+export { default as KnowledgeBaseUser } from './KnowledgeBase/KnowBaseUser';
