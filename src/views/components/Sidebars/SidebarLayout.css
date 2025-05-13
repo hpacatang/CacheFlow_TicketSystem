@@ -5,12 +5,12 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  width: 15%;              
+  width: 17%;              
   height: 100%;
   background-color: #1B65AD;
   overflow: hidden;         
   padding: 1rem;
-  justify-content: center;
+  justify-content: flex-start;
   justify-items: center;
   text-align: center;
 }
@@ -23,6 +23,7 @@
 .notif-icon {
   display: flex;
   justify-content: flex-end;
+  margin-top: 0;
   margin-bottom: 4rem;      
 }
 .role p{
@@ -65,7 +66,7 @@
 .logout {
   color: white; 
   border: none; 
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   cursor: pointer;
 }
 .logout:hover{

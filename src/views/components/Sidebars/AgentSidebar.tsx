@@ -4,10 +4,8 @@ import SidebarLayout from './SidebarLayout';
 
 export const AdminSidebar = () => {
   return (
-    <div>
         <SidebarLayout>
             <AgentLinks/>
         </SidebarLayout>
-    </div>
   )
 }
