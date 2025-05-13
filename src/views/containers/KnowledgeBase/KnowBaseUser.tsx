@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import AppBar from '../../components/AppBar';
 import DrawerHeader from '../../components/DrawerHeader';
 import Main from '../../components/Main';
@@ -31,6 +32,7 @@ import './KnowBase.css';
 
 // Define a type for the articles
 interface Article {
+  id: number;
   title: string;
   category: string;
   views: number;
@@ -38,15 +40,21 @@ interface Article {
   body?: string; // Optional property for the article body
 }
 
-
-const KnowBase = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+const KnowBaseUser = () => {
+  const [articles, setArticles] = useState<Article[]>([]);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
-  };
+  // Fetch articles from the backend
+  useEffect(() => {
+    axios.get('http://localhost:3001/articles')
+      .then((response) => {
+        setArticles(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching articles:', error);
+      });
+  }, []);
 
   const handleViewArticle = (article: Article) => {
     setSelectedArticle(article);
@@ -57,11 +65,6 @@ const KnowBase = () => {
     setIsViewModalOpen(false);
     setSelectedArticle(null);
   };
-
-  const articles: Article[] = [
-    { title: 'Welcome!', category: 'Sample Category', views: 101010, lastUpdated: '1 Year ago', 
-      body: 'Welcome to Cache Flow, the smart and reliable ticketing system designed to keep your support process running smoothly. Whether you\'re resolving internal IT issues, handling customer queries, or managing service requests, Cache Flow gives you the tools to stay organized, responsive, and efficient.\n\nThis is the Knowledge Base! Here, you will find a comprehensive collection of articles, guides, and resources designed to help you navigate and make the most of our system. Whether you are looking for troubleshooting tips, detailed explanations, or best practices, we have got you covered. Dive in and explore the wealth of information at your fingertips!' },
-  ];
 
   const menuItems = [
     { text: 'Ticket Management', icon: <HomeIcon />, textColor: 'white' },
@@ -91,7 +94,7 @@ const KnowBase = () => {
         }}
       >
         <div className="sidebar-header">
-        <img src="/cacheflowlogo.png" alt="CacheFlow Logo" className="sidebar-logo" />
+          <img src="/cacheflowlogo.png" alt="CacheFlow Logo" className="sidebar-logo" />
           <h3 className="sidebar-title">User</h3>
         </div>
         <List>
@@ -122,14 +125,14 @@ const KnowBase = () => {
         <AppBar title="Knowledge Base" />
         <DrawerHeader />
         <h1 className="knowledge-base-title">Knowledge Base</h1>
-        <div className="knowledge-base-container" style={{ width: '220%', maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          </div>
-
-          <div className="table-container" >
-          </div>
-
-          {/* KNOWLEDGE BASE TABLE */}
+        <div className="knowledge-base-container" 
+        style={{width: '100%',
+          maxWidth: '1200px',
+          minWidth: '1000px', 
+          margin: '0 auto',  
+          padding: '20px',
+          overflow: 'auto', 
+        }}>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -141,8 +144,8 @@ const KnowBase = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {articles.map((article, index) => (
-                  <TableRow key={index}>
+                {articles.map((article) => (
+                  <TableRow key={article.id}>
                     <TableCell
                       onClick={() => handleViewArticle(article)}
                       sx={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
@@ -159,7 +162,7 @@ const KnowBase = () => {
           </TableContainer>
         </div>
 
-        {/* VIEW ARTICLE & EDIT ARTICLE ICON */}
+        {/* VIEW ARTICLE MODAL */}
         <Dialog
           open={isViewModalOpen}
           onClose={handleViewModalClose}
@@ -201,13 +204,6 @@ const KnowBase = () => {
             <Typography variant="body1" sx={{ marginBottom: '16px', whiteSpace: 'pre-line' }}>
               {selectedArticle?.body || 'No content available.'}
             </Typography>
-            <div style={{ textAlign: 'center', marginTop: '16px' }}>
-              <img
-                src="/placeholder-image.png"
-                alt="Article"
-                style={{ width: '100%', maxWidth: '400px', borderRadius: '8px' }}
-              />
-            </div>
           </DialogContent>
         </Dialog>
       </Main>
@@ -215,4 +211,4 @@ const KnowBase = () => {
   );
 };
 
-export default KnowBase;
+export default KnowBaseUser;
