@@ -75,6 +75,7 @@ const KnowBase = () => {
     body: '',
   });
 
+  //Axios and db.json implementation for permanent data storage
   useEffect(() => {
     // Fetch articles from JSON Server
     axios.get('http://localhost:3001/articles')
