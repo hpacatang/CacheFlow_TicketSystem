@@ -1,5 +1,5 @@
 body {
-    font-family: 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .knowledge-base-container {
@@ -32,10 +32,10 @@ body {
   margin: 0 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  max-width: 600px; 
+  max-width: 600px;
   min-width: 300px;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 .tabs-container .MuiTab-root:hover {
@@ -43,7 +43,7 @@ body {
 }
 
 .active-tab {
-  background-color: #71C3F7 !important; 
+  background-color: #71C3F7 !important;
   color: #fff !important;
   font-weight: bold;
   border-radius: 5px;
@@ -51,8 +51,8 @@ body {
 }
 
 .inactive-tab {
-  background-color: #e0e0e0; 
-  color: #000; 
+  background-color: #e0e0e0;
+  color: #000;
 }
 
 .search-bar {
@@ -90,9 +90,9 @@ body {
   background-color: #1E90FF !important;
   color: #fff;
   font-weight: bold !important;
-  padding: 10px 20px;
+  padding: 20px 20px;
   border-radius: 5px;
-  width: 150px;
+  width: 170px;
   text-transform: none !important;
 }
 
@@ -101,10 +101,10 @@ body {
 }
 
 .knowledge-base-title {
-  text-align: left; 
-  margin-bottom: 15px; 
-  font-size: 2rem; 
-  font-weight: bold; 
+  text-align: left;
+  margin-bottom: 15px;
+  font-size: 2rem;
+  font-weight: bold;
   color: #333;
   margin-top: -40px;
 }
@@ -112,7 +112,7 @@ body {
 .sidebar-header {
   padding: 16px;
   text-align: center;
-  background-color: #1976d2;
+  background-color: #1B65AD;
   color: white;
   font-weight: bold;
 }
@@ -134,7 +134,8 @@ body {
 .MuiListItemText-primary {
   font-size: 14px;
   font-weight: 500;
-  color: white; /* Updated to white */
+  color: white;
+  /* Updated to white */
 }
 
 .MuiListItem-root.active {
@@ -146,15 +147,17 @@ body {
   width: 100px;
   height: 100px;
   object-fit: contain;
+  background-color: #1B65AD;
 }
 
 .sidebar-title {
   margin: 0;
   font-size: 1.2rem;
+  background-color: #1B65AD;
 }
 
 .custom-modal {
-  max-width: 800px;
+  max-width: 1000px;
   width: 100%;
-  border-radius: 10px;
+  border-radius: 30px;
 }

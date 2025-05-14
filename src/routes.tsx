@@ -18,6 +18,7 @@ export const AppRoutes = () => {
         <Route path={PATHS.NOT_FOUND.path} element={<Views.NotFound />} />
         <Route path={PATHS.KNOWLEDGE_BASE.path} element={<Views.KnowledgeBase />} />
         <Route path={PATHS.SIGN_IN.path} element={<Views.SignIn />} />
+        <Route path={PATHS.ANALYTICS.path} element={<Views.Analytics />} />
         {/* Set KnowledgeBase as the default route */}
         <Route path="/" element={<Views.KnowledgeBase />} />
       </Routes>

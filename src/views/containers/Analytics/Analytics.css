@@ -1,0 +1,122 @@
+.analytics-container {
+  width: 100%;
+  min-height: 100vh;
+  background: #f8f9fa;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 0;
+}
+
+.analytics-content {
+  width: 1200px;
+  max-width: 95vw;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.analytics-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1a64ac;
+  margin-bottom: 32px;
+  letter-spacing: -1.5px;
+}
+
+.analytics-section {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.analytics-metrics {
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.analytics-metric-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(26, 100, 172, 0.08);
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 220px;
+  flex: 1;
+}
+
+.analytics-metric-card svg {
+  color: #167bbb;
+  margin-bottom: 12px;
+}
+
+.analytics-metric-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #1a64ac;
+  margin-bottom: 6px;
+}
+
+.analytics-metric-label {
+  font-size: 1.1rem;
+  color: #555;
+  text-align: center;
+}
+
+.analytics-subtitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a64ac;
+  margin-bottom: 18px;
+  margin-top: 0;
+  letter-spacing: -1px;
+}
+
+.analytics-charts {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 32px;
+}
+
+.analytics-chart-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(26, 100, 172, 0.08);
+  padding: 24px 18px 12px 18px;
+  min-width: 260px;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.analytics-chart-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #167bbb;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1100px) {
+  .analytics-content {
+    width: 100%;
+    padding: 0 10px;
+  }
+  .analytics-section,
+  .analytics-charts {
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+  .analytics-metric-card,
+  .analytics-chart-card {
+    min-width: 180px;
+    width: 100%;
+    padding: 20px 10px;
+  }
+}

@@ -26,6 +26,9 @@ export const PATHS = {
   SIGN_IN: { 
     path: '/sign-in', 
     label: 'Sign In' },
+  ANALYTICS: { 
+    path: '/analytics', 
+    label: 'Analytics' },
 };
 
 // SIDE BAR MENU PATH
