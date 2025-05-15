@@ -2,7 +2,7 @@ import React from 'react'
 import { AgentLinks} from './Links/AgentLink';
 import SidebarLayout from './SidebarLayout';
 
-export const AdminSidebar = () => {
+export const AgentSidebar = () => {
   return (
         <SidebarLayout>
             <AgentLinks/>

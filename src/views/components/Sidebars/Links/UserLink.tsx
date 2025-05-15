@@ -7,8 +7,8 @@ export const UserLinks = () => {
     
   return (
     <div>
-        <Link to="/Tickets">Tickets</Link>
-        <Link to="/Knowledge">Knowledge Base</Link>
+        <Link to="/dashboard">Tickets</Link>
+        <Link to="/knowledge-base-user">Knowledge Base</Link>
          <Link to="/Feedback">Submit Feedback</Link>
     </div>
   )

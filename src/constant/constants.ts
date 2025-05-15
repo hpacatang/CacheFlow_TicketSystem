@@ -16,6 +16,10 @@ export const PATHS = {
     path: "/dashboard",
     label: "Dashboard"
   },
+  DASHBOARD_USER: {
+    path: "/dashboard-user",
+    label: "User Dashboard"
+  },
   NOT_FOUND: {
     path: "*",
     label: "Not Found"
