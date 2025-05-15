@@ -1,10 +1,68 @@
 {
   "statistics": [
     {
-      "report1": "Sample Response 1"
+      "report1": "Sample Response 1",
+      "id": "1a0c"
     },
     {
-      "report2": "Sample Response 2"
+      "report2": "Sample Response 2",
+      "id": "4458"
+    }
+  ],
+  "users": [
+    {
+      "name": "jamal",
+      "role": "agent",
+      "id": "9495"
+    },
+    {
+      "name": "kaye",
+      "role": "agent",
+      "id": "6265"
+    },
+    {
+      "name": "jhed",
+      "role": "agent",
+      "id": "7365"
+    },
+    {
+      "name": "yana",
+      "role": "user",
+      "id": "7147"
+    },
+    {
+      "name": "admin1",
+      "role": "admin",
+      "id": "754d"
+    }
+  ],
+  "tickets": [
+    {
+      "id": "1",
+      "summary": "PC won’t boot",
+      "name": "yana",
+      "assignee": "jamal",
+      "status": "inProgress",
+      "resolvedAt": null,
+      "type": "hardware"
+    },
+    {
+      "id": "2",
+      "summary": "Windows issue",
+      "name": "dona",
+      "assignee": "kaye",
+      "status": "resolved",
+      "resolvedAt": "2024-12-01",
+      "type": "software"
+    },
+    {
+      "id": "3",
+      "summary": "Slow net",
+      "name": "james",
+      "assignee": "jhed",
+      "status": "inProgress",
+      "resolvedAt": null,
+      "type": "hardware"
     }
   ]
 }

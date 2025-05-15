@@ -26,7 +26,7 @@
 
 .search-filter {
   width: 100%;
-  padding: 12px 12px 12px 40px; /* left space for icon */
+  padding: 12px 12px 12px 40px; 
   border-radius: 7px;
   border: none;
   font-size: 1rem;
@@ -117,18 +117,19 @@ table th, table td {
 }
 
 .create-ticket-wrapper {
-  border-bottom: 1px solid #167BBB;  /* Border to separate the button */
+  border-bottom: 1px solid #167BBB;  
   padding: 10px;
   margin: 10px;
   display: flex;
-  justify-content: center;  /* Adjust the button's position inside the wrapper */
+  justify-content: center; 
 }
 
 .create-ticket-wrapper.hidden {
-  display: none;  /* Hide the wrapper (and the button inside it) */
+  display: none;  
 }
 
 .create-btn {
+  width: 10rem;
   padding: 0.5rem 1rem;
   background-color: #167BBB;
   color: white;
@@ -144,17 +145,23 @@ table th, table td {
 select {
   -webkit-appearance: none;  /* Removes the default select styling in Webkit browsers (Chrome, Safari) */
   -moz-appearance: none;     /* Removes the default select styling in Firefox */
-  appearance: none;          /* General solution */
-  border: none;              /* Remove any borders */
+  appearance: none;         
+  border: none;              
   background: transparent url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M6 9l6 6 6-6%22/%3E%3C/svg%3E') no-repeat right center; /* Down arrow */
-  padding: 10px 50px 1px 1px;  /* Add padding to allow space for the arrow */
-  font-size: inherit;        /* Inherit font size from parent */
-  text-align: center;        /* Center the text */
-  cursor: pointer;          /* Make it behave like a clickable element */
+  padding: 10px 50px 1px 1px;  
+  font-size: inherit;        
+  text-align: center;        
+  cursor: pointer;         
 }
 
-/* Optional: Style the select inside a table cell */
 td[class^="status-"] select {
   text-align: center;
 }
+.clickable-row {
+  cursor: pointer;
+}
+.clickable-row:hover {
+ background-color: #d7d7d7;
+}
+
 
