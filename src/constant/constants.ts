@@ -16,19 +16,15 @@ export const PATHS = {
     path: "/dashboard",
     label: "Dashboard"
   },
+  CUSTOMERFEEDBACK: {
+    path: "/customerfeedback",
+    label: "Customer Feedback"
+  },
   NOT_FOUND: {
     path: "*",
     label: "Not Found"
-  },
-  KNOWLEDGE_BASE: { 
-    path: '/knowledge-base', 
-    label: 'Knowledge Base' },
-  SIGN_IN: { 
-    path: '/sign-in', 
-    label: 'Sign In' },
-  ANALYTICS: { 
-    path: '/analytics', 
-    label: 'Analytics' },
+  }
+  // Add more routes here
 };
 
 // SIDE BAR MENU PATH
