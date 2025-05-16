@@ -5,15 +5,17 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  /* width: 15%;               */
+  /* width: 15%;                */
   height: 100%;
   background-color: #1B65AD;
   overflow: hidden;         
   padding: 1rem;
-  justify-content: center;
+  justify-content: flex-start;
   justify-items: center;
   text-align: center;
+  height: 97vh;
 }
+
 .icon{
   /* font-size: 15rem; wont change size */
   color: white;  
