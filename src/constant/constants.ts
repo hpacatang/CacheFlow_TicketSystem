@@ -27,6 +27,9 @@ export const PATHS = {
   KNOWLEDGE_BASE: { 
     path: '/knowledge-base', 
     label: 'Knowledge Base' },
+  KNOWLEDGE_BASE_USER: {
+    path: '/knowledge-base-user',
+    label: 'Knowledge Base User' },
   SIGN_IN: { 
     path: '/sign-in', 
     label: 'Sign In' },
