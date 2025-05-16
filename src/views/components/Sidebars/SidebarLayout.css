@@ -5,7 +5,7 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  width: 300px;              /* Match analytics sidebar width */
+  /* width: 300px;              Match analytics sidebar width */
   min-width: 260px;
   max-width: 340px;
   height: 100vh;
@@ -16,10 +16,7 @@
   justify-content: flex-start;
   justify-items: center;
   text-align: center;
-<<<<<<< Updated upstream
    height: 100vh;
-=======
->>>>>>> Stashed changes
 }
 
 .icon{
