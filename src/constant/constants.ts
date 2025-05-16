@@ -59,6 +59,9 @@ export const PATHS = {
   ACCESS_CNTRL: {
     path: "/AccessControl",
     label: "Access Control"},
+  CUSTOMERFEEDBACK: {
+    path: "/CustomerFeedback",
+    label: "Customer Feedback"},
 };
 
 // SIDE BAR MENU PATH

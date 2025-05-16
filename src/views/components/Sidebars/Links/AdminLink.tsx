@@ -10,7 +10,7 @@ export const AdminLinks = () => {
         <Link to="/UserManagement">User Management</Link>
         <Link to="/knowdlege">Knowledge Base</Link>
         <Link to="/Analytics">Reporting & Analytics</Link>
-        <Link to="/knowdlege Base">Customer Feedback</Link>
+        <Link to="/CustomerFeedback">Customer Feedback</Link>
     </div>
   )
 }

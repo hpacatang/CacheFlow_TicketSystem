@@ -9,3 +9,5 @@ export const AdminSidebar = () => {
         </SidebarLayout>
   )
 }
+
+export default AdminSidebar;
