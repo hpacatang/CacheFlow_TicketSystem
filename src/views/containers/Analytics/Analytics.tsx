@@ -1,11 +1,9 @@
 import React from "react";
-import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import StarRateIcon from "@mui/icons-material/StarRate";
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
+import { UserSidebar } from '../../components/Sidebars/UserSidebar';
 import "./Analytics.css";
 
-const COLORS = ["#7ca7c7", "#b7d3e6", "#e6e6e6", "#7cb67c", "#e6b77c"];
+const COLORS = ["#167BBB", "#7CA7C7", "#B7D3E6", "#E6E6E6", "#7CB67C"];
 
 const categoriesData = [
   { name: "General issues", value: 400 },
@@ -34,31 +32,52 @@ const totalData = [
 ];
 
 export const Analytics = () => (
-  <div className="analytics-container">
+  <div className="analytics-layout">
+    <div className="analytics-sidebar">
+      <UserSidebar />
+    </div>
     <div className="analytics-content">
-      <h1 className="analytics-title">Reporting & Analytics</h1>
-      <div className="analytics-section analytics-metrics">
-        <div className="analytics-metric-card">
-          <ConfirmationNumberIcon style={{ fontSize: 40 }} />
-          <div className="analytics-metric-value">143</div>
-          <div className="analytics-metric-label">Tickets resolved</div>
-        </div>
-        <div className="analytics-metric-card">
-          <AccessTimeIcon style={{ fontSize: 40 }} />
-          <div className="analytics-metric-value">2h 30m</div>
-          <div className="analytics-metric-label">Average resolution time</div>
-        </div>
-        <div className="analytics-metric-card">
-          <StarRateIcon style={{ fontSize: 40 }} />
-          <div className="analytics-metric-value">4.5 / 5</div>
-          <div className="analytics-metric-label">Satisfaction ratings</div>
+      <div className="analytics-header">
+        <h1 className="analytics-title">Reporting & Analytics</h1>
+        <div className="analytics-period">
+          <span className="period-label">Period:</span>
+          <select className="period-select">
+            <option>Last 30 days</option>
+            <option>Last 7 days</option>
+            <option>Last 24 hours</option>
+          </select>
         </div>
       </div>
+
+      <div className="analytics-metrics">
+        <div className="metric-card">
+          <div className="metric-icon tickets"></div>
+          <div className="metric-content">
+            <div className="metric-value">143</div>
+            <div className="metric-label">Tickets resolved</div>
+          </div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-icon time"></div>
+          <div className="metric-content">
+            <div className="metric-value">2h 30m</div>
+            <div className="metric-label">Average resolution time</div>
+          </div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-icon rating"></div>
+          <div className="metric-content">
+            <div className="metric-value">4.5 / 5</div>
+            <div className="metric-label">Satisfaction ratings</div>
+          </div>
+        </div>
+      </div>
+
       <h2 className="analytics-subtitle">Ticket Summary</h2>
-      <div className="analytics-section analytics-charts">
-        <div className="analytics-chart-card">
-          <div className="analytics-chart-title">Categories</div>
-          <ResponsiveContainer width="100%" height={180}>
+      <div className="analytics-charts">
+        <div className="chart-card">
+          <h3 className="chart-title">Categories</h3>
+          <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
                 data={categoriesData}
@@ -66,20 +85,25 @@ export const Analytics = () => (
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                outerRadius={60}
-                label={false}
+                outerRadius={70}
+                innerRadius={45}
               >
                 {categoriesData.map((entry, index) => (
                   <Cell key={`cell-cat-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Legend verticalAlign="middle" align="right" layout="vertical" />
+              <Legend 
+                verticalAlign="bottom" 
+                align="center" 
+                layout="vertical"
+                wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div className="analytics-chart-card">
-          <div className="analytics-chart-title">Status</div>
-          <ResponsiveContainer width="100%" height={180}>
+        <div className="chart-card">
+          <h3 className="chart-title">Status</h3>
+          <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
                 data={statusData}
@@ -87,20 +111,25 @@ export const Analytics = () => (
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                outerRadius={60}
-                label={false}
+                outerRadius={70}
+                innerRadius={45}
               >
                 {statusData.map((entry, index) => (
                   <Cell key={`cell-status-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Legend verticalAlign="middle" align="right" layout="vertical" />
+              <Legend 
+                verticalAlign="bottom" 
+                align="center" 
+                layout="vertical"
+                wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div className="analytics-chart-card">
-          <div className="analytics-chart-title">Priority</div>
-          <ResponsiveContainer width="100%" height={180}>
+        <div className="chart-card">
+          <h3 className="chart-title">Priority</h3>
+          <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
                 data={priorityData}
@@ -108,20 +137,25 @@ export const Analytics = () => (
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                outerRadius={60}
-                label={false}
+                outerRadius={70}
+                innerRadius={45}
               >
                 {priorityData.map((entry, index) => (
                   <Cell key={`cell-priority-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Legend verticalAlign="middle" align="right" layout="vertical" />
+              <Legend 
+                verticalAlign="bottom" 
+                align="center" 
+                layout="vertical"
+                wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div className="analytics-chart-card">
-          <div className="analytics-chart-title">Total</div>
-          <ResponsiveContainer width="100%" height={180}>
+        <div className="chart-card">
+          <h3 className="chart-title">Total</h3>
+          <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
                 data={totalData}
@@ -129,14 +163,19 @@ export const Analytics = () => (
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                outerRadius={60}
-                label={false}
+                outerRadius={70}
+                innerRadius={45}
               >
                 {totalData.map((entry, index) => (
                   <Cell key={`cell-total-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Legend verticalAlign="middle" align="right" layout="vertical" />
+              <Legend 
+                verticalAlign="bottom" 
+                align="center" 
+                layout="vertical"
+                wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>

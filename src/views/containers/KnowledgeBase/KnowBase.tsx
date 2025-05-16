@@ -245,7 +245,7 @@ const KnowBase = () => {
         <AppBar title="Knowledge Base" />
         <DrawerHeader />
         <h1 className="knowledge-base-title">Knowledge Base</h1>
-        <div className="knowledge-base-container" style={{ width: '109%', maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+        <div className="knowledge-base-container" style={{ width: '109%', maxWidth: '1100px', margin: '0 auto', padding: '20px' }}>
           <Tabs
             value={activeTab}
             onChange={handleTabChange}
