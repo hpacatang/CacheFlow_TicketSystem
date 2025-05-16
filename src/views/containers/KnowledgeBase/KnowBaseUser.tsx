@@ -129,8 +129,8 @@ const KnowBaseUser = () => {
         <h1 className="knowledge-base-title">Knowledge Base</h1>
         <div className="knowledge-base-container" 
         style={{width: '100%',
-          maxWidth: '1200px',
-          minWidth: '1000px', 
+          maxWidth: '1300px',
+          minWidth: '1100px', 
           margin: '0 auto',  
           padding: '20px',
           overflow: 'auto', 
