@@ -10,6 +10,7 @@ export * from "./ForgotPassword";
 export { default as ForgotPass } from "./ForgotPassword/ForgotPass";
 export * from "./ResetPassword";
 export * from "./VerifyEmail";
+export * from "./CustomerFeedback";
 
 // export * from "./KnowledgeBase";
 export * from "./Settings";

@@ -23,7 +23,6 @@ import {
 import { styled } from "@mui/material/styles"
 import AdminSidebar from "../../components/Sidebars/AdminSidebar"
 import FeedbackModal from "../../components/Modals/FeedbackModal"
-import './CustomerFB.css';
 
 interface Ticket {
   id: string
@@ -45,7 +44,7 @@ interface FeedbackDetails {
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   borderRadius: "20px",
   padding: 0,
-  height: "55rem",
+  height: "35rem",
   width: "70rem",
   marginLeft: "2rem",
   overflowY: "auto",
