@@ -7,9 +7,9 @@ export const AgentLinks = () => {
     
   return (
     <div>
-        <Link to="/Tickets">Tickets</Link>
-        <Link to="/Knowledge">Knowledge Base</Link>
-         <Link to="/Customer Feedback">Submit Feedback</Link>
+        <Link to="/dashboard">Tickets</Link>
+        <Link to="/knowledge-base">Knowledge Base</Link>
+         <Link to="/CustomerFeedback">Submit Feedback</Link>
     </div>
   )
 }

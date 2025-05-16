@@ -37,7 +37,9 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import './KnowBase.css';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
+import { AdminSidebar } from '../../components/Sidebars/AdminSidebar';
 import { AgentSidebar } from '../../components/Sidebars/AgentSidebar';
+
 
 // Define a type for the articles
 interface Article {
@@ -50,6 +52,7 @@ interface Article {
 }
 
 const KnowBase = () => {
+  const sidebarRole = localStorage.getItem('userRole');
   const [activeTab, setActiveTab] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -237,7 +240,8 @@ const KnowBase = () => {
           ))}
         </List>
       </Drawer> */}
-      <AgentSidebar />
+      {sidebarRole === 'agent' && <AgentSidebar />}
+      {(sidebarRole === 'admin' || sidebarRole === 'superadmin') && <AdminSidebar />}
 
       {/* Main Content */}
       

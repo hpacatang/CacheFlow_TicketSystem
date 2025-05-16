@@ -11,6 +11,8 @@ export const Login = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    localStorage.setItem('userRole', 'admin'); //TO CONTROL SIDEBAR ROLES
+
     navigate("/dashboard");
   };
 

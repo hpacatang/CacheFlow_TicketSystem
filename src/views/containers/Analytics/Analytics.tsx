@@ -1,6 +1,6 @@
 import React from "react";
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
-import { UserSidebar } from '../../components/Sidebars/UserSidebar';
+import { AdminSidebar } from '../../components/Sidebars/AdminSidebar';
 import "./Analytics.css";
 
 const COLORS = ["#167BBB", "#7CA7C7", "#B7D3E6", "#E6E6E6", "#7CB67C"];
@@ -34,7 +34,7 @@ const totalData = [
 export const Analytics = () => (
   <div className="analytics-layout">
     <div className="analytics-sidebar">
-      <UserSidebar />
+      <AdminSidebar />
     </div>
     <div className="analytics-content">
       <div className="analytics-header">

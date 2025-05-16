@@ -6,10 +6,10 @@ export const AdminLinks = () => {
 
   return (
     <div>
-        <Link to="/Tickets">Tickets</Link>
+        <Link to="/dashboard">Tickets</Link>
         <Link to="/UserManagement">User Management</Link>
-        <Link to="/knowdlege">Knowledge Base</Link>
-        <Link to="/Analytics">Reporting & Analytics</Link>
+        <Link to="/knowledge-base">Knowledge Base</Link>
+        <Link to="/analytics">Reporting & Analytics</Link>
         <Link to="/CustomerFeedback">Customer Feedback</Link>
     </div>
   )

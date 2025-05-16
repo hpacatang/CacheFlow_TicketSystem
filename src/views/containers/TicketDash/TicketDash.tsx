@@ -41,8 +41,9 @@ export const TicketDash = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editTicket, setEditTicket] = useState<Ticket | null>(null);
-  const loggedInUser = 'yana'; //CHANGE USER HERE
+  const loggedInUser = 'jamal'; //CHANGE USER HERE
   
+  const SidebarRole = localStorage.getItem('userRole') || 'user';
   type UserRole = 'user' | 'agent' | 'admin' | 'superadmin';
   const userRole = (users.find(u => u.name === loggedInUser)?.role || 'user') as UserRole;
   
@@ -268,9 +269,9 @@ const handleDeleteTicket = async () => {
   return (
     <div className='parent-container'>
 
-        {userRole === 'user' && <UserSidebar />}
-        {userRole === 'agent' && <AgentSidebar />}
-        {(userRole === 'admin' || userRole === 'superadmin') && <AdminSidebar />}
+        {SidebarRole === 'user' && <UserSidebar />}
+        {SidebarRole === 'agent' && <AgentSidebar />}
+        {(SidebarRole === 'admin' || userRole === 'superadmin') && <AdminSidebar />}
 
       <div className='filter-section'>
         <div className={`create-ticket-wrapper ${userRole === 'user' ? '' : 'hidden'}`}>
@@ -370,7 +371,7 @@ const handleDeleteTicket = async () => {
                     value={ticket.status}
                    onChange={(e) => handleStatusChange(ticket.id, e.target.value as Ticket['status'])}
                   >
-                    {['open', 'inProgress', 'resolved', 'closed'].map(status => (
+                    {['Open', 'InProgress', 'Resolved', 'Closed'].map(status => (
                       <option key={status} value={status}>
                         {status}
                       </option>
