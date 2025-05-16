@@ -27,11 +27,13 @@ import FeedbackModal from "../../components/Modals/FeedbackModal"
 interface Ticket {
   id: string
   summary: string
-  reporter: string
+  name: string
   assignee: string
   status: string
-  createdAt: string
-  resolvedAt: string
+  resolvedAt: string | null
+  dueDate: string
+  priority: string
+  category: string
 }
 
 interface FeedbackDetails {
@@ -95,43 +97,13 @@ export const CustomerFeedback: React.FC = () => {
     const fetchTickets = async () => {
       try {
         setLoading(true)
-        // In a real app, this would be an API call
-        // For demo purposes, we'll simulate a fetch with setTimeout
-        setTimeout(() => {
-          const demoTickets: Ticket[] = [
-            {
-              id: "01",
-              summary: "Sample sample sample...",
-              reporter: "Sample Name",
-              assignee: "Sample Name",
-              status: "Closed",
-              createdAt: "01-01-2025",
-              resolvedAt: "01-01-2025",
-            },
-            {
-              id: "02",
-              summary: "Login issue on mobile app",
-              reporter: "John Doe",
-              assignee: "Jane Smith",
-              status: "Open",
-              createdAt: "02-01-2025",
-              resolvedAt: "",
-            },
-            {
-              id: "03",
-              summary: "Payment processing error",
-              reporter: "Alice Johnson",
-              assignee: "Bob Williams",
-              status: "In Progress",
-              createdAt: "03-01-2025",
-              resolvedAt: "",
-            },
-          ]
-          setTickets(demoTickets)
-          setLoading(false)
-        }, 1000)
+        const response = await fetch("http://localhost:3001/tickets")
+        if (!response.ok) throw new Error("Failed to fetch tickets!")
+        const data = await response.json()
+        setTickets(data)
+        setLoading(false)
       } catch (err) {
-        setError("Failed to fetch tickets")
+        setError("Failed to fetch tickets!")
         setLoading(false)
       }
     }
@@ -183,7 +155,7 @@ export const CustomerFeedback: React.FC = () => {
                   <StyledTableHeaderCell>Reporter</StyledTableHeaderCell>
                   <StyledTableHeaderCell>Assignee</StyledTableHeaderCell>
                   <StyledTableHeaderCell>Status</StyledTableHeaderCell>
-                  <StyledTableHeaderCell>Created at</StyledTableHeaderCell>
+                  <StyledTableHeaderCell>Due Date</StyledTableHeaderCell>
                   <StyledTableHeaderCell>Resolved at</StyledTableHeaderCell>
                   <StyledTableHeaderCell align="center">Actions</StyledTableHeaderCell>
                 </TableRow>
@@ -193,11 +165,11 @@ export const CustomerFeedback: React.FC = () => {
                   <TableRow key={ticket.id} hover>
                     <StyledTableCell>{ticket.id}</StyledTableCell>
                     <StyledTableCell>{ticket.summary}</StyledTableCell>
-                    <StyledTableCell>{ticket.reporter}</StyledTableCell>
+                    <StyledTableCell>{ticket.name}</StyledTableCell>
                     <StyledTableCell>{ticket.assignee}</StyledTableCell>
                     <StyledTableCell>{ticket.status}</StyledTableCell>
-                    <StyledTableCell>{ticket.createdAt}</StyledTableCell>
-                    <StyledTableCell>{ticket.resolvedAt}</StyledTableCell>
+                    <StyledTableCell>{ticket.dueDate}</StyledTableCell>
+                    <StyledTableCell>{ticket.resolvedAt || ""}</StyledTableCell>
                     <StyledTableCell align="center">
                       <ViewButton variant="contained" size="small" onClick={() => handleViewFeedback(ticket.id)}>
                         View Feedback
