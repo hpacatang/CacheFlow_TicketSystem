@@ -5,7 +5,7 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  /* width: 15%;                */
+  width: 17%;              
   height: 100%;
   background-color: #1B65AD;
   overflow: hidden;         
@@ -25,6 +25,7 @@
 .notif-icon {
   display: flex;
   justify-content: flex-end;
+  margin-top: 0;
   margin-bottom: 4rem;      
 }
 .role p{
@@ -41,7 +42,7 @@
 }
 
 .links{
-  margin-bottom: 18rem;
+  margin-bottom: 31rem;
   text-align: left;
 }
 .links a {
@@ -67,7 +68,7 @@
 .logout {
   color: white; 
   border: none; 
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   cursor: pointer;
 }
 .logout:hover{

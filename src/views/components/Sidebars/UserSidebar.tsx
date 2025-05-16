@@ -4,10 +4,8 @@ import SidebarLayout from './SidebarLayout';
 
 export const UserSidebar = () => {
   return (
-    <div>
         <SidebarLayout>
             <UserLinks/>
         </SidebarLayout>
-    </div>
   )
 }
