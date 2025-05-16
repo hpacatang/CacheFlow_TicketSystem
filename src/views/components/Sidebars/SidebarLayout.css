@@ -13,7 +13,9 @@
   justify-content: flex-start;
   justify-items: center;
   text-align: center;
+  height: 97vh;
 }
+
 .icon{
   /* font-size: 15rem; wont change size */
   color: white;  
@@ -40,7 +42,7 @@
 }
 
 .links{
-  margin-bottom: 18rem;
+  margin-bottom: 31rem;
   text-align: left;
 }
 .links a {
@@ -66,7 +68,7 @@
 .logout {
   color: white; 
   border: none; 
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   cursor: pointer;
 }
 .logout:hover{

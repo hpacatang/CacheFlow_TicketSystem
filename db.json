@@ -6,5 +6,15 @@
     {
       "report2": "Sample Response 2"
     }
+  ],
+  "articles": [
+    {
+      "id": "28e7d1ff-c7bb-47d8-a9ac-4b88f853c2c5",
+      "title": "Welcome to CacheFlow!",
+      "category": "Technology",
+      "views": 0,
+      "lastUpdated": "5/13/2025",
+      "body": "Welcome to Cache Flow, the smart and reliable ticketing system designed to keep your support process running smoothly. Whether you\\'re resolving internal IT issues, handling customer queries, or managing service requests, Cache Flow gives you the tools to stay organized, responsive, and efficient.\n\nThis is the Knowledge Base! \n\nHere, you will find a comprehensive collection of articles, guides, and resources designed to help you navigate and make the most of our system. Whether you are looking for troubleshooting tips, detailed explanations, or best practices, we have got you covered. Dive in and explore the wealth of information at your fingertips!"
+    }
   ]
 }
