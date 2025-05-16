@@ -44,7 +44,11 @@
       "assignee": "jamal",
       "status": "open",
       "resolvedAt": null,
-      "type": "hardware"
+      "type": "hardware",
+      "description": "The PC is not turning on at all. I have checked the power supply and it seems to be working fine. Please help me troubleshoot this issue.",
+      "dueDate": "2024-12-01",
+      "priority": "High",
+      "category": "Hardware"
     },
     {
       "id": "2",
@@ -53,7 +57,11 @@
       "assignee": "kaye",
       "status": "resolved",
       "resolvedAt": "2024-12-01",
-      "type": "software"
+      "type": "software",
+      "description": "Windows is not updating properly. I have tried running the troubleshooter but it doesn't seem to help. Can you assist me with this?",
+      "dueDate": "2024-12-01",
+      "priority": "Medium",
+      "category": "Software"
     },
     {
       "id": "3",
@@ -62,7 +70,11 @@
       "assignee": "jhed",
       "status": "inProgress",
       "resolvedAt": null,
-      "type": "hardware"
+      "type": "hardware",
+      "description": "The internet connection is very slow. I have checked the router and it seems to be working fine. Can you help me with this issue?",
+      "dueDate": "2024-12-01",
+      "priority": "Low",
+      "category": "Network"
     }
   ]
 }
