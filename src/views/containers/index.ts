@@ -12,5 +12,9 @@ export * from "./ResetPassword";
 export * from "./VerifyEmail";
 
 // export * from "./KnowledgeBase";
+export * from "./Settings";
+export * from "./Notifications";
+export * from "./UserMngmt";
+export * from "./AccessCntrl";
 export { default as KnowledgeBase } from './KnowledgeBase/KnowBase';
 export { default as KnowledgeBaseUser } from './KnowledgeBase/KnowBaseUser';

@@ -21,6 +21,11 @@ export const AppRoutes = () => {
         <Route path={PATHS.SIGN_IN.path} element={<Views.SignIn />} />
         <Route path={PATHS.FORGOT_PASSWORD.path} element={<Views.ForgotPass />} />
         <Route path={PATHS.ANALYTICS.path} element={<Views.Analytics />} />
+        <Route path={PATHS.SETTINGS.path} element={<Views.Settings role="user" />} />{/* agent */}
+        <Route path={PATHS.NOTIFICATION.path} element={<Views.Notifications role="user" />} />
+        <Route path={PATHS.USER_MNGMT.path} element={<Views.UserMngmt />} />
+        <Route path={PATHS.ACCESS_CNTRL.path} element={<Views.AccessCntrl />} />
+    
         <Route path={PATHS.CONFIRM_PASSWORD.path} element={<Views.ResetPass />} />
         <Route path={PATHS.VERIFY_EMAIL.path} element={<Views.VerifyEmail />} />
         {/* Set KnowledgeBase as the default route */}

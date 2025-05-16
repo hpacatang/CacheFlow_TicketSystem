@@ -1,0 +1,83 @@
+.access-cntrl-container {
+  max-width: 100%;
+  width: 800px;
+  margin: 32px auto;
+  background: #f3f8fc;
+  border-radius: 16px;
+  padding: 24px 32px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.access-cntrl-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.access-cntrl-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.add-user-btn {
+  background: #2196f3;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-user-btn:hover {
+  background: #1769aa;
+}
+
+.access-cntrl-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+}
+
+.access-cntrl-table th,
+.access-cntrl-table td {
+  text-align: center;
+  padding: 10px 0;
+  font-size: 1rem;
+}
+
+.access-cntrl-table th {
+  font-weight: 700;
+  border-bottom: 2px solid #222;
+}
+
+.access-cntrl-table td:first-child,
+.access-cntrl-table th:first-child {
+  text-align: left;
+  padding-left: 10px;
+}
+
+.access-cntrl-table input[type="checkbox"] {
+  accent-color: #2196f3;
+  width: 20px;
+  height: 20px;
+  cursor: default;
+}
+
+.visibility-row td {
+  background: transparent;
+  border: none;
+  padding-top: 18px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #222;
+}
+
+.visibility-label {
+  text-align: left;
+  padding-left: 10px;
+}

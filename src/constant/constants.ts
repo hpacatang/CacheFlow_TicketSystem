@@ -1,3 +1,5 @@
+import { A } from "react-router/dist/development/route-data-B9_30zbP";
+
 // ROUTER PATH
 export const PATHS = {
   MAIN: {
@@ -45,6 +47,18 @@ export const PATHS = {
   VERIFY_EMAIL: { 
     path: '/verify-email', 
     label: 'Verify Email' },
+  SETTINGS: {
+    path: "/settings",
+    label: "Settings"},
+  NOTIFICATION: {
+    path: "/Notifications",
+    label: "Notifications"},
+  USER_MNGMT: {
+    path: "/UserManagement",
+    label: "User Management"},
+  ACCESS_CNTRL: {
+    path: "/AccessControl",
+    label: "Access Control"},
 };
 
 // SIDE BAR MENU PATH

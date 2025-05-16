@@ -1,0 +1,150 @@
+.user-mngmt-container {
+  max-width: 100%;
+  width: 800px;
+  margin: 32px auto;
+  background: #f3f8fc;
+  border-radius: 16px;
+  padding: 24px 32px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.user-mngmt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-user-btn {
+  background: #0074d9;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.user-mngmt-controls {
+  display: flex;
+  align-items: center;
+  margin: 24px 0 16px 0;
+  gap: 16px;
+}
+
+.search-box input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  width: 200px;
+}
+
+.manage-permissions-btn {
+  background: #0074d9;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+}
+
+.user-table th, .user-table td {
+  padding: 12px 8px;
+  text-align: left;
+}
+
+.user-table th {
+  border-bottom: 2px solid #222;
+  font-weight: 600;
+}
+
+.user-table td {
+  border-bottom: 1px solid #e3f0fc;
+}
+
+.actions-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 32px 28px 24px 28px;
+  min-width: 400px;
+  width: 420px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.modal-body label {
+  font-size: 0.98rem;
+  font-weight: 500;
+}
+
+.modal-body input,
+.modal-body select {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  font-size: 1rem;
+}
+
+.modal-add-btn {
+  background: #2196f3;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 8px auto 0 auto;
+  display: block;
+}

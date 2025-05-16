@@ -1,0 +1,139 @@
+.notifications-container {
+  max-width: 100%;
+  width: 800px;
+  margin: 32px auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px 32px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.notifications-tabs {
+  display: flex;
+  justify-content: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.notifications-tabs button {
+  width: 120px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  border-radius: 12px 12px 0 0;
+  background: #e3f0fc;
+  color: #0074d9;
+  font-weight: 600;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notifications-tabs button.active {
+  background: #0074d9;
+  color: #fff;
+}
+
+.notifications-filter {
+  position: relative;
+  margin-left: 16px;
+}
+
+.filter-btn {
+  width: 48px;
+  height: 48px;
+  background: #e3f0fc;
+  border: none;
+  border-radius: 12px 12px 0 0;
+  color: #0074d9;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.filter-btn:active,
+.filter-btn:focus {
+  background: #0074d9;
+  color: #fff;
+}
+
+.filter-dropdown {
+  position: absolute;
+  right: 0;
+  top: 36px;
+  background: #fff;
+  border: 1px solid #cce3f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #0001;
+  min-width: 160px;
+  z-index: 10;
+}
+
+.filter-option {
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.filter-option.selected,
+.filter-option:hover {
+  background: #e3f0fc;
+  color: #0074d9;
+}
+
+.notifications-list {
+  margin-top: 16px;
+}
+
+.notif-date {
+  font-weight: 600;
+  margin: 16px 0 8px 0;
+}
+
+.notif-row {
+  display: flex;
+  align-items: center;
+  background: #e3f0fc;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  padding: 12px 16px;
+  gap: 16px;
+  position: relative;
+}
+
+.notif-row.highlight {
+  border-left: 4px solid #ff3b3b;
+}
+
+.notif-title {
+  font-weight: 600;
+  min-width: 140px;
+}
+
+.notif-reminder {
+  color: #ff3b3b;
+  font-weight: bold;
+}
+
+.notif-message {
+  flex: 1;
+  color: #222;
+}
+
+.notif-date-right {
+  min-width: 80px;
+  text-align: right;
+  color: #888;
+}
+
+.notif-empty {
+  color: #888;
+  padding: 16px;
+}
