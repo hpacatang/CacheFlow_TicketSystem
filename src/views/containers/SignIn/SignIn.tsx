@@ -77,7 +77,7 @@ export const SignIn = () => {
                         Sign Up
                     </button>
                     <div className="signup-text" style={{ marginTop: 32 }}>
-                        Already have an Account? <a href="#">Log in</a>
+                        Already have an Account? <a href="/login">Log in</a>
                     </div>
                 </div>
             </div>
