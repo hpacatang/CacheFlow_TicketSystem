@@ -3,6 +3,8 @@ import { UserSidebar } from '../../components/Sidebars/UserSidebar';
 import { AgentSidebar } from '../../components/Sidebars/AgentSidebar';
 import { AdminSidebar } from '../../components/Sidebars/AdminSidebar';
 import SearchIcon from '@mui/icons-material/Search';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import './TicketDash.css';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, TextField, FormControl, Select, MenuItem } from '@mui/material';
 
@@ -14,6 +16,11 @@ interface Ticket {
   status: 'open' | 'inProgress' | 'resolved' | 'closed';
   resolvedAt: string | null;
   type: 'hardware' | 'software';
+  description: string;
+  dueDate: string;
+  priority?: string;
+  category?: string;
+  attachment?: string | File | null;
 }
 
 interface User {
@@ -31,7 +38,10 @@ export const TicketDash = () => {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const loggedInUser = 'jamal'; //CHANGE USER HERE
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editTicket, setEditTicket] = useState<Ticket | null>(null);
+  const loggedInUser = 'yana'; //CHANGE USER HERE
   
   type UserRole = 'user' | 'agent' | 'admin' | 'superadmin';
   const userRole = (users.find(u => u.name === loggedInUser)?.role || 'user') as UserRole;
@@ -161,7 +171,63 @@ const handleAssigneeChange = async (id: number, newAssignee: string) => {
     setShowModal(false);
   };
 
+  // Edit modal open/close handlers
+  const handleEditModalOpen = () => {
+    if (selectedTicket) {
+      setEditTicket({ ...selectedTicket });
+      setShowEditModal(true);
+    }
+  };
+  const handleEditModalClose = () => {
+    setShowEditModal(false);
+    setEditTicket(null);
+  };
 
+  // Edit ticket field change handler
+  const handleEditTicketChange = (field: keyof Ticket, value: string | File | null) => {
+    setEditTicket(prev => prev ? { ...prev, [field]: value } : prev);
+  };
+
+  // Save edited ticket
+  const handleEditTicketSave = async () => {
+    if (!editTicket) return;
+    setTickets(prev => prev.map(t => t.id === editTicket.id ? { ...editTicket } : t));
+    setSelectedTicket({ ...editTicket });
+    setShowEditModal(false);
+    setShowViewModal(true);
+    try {
+      await fetch(`http://localhost:3001/tickets/${editTicket.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          summary: editTicket.summary,
+          description: editTicket.description,
+          dueDate: editTicket.dueDate,
+          priority: editTicket.priority,
+          category: editTicket.category,
+          attachment: typeof editTicket.attachment === 'string' ? editTicket.attachment : (editTicket.attachment && 'name' in editTicket.attachment ? editTicket.attachment.name : null),
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to update ticket:', error);
+    }
+  };
+
+  // Handler for deleting a ticket
+const handleDeleteTicket = async () => {
+  if (!editTicket) return;
+  try {
+    await fetch(`http://localhost:3001/tickets/${editTicket.id}`, {
+      method: 'DELETE',
+    });
+    setTickets(prev => prev.filter(t => t.id !== editTicket.id));
+    setShowEditModal(false);
+    setShowViewModal(false);
+    setSelectedTicket(null);
+  } catch (error) {
+    console.error('Failed to delete ticket:', error);
+  }
+};
 
   return (
     <div className='parent-container'>
@@ -229,9 +295,20 @@ const handleAssigneeChange = async (id: number, newAssignee: string) => {
           </thead>
           <tbody>
             {filteredTickets.map(ticket => (
-              <tr key={ticket.id} onClick={() => openModal(ticket)} className="clickable-row">
+              <tr key={ticket.id} className="clickable-row">
                 <td>{ticket.id}</td>
-                <td>{ticket.summary}</td>
+                <td>
+                  <span
+                    style={{ color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}
+                    onClick={e => {
+                      e.stopPropagation();
+                      setSelectedTicket(ticket);
+                      setShowViewModal(true);
+                    }}
+                  >
+                    {ticket.summary}
+                  </span>
+                </td>
                 <td>{ticket.name}</td>
                 <td className={`assignee-${ticket.assignee}`}>
                   {(userRole === 'agent' || userRole === 'admin') ? (
@@ -441,6 +518,251 @@ const handleAssigneeChange = async (id: number, newAssignee: string) => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* View Ticket Modal */}
+<Dialog
+  open={showViewModal}
+  onClose={() => setShowViewModal(false)}
+  sx={{
+    '& .MuiDialog-paper': {
+      width: '800px', // Match the edit modal width
+      maxWidth: '95%',
+      borderRadius: '16px',
+    },
+  }}
+>
+  <DialogTitle sx={{ fontWeight: 'bold', fontSize: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      Ticket Details
+      {selectedTicket && (
+        <Button onClick={handleEditModalOpen} sx={{ minWidth: 'auto', padding: 0, color: '#1976d2', ml: 1 }} title="Edit Ticket">
+          <EditIcon />
+        </Button>
+      )}
+    </span>
+    <Button
+      onClick={() => setShowViewModal(false)}
+      sx={{
+        minWidth: 'auto',
+        padding: 0,
+        color: 'black',
+        fontSize: '16px',
+        '&:hover': { color: 'red' },
+      }}
+    >
+      ✕
+    </Button>
+  </DialogTitle>
+  <DialogContent dividers>
+    {selectedTicket && (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Typography variant="subtitle1"><b>Title:</b> {selectedTicket.summary}</Typography>
+        <Typography variant="subtitle1"><b>Description:</b> {selectedTicket.description || '—'}</Typography>
+        <Typography variant="subtitle1"><b>Due Date:</b> {selectedTicket.dueDate || '—'}</Typography>
+        <Typography variant="subtitle1"><b>Priority:</b> {selectedTicket.priority || '—'}</Typography>
+        <Typography variant="subtitle1"><b>Category:</b> {selectedTicket.category || '—'}</Typography>
+        <Typography variant="subtitle1"><b>Attachment:</b> {selectedTicket.attachment
+          ? (typeof selectedTicket.attachment === 'string'
+              ? <a href={selectedTicket.attachment} target="_blank" rel="noopener noreferrer">View Attachment</a>
+              : (selectedTicket.attachment && 'name' in selectedTicket.attachment ? selectedTicket.attachment.name : '—'))
+          : '—'}
+        </Typography>
+      </div>
+    )}
+  </DialogContent>
+</Dialog>
+
+{/* Edit Ticket Modal */}
+<Dialog
+  open={showEditModal}
+  onClose={handleEditModalClose}
+  sx={{
+    '& .MuiDialog-paper': {
+      width: '800px',
+      maxWidth: '95%',
+      borderRadius: '16px',
+    },
+  }}
+>
+  <DialogTitle sx={{ fontWeight: 'bold', fontSize: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    Edit Ticket
+    <Button
+      onClick={handleEditModalClose}
+      sx={{
+        minWidth: 'auto',
+        padding: 0,
+        color: 'black',
+        fontSize: '16px',
+        '&:hover': {
+          color: 'red',
+        },
+      }}
+    >
+      ✕
+    </Button>
+  </DialogTitle>
+  <DialogContent>
+    {editTicket && (
+      <>
+        <Typography variant="subtitle1" sx={{ marginBottom: '2px' }}>
+          Title
+        </Typography>
+        <TextField
+          variant="outlined"
+          fullWidth
+          margin="dense"
+          value={editTicket.summary}
+          onChange={e => handleEditTicketChange('summary', e.target.value)}
+          sx={{ borderRadius: '8px', marginBottom: '16px', '& .MuiOutlinedInput-root': { height: '40px' } }}
+        />
+        <Typography variant="subtitle1" sx={{ marginBottom: '4px' }}>
+          Description
+        </Typography>
+        <TextField
+          variant="outlined"
+          fullWidth
+          margin="dense"
+          multiline
+          rows={4}
+          value={editTicket.description}
+          onChange={e => handleEditTicketChange('description', e.target.value)}
+          sx={{ borderRadius: '8px', marginBottom: '16px' }}
+        />
+        <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+          <div style={{ flex: 1 }}>
+            <Typography variant="subtitle1" sx={{ marginBottom: '4px' }}>
+              Due Date
+            </Typography>
+            <TextField
+              variant="outlined"
+              fullWidth
+              margin="dense"
+              type="date"
+              value={editTicket.dueDate || ''}
+              onChange={e => handleEditTicketChange('dueDate', e.target.value)}
+              sx={{ borderRadius: '8px', '& .MuiOutlinedInput-root': { height: '40px' } }}
+              InputLabelProps={{ shrink: true }}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <Typography variant="subtitle1" sx={{ marginBottom: '4px' }}>
+              Priority
+            </Typography>
+            <FormControl fullWidth margin="dense" sx={{ '& .MuiOutlinedInput-root': { height: '40px' } }}>
+              <Select
+                displayEmpty
+                value={editTicket.priority || ''}
+                onChange={e => handleEditTicketChange('priority', e.target.value)}
+                sx={{ borderRadius: '8px', height: '40px' }}
+              >
+                <MenuItem value="" disabled>
+                  <span style={{ color: 'gray' }}>Select Priority</span>
+                </MenuItem>
+                <MenuItem value="Low">Low</MenuItem>
+                <MenuItem value="Medium">Medium</MenuItem>
+                <MenuItem value="High">High</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+          <div style={{ flex: 1 }}>
+            <Typography variant="subtitle1" sx={{ marginBottom: '4px' }}>
+              Category
+            </Typography>
+            <FormControl fullWidth margin="dense" sx={{ '& .MuiOutlinedInput-root': { height: '40px' } }}>
+              <Select
+                displayEmpty
+                value={editTicket.category || ''}
+                onChange={e => handleEditTicketChange('category', e.target.value)}
+                sx={{ borderRadius: '8px', height: '40px' }}
+              >
+                <MenuItem value="" disabled>
+                  <span style={{ color: 'gray' }}>Select Category</span>
+                </MenuItem>
+                <MenuItem value="Hardware">Hardware</MenuItem>
+                <MenuItem value="Software">Software</MenuItem>
+                <MenuItem value="Network">Network</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+        </div>
+        <Typography variant="subtitle1" sx={{ marginBottom: '4px' }}>
+          Attachments
+        </Typography>
+        <div
+          style={{
+            border: '2px dashed black',
+            borderRadius: '8px',
+            padding: '16px',
+            textAlign: 'center',
+            marginBottom: '5px',
+            backgroundColor: '#f9f9f9',
+          }}
+          onDragOver={e => e.preventDefault()}
+          onDrop={e => {
+            e.preventDefault();
+            const files = Array.from(e.dataTransfer.files);
+            handleEditTicketChange('attachment', files[0] || null);
+          }}
+        >
+          Drag and drop files here, or click to upload
+          <input
+            type="file"
+            style={{ display: 'none' }}
+            id="edit-ticket-attachment-input"
+            onChange={e => handleEditTicketChange('attachment', e.target.files ? e.target.files[0] : null)}
+          />
+          {editTicket.attachment && (typeof editTicket.attachment === 'string'
+            ? <div style={{ marginTop: 8 }}><a href={editTicket.attachment} target="_blank" rel="noopener noreferrer">Current Attachment</a></div>
+            : (editTicket.attachment && 'name' in editTicket.attachment ? <div style={{ marginTop: 8 }}>{editTicket.attachment.name}</div> : null))}
+        </div>
+      </>
+    )}
+  </DialogContent>
+  <DialogActions sx={{ justifyContent: 'center' }}>
+    <Button
+      onClick={handleEditTicketSave}
+      sx={{
+        backgroundColor: '#1E90FF',
+        color: 'white',
+        '&:hover': {
+          backgroundColor: 'darkblue',
+        },
+        padding: '8px 16px',
+        borderRadius: '8px',
+        fontWeight: 'bold',
+        textTransform: 'none',
+        marginBottom: '10px',
+        fontSize: '16px',
+        mr: 2,
+      }}
+    >
+      Save Changes
+    </Button>
+    <Button
+      onClick={handleDeleteTicket}
+      sx={{
+        minWidth: '40px',
+        height: '40px',
+        backgroundColor: '#ff4d4f',
+        color: 'white',
+        borderRadius: '50%',
+        ml: 2,
+        mb: '10px',
+        '&:hover': {
+          backgroundColor: '#b71c1c',
+        },
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+      }}
+      aria-label="Delete Ticket"
+    >
+      <DeleteIcon fontSize="medium" />
+    </Button>
+  </DialogActions>
+</Dialog>
     </div>
   );
 
