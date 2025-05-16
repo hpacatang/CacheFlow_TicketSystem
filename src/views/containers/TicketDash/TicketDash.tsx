@@ -78,8 +78,44 @@ export const TicketDash = () => {
   const handleNewTicketChange = (field: string, value: string | File | null) => {
     setNewTicket(prev => ({ ...prev, [field]: value }));
   };
-  const handleCreateTicket = () => {
-    // Add ticket creation logic here
+  const handleCreateTicket = async () => {
+    // Find the next available integer ID
+    const usedIds = tickets.map(t => t.id).sort((a, b) => a - b);
+    let nextId = 3;
+    for (let i = 1; i < usedIds.length; i++) {
+      if (usedIds[i] !== i + 1) {
+        nextId = i + 1;
+        break;
+      }
+      if (i === usedIds.length - 1) {
+        nextId = usedIds.length + 1;
+      }
+    }
+    if (usedIds.length === 0) nextId = 1;
+
+    // Build the new ticket object
+    const ticketToCreate = {
+      ...newTicket,
+      id: nextId,
+      name: loggedInUser,
+      assignee: '', // or assign as needed
+      status: 'open',
+      resolvedAt: null,
+      type: newTicket.type || 'hardware', // default if needed
+    };
+
+    try {
+      const response = await fetch('http://localhost:3001/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ticketToCreate),
+      });
+      const createdTicket = await response.json();
+      setTickets(prev => [...prev, createdTicket]);
+    } catch (error) {
+      console.error('Failed to create ticket:', error);
+    }
+
     handleCreateTicketClose();
     setNewTicket({ summary: '', type: '', description: '', dueDate: '', priority: '', category: '', attachment: null });
   };
@@ -213,7 +249,7 @@ const handleAssigneeChange = async (id: number, newAssignee: string) => {
     }
   };
 
-  // Handler for deleting a ticket
+  // Deleting a ticket
 const handleDeleteTicket = async () => {
   if (!editTicket) return;
   try {
@@ -281,6 +317,7 @@ const handleDeleteTicket = async () => {
         </div>
       </div>
 
+      {/* Main content/dashboard */}
       <div className='main-content'>
         <table>
           <thead>
@@ -552,6 +589,9 @@ const handleDeleteTicket = async () => {
     >
       ✕
     </Button>
+
+
+    {/* View Modal */}
   </DialogTitle>
   <DialogContent dividers>
     {selectedTicket && (
@@ -765,8 +805,4 @@ const handleDeleteTicket = async () => {
 </Dialog>
     </div>
   );
-
-
-
-
 };
