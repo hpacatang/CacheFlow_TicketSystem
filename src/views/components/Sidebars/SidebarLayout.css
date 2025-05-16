@@ -5,7 +5,7 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  width: 17%;              
+  width: 18%;              
   height: 100%;
   background-color: #1B65AD;
   overflow: hidden;         
@@ -13,7 +13,7 @@
   justify-content: flex-start;
   justify-items: center;
   text-align: center;
-  height: 97vh;
+  height: 100vh;
 }
 
 .icon{
@@ -42,7 +42,6 @@
 }
 
 .links{
-  margin-bottom: 31rem;
   text-align: left;
 }
 .links a {
@@ -51,9 +50,9 @@
   color: white;
   text-decoration: none;
   margin-bottom: 1px;
-  border-radius: 5px;
+  border-radius: 3px;
   width: 100%; 
-  font-size: 1.4rem;
+  font-size: 1.3rem;
 }
 
 .links a:hover {
@@ -61,6 +60,7 @@
 }
 
 .footer{
+  margin-top: auto;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
