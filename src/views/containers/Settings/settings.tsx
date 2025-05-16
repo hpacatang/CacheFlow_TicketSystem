@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './settings.css';
 import { UserSidebar } from '../../components/Sidebars/UserSidebar';
 import { AgentSidebar } from '../../components/Sidebars/AgentSidebar';
+import { AdminSidebar } from '../../components/Sidebars/AdminSidebar';
 
 const TABS = [
   { label: 'Notification Settings' },
@@ -10,10 +11,11 @@ const TABS = [
 ];
 
 interface SettingsProps {
-  role: 'user' | 'agent';
+  role?: 'user' | 'agent' | 'admin'; //optional for now 
 }
 
 export const Settings: React.FC<SettingsProps> = ({ role }) => {
+  const sidebarRole = (localStorage.getItem('userRole')); //use local storage to get role
   const [activeTab, setActiveTab] = useState(0);
 
   const [darkMode, setDarkMode] = useState(false);
@@ -46,8 +48,9 @@ export const Settings: React.FC<SettingsProps> = ({ role }) => {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
-      {role === 'user' && <UserSidebar />}
-      {role === 'agent' && <AgentSidebar />}
+      {sidebarRole === 'user' && <UserSidebar />}
+      {sidebarRole === 'agent' && <AgentSidebar />}
+      {sidebarRole === 'admin' && <AdminSidebar />}
       <div style={{ flex: 1 }}>
         <div className="settings-container">
           <h2>Settings</h2>
