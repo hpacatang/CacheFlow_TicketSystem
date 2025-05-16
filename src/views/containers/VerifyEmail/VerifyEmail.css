@@ -1,0 +1,185 @@
+/* No styles needed. All styling is handled by MUI in the component. */
+
+.forgot-password-center-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  z-index: 1;
+  padding: 0;
+}
+
+.forgot-password-card-simple {
+  width: 100%;
+  max-width: 440px;
+  padding: 40px 32px 32px 32px;
+  background: #1b65ad;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+}
+
+.forgot-password-card-simple h2 {
+  color: white;
+}
+
+.instruction-text-simple {
+  color: white;
+  font-size: 1rem;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.input-group-simple {
+  position: relative;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.forgot-password-input-simple {
+  width: 100%;
+  height: 48px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0 40px 0 44px;
+  font-size: 1rem;
+  background: #fafbfc;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.forgot-password-input-simple:focus {
+  border: 1.5px solid #167bbb;
+  background: #fff;
+}
+
+.input-icon-simple {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reset-button-simple {
+  width: 100%;
+  height: 44px;
+  background: #fff;
+  border: none;
+  border-radius: 8px;
+  color: #167bbb;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 18px;
+  transition: background 0.2s;
+}
+
+.reset-button-simple:hover {
+  background: #1569a0;
+}
+
+.back-to-login-simple {
+  width: 100%;
+  text-align: center;
+}
+
+.back-to-login-simple a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: text-decoration 0.2s;
+}
+
+.back-to-login-simple a:hover {
+  text-decoration: underline;
+}
+
+.verify-subtext {
+  color: white;
+  font-size: 1.05rem;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.verify-email {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.08rem;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.verify-instruction {
+  color: white;
+  font-size: 0.98rem;
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.verify-code-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.verify-code-input {
+  width: 40px;
+  height: 48px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafbfc;
+  font-size: 1.5rem;
+  text-align: center;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.verify-code-input:focus {
+  border: 1.5px solid #167bbb;
+  background: #fff;
+}
+
+.verify-extra {
+  color: #e0e0e0;
+  font-size: 0.97rem;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.verify-links {
+  margin-top: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.verify-link-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.97rem;
+  padding: 0 2px;
+}
+
+.verify-link-sep {
+  color: #e0e0e0;
+  padding: 0 4px;
+}

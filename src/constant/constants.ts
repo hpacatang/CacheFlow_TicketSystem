@@ -32,6 +32,15 @@ export const PATHS = {
   ANALYTICS: { 
     path: '/analytics', 
     label: 'Analytics' },
+  FORGOT_PASSWORD: { 
+    path: '/forgot-pass', 
+    label: 'Forgot Password' },
+  CONFIRM_PASSWORD: { 
+    path: '/confirm-pass', 
+    label: 'Confirm Password' },
+  VERIFY_EMAIL: { 
+    path: '/verify-email', 
+    label: 'Verify Email' },
 };
 
 // SIDE BAR MENU PATH

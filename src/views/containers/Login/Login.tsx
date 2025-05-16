@@ -2,10 +2,18 @@ import React from "react";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { useNavigate } from "react-router-dom";
 
 import "./Login.css";
 
 export const Login = () => {
+  const navigate = useNavigate();
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate("/dashboard");
+  };
+
   return (
     <div className="login-container">
       <div className="login-left">
@@ -56,13 +64,13 @@ export const Login = () => {
           </div>
 
           <div className="forgot-password">
-            <a href="#">forgot password?</a>
+            <a href="/forgot-pass">forgot password?</a>
           </div>
 
-          <button className="login-button">Log In</button>
+          <button className="login-button" onClick={handleLogin}>Log In</button>
 
           <div className="signup-text">
-            Don't have an Account? <a href="#">Sign up</a>
+            Don't have an Account? <a href="/sign-in">Sign up</a>
           </div>
         </div>
       </div>
