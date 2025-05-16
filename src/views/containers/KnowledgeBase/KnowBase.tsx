@@ -37,6 +37,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import './KnowBase.css';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
+import { AdminSidebar } from '../../components/Sidebars/AgentSidebar';
 
 // Define a type for the articles
 interface Article {
@@ -196,7 +197,7 @@ const KnowBase = () => {
   return (
     <div style={{ display: 'flex' }}>
       {/* Sidebar */}
-      <Drawer
+      {/* <Drawer
         variant="permanent"
         anchor="left"
         sx={{
@@ -229,15 +230,17 @@ const KnowBase = () => {
               }}
             >
               <ListItemIcon sx={{ color: 'white' }}>{item.icon}</ListItemIcon> {/* Icon color */}
-              <ListItemText
+              {/* <ListItemText
                 primary={item.text}
               />
             </ListItem>
           ))}
         </List>
-      </Drawer>
+      </Drawer> */}
+      <AdminSidebar />
 
       {/* Main Content */}
+      
       <Main style={{ marginLeft: 80 }}>
         <AppBar title="Knowledge Base" />
         <DrawerHeader />
