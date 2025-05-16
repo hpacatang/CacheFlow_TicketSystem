@@ -129,15 +129,15 @@
   background: #f5f8fa;
 }
 
-.analytics-sidebar {
-  width: 300px;           /* Increased width for better content fit */
-  min-width: 260px;       /* Increased min-width */
+/* .analytics-sidebar {
+  width: 300px;          
+  min-width: 260px;      
   background: #2366a2;
   height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: auto;         /* Allow scrolling if content overflows */
-}
+  overflow: auto;        
+} */
 
 @media (max-width: 1440px) {
   .analytics-charts {

@@ -130,7 +130,7 @@ const KnowBaseUser = () => {
         <div className="knowledge-base-container" 
         style={{width: '100%',
           maxWidth: '1300px',
-          minWidth: '1100px', 
+          minWidth: '1050px', 
           margin: '0 auto',  
           padding: '20px',
           overflow: 'auto', 
