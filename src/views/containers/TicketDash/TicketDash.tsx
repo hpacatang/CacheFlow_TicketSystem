@@ -288,11 +288,11 @@ const handleDeleteTicket = async () => {
           />
         </div>
 
-        <div className='filter-list'>
+        <div className='ticket-filter-list'>
           {['open', 'inProgress', 'resolved', 'closed'].map(status => (
             <button
               key={status}
-              className={`filter-btn ${isActive(status) ? 'active' : ''}`}
+              className={`ticket-filter-btn ${isActive(status) ? 'active' : ''}`}
               onClick={() => toggleFilter(status)}
             >
               {status}
@@ -305,7 +305,7 @@ const handleDeleteTicket = async () => {
           {['hardware', 'software'].map(type => (
             <button
               key={type}
-              className={`filter-btn ${isActive(type) ? 'active' : ''}`}
+              className={`ticket-filter-btn ${isActive(type) ? 'active' : ''}`}
               onClick={() => toggleFilter(type)}
             >
               {type}

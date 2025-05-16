@@ -55,8 +55,8 @@
       "summary": "Windows issue",
       "name": "dona",
       "assignee": "kaye",
-      "status": "resolved",
-      "resolvedAt": "2024-12-01",
+      "status": "closed",
+      "resolvedAt": "2025-05-16T16:49:11.635Z",
       "type": "software",
       "description": "Windows is not updating properly. I have tried running the troubleshooter but it doesn't seem to help. Can you assist me with this?",
       "dueDate": "2024-12-01",
@@ -75,6 +75,20 @@
       "dueDate": "2024-12-01",
       "priority": "Low",
       "category": "Network"
+    },
+    {
+      "id": 2,
+      "summary": "windows update broke pc",
+      "type": "hardware",
+      "description": "latest windows update made the pc lag even in start",
+      "dueDate": "2025-05-17",
+      "priority": "High",
+      "category": "Software",
+      "attachment": null,
+      "name": "yana",
+      "assignee": "",
+      "status": "open",
+      "resolvedAt": null
     }
   ],
   "articles": [
