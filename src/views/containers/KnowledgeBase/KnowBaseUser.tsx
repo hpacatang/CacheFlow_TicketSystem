@@ -29,6 +29,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import ArticleIcon from '@mui/icons-material/Article';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import './KnowBase.css';
+import { UserSidebar } from '../../components/Sidebars/UserSidebar';
 
 // Define a type for the articles
 interface Article {
@@ -79,7 +80,7 @@ const KnowBaseUser = () => {
   return (
     <div style={{ display: 'flex' }}>
       {/* Sidebar */}
-      <Drawer
+      {/* <Drawer
         variant="permanent"
         anchor="left"
         sx={{
@@ -112,13 +113,14 @@ const KnowBaseUser = () => {
               }}
             >
               <ListItemIcon sx={{ color: 'white' }}>{item.icon}</ListItemIcon> {/* Icon color */}
-              <ListItemText
+              {/* <ListItemText
                 primary={item.text}
               />
             </ListItem>
           ))}
         </List>
-      </Drawer>
+      </Drawer> */}
+      <UserSidebar />
 
       {/* Main Content */}
       <Main style={{ marginLeft: 80 }}>
