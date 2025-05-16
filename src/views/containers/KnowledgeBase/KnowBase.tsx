@@ -37,7 +37,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import './KnowBase.css';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
-import { AdminSidebar } from '../../components/Sidebars/AgentSidebar';
+import { AgentSidebar } from '../../components/Sidebars/AgentSidebar';
 
 // Define a type for the articles
 interface Article {
@@ -237,7 +237,7 @@ const KnowBase = () => {
           ))}
         </List>
       </Drawer> */}
-      <AdminSidebar />
+      <AgentSidebar />
 
       {/* Main Content */}
       
