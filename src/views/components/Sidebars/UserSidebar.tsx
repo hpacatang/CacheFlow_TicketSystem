@@ -9,3 +9,5 @@ export const UserSidebar = () => {
         </SidebarLayout>
   )
 }
+
+export default UserSidebar;

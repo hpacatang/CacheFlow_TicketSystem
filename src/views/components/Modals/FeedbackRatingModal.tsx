@@ -176,4 +176,4 @@ const FeedbackRatingModal: React.FC<FeedbackRatingModalProps> = ({ open, onClose
   )
 }
 
-export default FeedbackRatingModal
+export default FeedbackRatingModal;

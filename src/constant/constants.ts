@@ -62,6 +62,9 @@ export const PATHS = {
   CUSTOMERFEEDBACK: {
     path: "/CustomerFeedback",
     label: "Customer Feedback"},
+  SUBMITFEEDBACK: {
+    path: "/Feedback",
+    label: "Submit Ticket"},
 };
 
 // SIDE BAR MENU PATH

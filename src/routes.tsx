@@ -10,7 +10,7 @@ export const AppRoutes = () => {
           {/* ADD PPRIVATE ROUTES HERE (Routes that can only access after login like Dashboard, Account Setting, etc.) */}
           {/* <Route path={PATHS.DASHBOARD.path} element={<Views.Dashboard />} /> */}
           <Route path={PATHS.DASHBOARD.path} element={<Views.TicketDash />} />
-          <Route path={PATHS.CUSTOMERFEEDBACK.path} element={<Views.CustomerFeedback />} />
+          <Route path={PATHS.CUSTOMERFEEDBACK.path} element={<Views.CustomerFeedback />} />          
           {/* <Route path={PATHS.DASHBOARD.path} element={<Views.KnowBase />} /> */}
         </Route>
         {/* ADD PUBLIC ROUTES HERE (e.g., Login, Sign Up, Forgot Pass, etc. ) */}
@@ -26,6 +26,7 @@ export const AppRoutes = () => {
         <Route path={PATHS.NOTIFICATION.path} element={<Views.Notifications role="user" />} />
         <Route path={PATHS.USER_MNGMT.path} element={<Views.UserMngmt />} />
         <Route path={PATHS.ACCESS_CNTRL.path} element={<Views.AccessCntrl />} />
+        <Route path={PATHS.SUBMITFEEDBACK.path} element={<Views.SubmitFeedback />} />
     
         <Route path={PATHS.CONFIRM_PASSWORD.path} element={<Views.ResetPass />} />
         <Route path={PATHS.VERIFY_EMAIL.path} element={<Views.VerifyEmail />} />
