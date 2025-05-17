@@ -41,7 +41,7 @@ export const TicketDash = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editTicket, setEditTicket] = useState<Ticket | null>(null);
-  const loggedInUser = 'jamal'; //CHANGE USER HERE
+  const loggedInUser = 'yana'; //CHANGE USER HERE
   
   const SidebarRole = localStorage.getItem('userRole') || 'user';
   type UserRole = 'user' | 'agent' | 'admin' | 'superadmin';
@@ -82,7 +82,7 @@ export const TicketDash = () => {
   const handleCreateTicket = async () => {
     // Find the next available integer ID
     const usedIds = tickets.map(t => t.id).sort((a, b) => a - b);
-    let nextId = 3;
+    let nextId = 1;
     for (let i = 1; i < usedIds.length; i++) {
       if (usedIds[i] !== i + 1) {
         nextId = i + 1;
