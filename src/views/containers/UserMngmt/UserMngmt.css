@@ -1,11 +1,12 @@
 .user-mngmt-container {
   max-width: 100%;
-  width: 800px;
+  width: 1050px;
   margin: 32px auto;
-  background: #f3f8fc;
+  background: #e8f3f9;
   border-radius: 16px;
   padding: 24px 32px;
   font-family: 'Segoe UI', Arial, sans-serif;
+  margin-left: 100px;
 }
 
 .user-mngmt-header {
