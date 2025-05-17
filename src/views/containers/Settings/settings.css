@@ -1,11 +1,12 @@
 .settings-container {
   max-width: 100%;
-  width: 800px;
+  width: 1050px;
   margin: 32px auto;
   background: #fff;
   border-radius: 16px;
   padding: 24px 32px;
   font-family: 'Segoe UI', Arial, sans-serif;
+  margin-left: 100px;
 }
 
 h2 {
@@ -38,7 +39,7 @@ h2 {
 }
 
 .settings-content {
-  background: #f3faff;
+  background: #e8f3f9;
   border-radius: 0 0 12px 12px;
   padding: 24px;
 }
