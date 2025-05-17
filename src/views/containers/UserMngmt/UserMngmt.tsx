@@ -19,9 +19,19 @@ export const UserMngmt: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:3000/users')
+    fetch('http://localhost:3001/users')
       .then(res => res.json())
-      .then(data => setUsers(data))
+      .then(data => {
+        // Map backend users to expected User interface
+        const mappedUsers = data.map((u: any) => ({
+          username: u.username ?? u.name ?? "",
+          email: u.email ?? "",
+          role: u.role ?? "",
+          password: u.password ?? "",
+          status: u.status ?? "Active"
+        }));
+        setUsers(mappedUsers);
+      })
       .catch(err => console.error('Failed to fetch users:', err));
   }, []);
 
