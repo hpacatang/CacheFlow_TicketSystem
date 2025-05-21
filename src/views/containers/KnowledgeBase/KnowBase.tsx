@@ -59,6 +59,7 @@ const KnowBase = () => {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false); 
   const [articles, setArticles] = useState<Article[]>([
     {
       id: uuidv4(),
@@ -125,6 +126,14 @@ const KnowBase = () => {
     setIsEditModalOpen(false);
   };
 
+  const handleDeleteConfirmModalOpen = () => {
+    setIsDeleteConfirmModalOpen(true);
+  };
+
+  const handleDeleteConfirmModalClose = () => {
+    setIsDeleteConfirmModalOpen(false);
+  };
+
   // Update the newArticle state when the user types in the modal's input fields.
   const handleNewArticleChange = (field: keyof Article, value: string) => {
     setNewArticle({ ...newArticle, [field]: value });
@@ -169,14 +178,22 @@ const KnowBase = () => {
   
   const handleDeleteArticle = () => {
     if (selectedArticle) {
+      handleDeleteConfirmModalOpen(); // Open confirmation modal
+    }
+  };
+
+  const confirmDeleteArticle = () => {
+    if (selectedArticle) {
       axios.delete(`http://localhost:3001/articles/${selectedArticle.id}`)
         .then(() => {
           setArticles(articles.filter((article) => article.id !== selectedArticle.id));
-          setIsEditModalOpen(false);
+          setIsEditModalOpen(false); // Close edit modal if open
           setSelectedArticle(null);
+          handleDeleteConfirmModalClose(); // Close confirmation modal
         })
         .catch((error) => {
           console.error('Error deleting article:', error);
+          handleDeleteConfirmModalClose(); // Close confirmation modal on error too
         });
     }
   };
@@ -486,6 +503,7 @@ const KnowBase = () => {
                   <TableCell sx={{ fontWeight: 'bold' }}>Categories</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Views</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Last Updated</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -500,6 +518,50 @@ const KnowBase = () => {
                     <TableCell>{article.category}</TableCell>
                     <TableCell>{article.views}</TableCell>
                     <TableCell>{article.lastUpdated}</TableCell>
+                    <TableCell>
+
+                      {/* Edit button */}
+                      <Button
+                        onClick={() => {
+                          setSelectedArticle(article);
+                          handleEditModalOpen();
+                        }}
+                        sx={{
+                          minWidth: '50px',
+                          padding: '4px',
+                          color: 'black',
+                          textTransform: 'none',
+                          backgroundColor: '#E2E2E2',
+                          marginRight: '5px',
+                          '&:hover': {
+                            backgroundColor: 'lightgray',
+                            textTransform: 'none'
+                          },
+                        }}
+                      >
+                      Edit
+                      </Button>
+
+                      {/* Delete button */}
+                      <Button
+                        onClick={() => {
+                          setSelectedArticle(article);
+                          handleDeleteArticle(); 
+                        }}
+                        sx={{
+                          minWidth: '50px',
+                          padding: '4px',
+                          color: 'white',
+                          textTransform: 'none',
+                          backgroundColor: 'black', 
+                          '&:hover': {
+                            backgroundColor: 'darkred',
+                          },
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -523,24 +585,6 @@ const KnowBase = () => {
           <DialogTitle sx={{ fontWeight: 'bold', fontSize: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               {selectedArticle?.title}
-              <Button
-                onClick={() => {
-                  setIsViewModalOpen(false);
-                  handleEditModalOpen();
-                }}
-                sx={{
-                  minWidth: 'auto',
-                  padding: 0,
-                  color: 'black',
-                  fontSize: '16px',
-                  marginLeft: '8px',
-                  '&:hover': {
-                    color: 'blue',
-                  },
-                }}
-              >
-                ✎ {/* Pen icon */}
-              </Button>
             </div>
             <Button
               onClick={handleViewModalClose}
@@ -745,7 +789,7 @@ const KnowBase = () => {
             >
               Update Article
             </Button>
-            <Button
+            {/* <Button
               onClick={handleDeleteArticle}
               sx={{
                 color: 'red',
@@ -763,6 +807,59 @@ const KnowBase = () => {
               }}
             >
               Delete Article
+            </Button> */}
+          </DialogActions>
+        </Dialog>
+
+        {/* DELETE CONFIRMATION MODAL */}
+        <Dialog
+          open={isDeleteConfirmModalOpen}
+          onClose={handleDeleteConfirmModalClose}
+          sx={{
+            '& .MuiDialog-paper': {
+              width: '400px',
+              maxWidth: '90%',
+              borderRadius: '16px',
+              padding: '20px',
+            },
+          }}
+        >
+          <DialogTitle sx={{ fontWeight: 'bold', fontSize: '20px', textAlign: 'center' }}>
+            Are you sure you want to delete this article?
+          </DialogTitle>
+          <DialogActions sx={{ justifyContent: 'center', marginTop: '20px' }}>
+            <Button
+              onClick={handleDeleteConfirmModalClose}
+              sx={{
+                color: 'black',
+                border: '1px solid black',
+                marginRight: '10px',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                textTransform: 'none',
+                '&:hover': {
+                  backgroundColor: 'lightgray',
+                },
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmDeleteArticle} 
+              color="primary"
+              variant="contained"
+              sx={{
+                backgroundColor: 'black',
+                color: 'white',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                textTransform: 'none',
+                '&:hover': {
+                  backgroundColor: 'darkred',
+                },
+              }}
+            >
+              Delete
             </Button>
           </DialogActions>
         </Dialog>
