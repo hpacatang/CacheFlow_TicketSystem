@@ -5,6 +5,7 @@ import { AdminSidebar } from '../../components/Sidebars/AdminSidebar';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+
 import './TicketDash.css';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, TextField, FormControl, Select, MenuItem } from '@mui/material';
 
@@ -51,12 +52,12 @@ export const TicketDash = () => {
   
   //GETTER
   useEffect(() => {
-    fetch('http://localhost:3001/users')
+    fetch('http://localhost:3000/users')
       .then(res => res.json())
       .then(setUsers)
       .catch(err => console.error('Error fetching users:', err));
 
-    fetch('http://localhost:3001/tickets')
+    fetch('http://localhost:3000/tickets')
       .then(res => res.json())
       .then(setTickets)
       .catch(err => console.error('Error fetching tickets:', err));
@@ -77,7 +78,7 @@ export const TicketDash = () => {
   const handleCreateTicketOpen = () => setIsCreateTicketOpen(true);
   const handleCreateTicketClose = () => setIsCreateTicketOpen(false);
   const handleNewTicketChange = (field: string, value: string | File | null) => {
-    setNewTicket(prev => ({ ...prev, [field]: value }));
+  setNewTicket(prev => ({ ...prev, [field]: value }));
   };
   const handleCreateTicket = async () => {
     // Find the next available integer ID
@@ -133,6 +134,14 @@ export const TicketDash = () => {
     userRole === 'user' ? ticket.name === loggedInUser : true
   );
 
+  
+  const priorityTicketCounts = ['high', 'medium', 'low'].reduce((acc, priority) => {
+  acc[priority] = visibleTickets.filter(ticket =>
+    ticket.priority?.toLowerCase() === priority
+  ).length;
+  return acc;
+}, {} as { [key: string]: number });
+
   const typeTicketCounts = ['hardware', 'software'].reduce((acc, type) => {
     acc[type] = visibleTickets.filter(ticket => ticket.type === type).length;
     return acc;
@@ -155,46 +164,6 @@ export const TicketDash = () => {
 
     return matchesFilter && matchesSearch;
   });
-
-  //PATCHER + FITER
- const handleStatusChange = async (id: number, newStatus: Ticket['status']) => {
-  const resolvedAt = (newStatus === 'resolved' || newStatus === 'closed') 
-    ? new Date().toISOString() 
-    : null;
-
-  setTickets(prev =>
-    prev.map(ticket =>
-      ticket.id === id ? { ...ticket, status: newStatus, resolvedAt } : ticket
-    )
-  );
-
-  try {
-    await fetch(`http://localhost:3001/tickets/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: newStatus, resolvedAt }),
-    });
-  } catch (error) {
-    console.error('Failed to update status:', error);
-  }
-};
-const handleAssigneeChange = async (id: number, newAssignee: string) => {
-  setTickets(prev =>
-    prev.map(ticket =>
-      ticket.id === id ? { ...ticket, assignee: newAssignee } : ticket
-    )
-  );
-
-  try {
-    await fetch(`http://localhost:3001/tickets/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ assignee: newAssignee }),
-    });
-  } catch (error) {
-    console.error('Failed to update assignee:', error);
-  }
-};
 
 
     //MODALS 
@@ -289,33 +258,56 @@ const handleDeleteTicket = async () => {
           />
         </div>
 
-        <div className='ticket-filter-list'>
-          {['open', 'inProgress', 'resolved', 'closed'].map(status => (
-            <button
-              key={status}
-              className={`ticket-filter-btn ${isActive(status) ? 'active' : ''}`}
-              onClick={() => toggleFilter(status)}
-            >
-              {status}
-              <div className="counter-div">
-                <span className="counter-value">{statusTicketCounts[status] || 0}</span>
-              </div>
-            </button>
-          ))}
+        <div className="ticket-filter-list">
 
-          {['hardware', 'software'].map(type => (
-            <button
-              key={type}
-              className={`ticket-filter-btn ${isActive(type) ? 'active' : ''}`}
-              onClick={() => toggleFilter(type)}
-            >
-              {type}
-              <div className="counter-div">
-                <span className="counter-value">{typeTicketCounts[type] || 0}</span>
-              </div>
-            </button>
-          ))}
+          {/* Priority Section */}
+          <div className="ticket-filter-group">
+            <div className="filter-group-title">Priority</div>
+            {['high', 'medium', 'low'].map(priority => (
+              <button
+                key={priority}
+                className={`ticket-filter-btn ${isActive(priority) ? 'active' : ''}`}
+                onClick={() => toggleFilter(priority)}
+              >
+                {priority}
+                <div className="counter-div">{priorityTicketCounts[priority] || 0}</div>
+              </button>
+            ))}
+          </div>
+
+          {/* Status Section */}
+          <div className="ticket-filter-group">
+            <div className="filter-group-title">Status</div>
+            {['open', 'inProgress', 'resolved', 'closed'].map(status => (
+              <button
+                key={status}
+                className={`ticket-filter-btn ${isActive(status) ? 'active' : ''}`}
+                onClick={() => toggleFilter(status)}
+              >
+                {status}
+                <div className="counter-div">{statusTicketCounts[status] || 0}</div>
+              </button>
+            ))}
         </div>
+
+          {/* Category Section */}
+          <div className="ticket-filter-group">
+            <div className="filter-group-title">Category</div>
+        {['hardware', 'software'].map(type => (
+          <button
+            key={type}
+            className={`ticket-filter-btn ${isActive(type) ? 'active' : ''}`}
+            onClick={() => toggleFilter(type)}
+          >
+            {type}
+            <div className="counter-div">{typeTicketCounts[type] || 0}</div>
+          </button>
+        ))}
+      </div>
+
+    </div>
+
+
       </div>
 
       {/* Main content/dashboard */}
@@ -323,18 +315,20 @@ const handleDeleteTicket = async () => {
         <table>
           <thead>
             <tr>
-              <th>ID</th>
+              <th>Priority</th>
               <th>Summary</th>
               <th>Name</th>
               <th>Assignee</th>
               <th>Status</th>
+              <th>Due date</th>
               <th>Resolved At</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredTickets.map(ticket => (
-              <tr key={ticket.id} className="clickable-row">
-                <td>{ticket.id}</td>
+              <tr key={ticket.priority} className="clickable-row">
+                <td>{ticket.priority}</td>
                 <td>
                   <span
                     style={{ color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}
@@ -349,36 +343,38 @@ const handleDeleteTicket = async () => {
                 </td>
                 <td>{ticket.name}</td>
                 <td className={`assignee-${ticket.assignee}`}>
-                  {(userRole === 'agent' || userRole === 'admin') ? (
-                    <select
-                      value={ticket.assignee}
-                      onChange={(e) => handleAssigneeChange(ticket.id, e.target.value)}
-                    >
-                      {users
-                        .filter(user => user.role === 'agent')
-                        .map(agent => (
-                          <option key={agent.name} value={agent.name}>
-                            {agent.name}
-                          </option>
-                        ))}
-                    </select>
-                  ) : (
-                    ticket.assignee
-                  )}
+                  {ticket.assignee}
                 </td>
                 <td className={`status-${ticket.status}`}>
-                  <select
-                    value={ticket.status}
-                   onChange={(e) => handleStatusChange(ticket.id, e.target.value as Ticket['status'])}
-                  >
-                    {['Open', 'InProgress', 'Resolved', 'Closed'].map(status => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
+                  {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
                 </td>
+                <td>{ticket.dueDate || '—'}</td>
                 <td>{ticket.resolvedAt || '—'}</td>
+               <td> 
+                  <Button
+                    onClick={() => {
+                      setSelectedTicket(ticket);
+                      setEditTicket(ticket);     
+                      setShowEditModal(true);   
+                    }}
+                    sx={{ minWidth: 'auto', padding: 0, color: '#1976d2', ml: 1 }}
+                    title="Edit Ticket"
+                  >
+                    <EditIcon />
+                  </Button>
+                  <Button
+                    className="icon-button"
+                    onClick={async () => {
+                      setEditTicket(ticket);    
+                      await handleDeleteTicket();
+                    }}
+                    sx={{ minWidth: 'auto', padding: 0, color: '#d32f2f', ml: 1 }}
+                    title="Delete Ticket"
+                  >
+                    <DeleteIcon />
+                  </Button>
+            </td>
+
               </tr>
             ))}
           </tbody>

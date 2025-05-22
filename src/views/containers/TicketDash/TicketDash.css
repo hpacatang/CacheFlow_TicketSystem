@@ -70,6 +70,22 @@ table th, table td {
   text-align: center;
 }
 
+
+.filter-group-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-top: 1.5rem;
+  margin-bottom:1px;
+  color: #0f4c81;
+  padding-bottom: 0.3rem;
+}
+
+.ticket-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
 .ticket-filter-list {
   display: flex;
   flex-direction: column;
