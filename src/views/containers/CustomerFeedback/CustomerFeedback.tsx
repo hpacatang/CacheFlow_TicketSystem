@@ -24,6 +24,7 @@ import { styled } from "@mui/material/styles"
 import AdminSidebar from "../../components/Sidebars/AdminSidebar"
 import { AgentSidebar } from "../../components/Sidebars/AgentSidebar"
 import FeedbackModal from "../../components/Modals/FeedbackModal"
+import VisibilityIcon from "@mui/icons-material/Visibility"
 
 interface Ticket {
   id: string
@@ -43,7 +44,6 @@ interface FeedbackDetails {
   feedback: string
 }
 
-
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   borderRadius: "20px",
   padding: 0,
@@ -55,7 +55,7 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
 }))
 
 const StyledTableHeaderCell = styled(TableCell)(({ theme }) => ({
-  fontWeight: "bold", 
+  fontWeight: "bold",
   borderBottom: "3px solid #000",
   padding: "20px",
   backgroundColor: "rgba(22, 123, 187, 0.1)",
@@ -68,19 +68,17 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }))
 
 const ViewButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "transparent",
-  color: "black",
+  backgroundColor: "#0074d9",
+  color: "white",
   border: "none",
   boxShadow: "none",
   "&:hover": {
-    color: "#1B65AD",
     border: "none",
     boxShadow: "none",
   },
   padding: theme.spacing(0.5, 1),
   textTransform: "none",
 }))
-
 
 export const CustomerFeedback: React.FC = () => {
   const sidebarRole = localStorage.getItem("userRole")
@@ -161,7 +159,7 @@ export const CustomerFeedback: React.FC = () => {
                   <StyledTableHeaderCell>Status</StyledTableHeaderCell>
                   <StyledTableHeaderCell>Due Date</StyledTableHeaderCell>
                   <StyledTableHeaderCell>Resolved at</StyledTableHeaderCell>
-                  <StyledTableHeaderCell align="center"></StyledTableHeaderCell>
+                  <StyledTableHeaderCell align="center">Actions</StyledTableHeaderCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -175,7 +173,7 @@ export const CustomerFeedback: React.FC = () => {
                     <StyledTableCell>{ticket.dueDate}</StyledTableCell>
                     <StyledTableCell>{ticket.resolvedAt || ""}</StyledTableCell>
                     <StyledTableCell align="center">
-                      <ViewButton variant="contained" size="small" onClick={() => handleViewFeedback(ticket.id)}>
+                      <ViewButton variant="contained" size="small" onClick={() => handleViewFeedback(ticket.id)} startIcon={<VisibilityIcon />}>
                         View Feedback
                       </ViewButton>
                     </StyledTableCell>

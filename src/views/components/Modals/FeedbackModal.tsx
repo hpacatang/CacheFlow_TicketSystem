@@ -17,7 +17,7 @@ interface FeedbackModalProps {
 
 const RatingBox = styled(Paper)(({ theme }) => ({
   backgroundColor: "#2196f3",
-  color: "white",
+  color: "black",
   width: "48px",
   height: "48px",
   display: "flex",
