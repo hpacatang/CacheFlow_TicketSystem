@@ -160,7 +160,7 @@ const priorityOrder: Record<'high' | 'medium' | 'low', number> = {
 const sortedTickets = useMemo(() => {
   const filtered = visibleTickets.filter(ticket => {
     const statusFilters = activeFilters.filter(f => ['open', 'inProgress', 'resolved', 'closed'].includes(f));
-    const typeFilters = activeFilters.filter(f => ['hardware', 'software'].includes(f));
+    const typeFilters = activeFilters.filter(f => ['hardware', 'software','network'].includes(f));
     const priorityFilters = activeFilters.filter(f => ['high', 'medium', 'low'].includes(f));
 
     const matchesStatus = statusFilters.length === 0 || statusFilters.includes(ticket.status);
@@ -226,7 +226,7 @@ const priorityTicketCounts = ['high', 'medium', 'low'].reduce((acc, priority) =>
   return acc;
 }, {} as { [key: string]: number });
 
-const typeTicketCounts = ['hardware', 'software'].reduce((acc, type) => {
+const typeTicketCounts = ['hardware', 'software','network'].reduce((acc, type) => {
   acc[type] = visibleTickets.filter(ticket => ticket.type === type).length;
   return acc;
 }, {} as { [key: string]: number });
@@ -345,19 +345,46 @@ const handleDeleteTicket = async () => {
       <div className="ticket-filter-list">
         {/* Priority Filter */}
         <div className="ticket-filter-group">
-          <div className="filter-group-title">Priority</div>
-          {(['high', 'medium', 'low'] as const).map(priority => (
+ <div className="filter-group-title">Priority</div>
+  {(['high', 'medium', 'low'] as const).map(priority => (
   <button
-    key={priority}
-    className={`ticket-filter-btn ${isActive(priority) ? 'active' : ''}`}
-    onClick={() => toggleFilter(priority)}
-    style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-  >
-    <FiberManualRecordIcon style={{ color: colorMap[priority], fontSize: 16 }} />
+  key={priority}
+  className={`ticket-filter-btn ${isActive(priority) ? 'active' : ''}`}
+  onClick={() => toggleFilter(priority)}
+  style={{
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between', // spread left and right
+    padding: '0.5rem 1rem',
+  }}
+>
+  {/* Left: text */}
+  <span style={{ flex: 1, textAlign: 'left' }}>
     {priority.charAt(0).toUpperCase() + priority.slice(1)}
-    <div className="counter-div">{priorityTicketCounts[priority] || 0}</div>
-  </button>
+  </span>
+
+  {/* Center: circle */}
+  <FiberManualRecordIcon
+    style={{
+      position: 'absolute',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      color: colorMap[priority],
+      fontSize: 16,
+      pointerEvents: 'none', // so circle doesn’t block button clicks
+    }}
+  />
+
+  {/* Right: counter */}
+  <div className="counter-div" style={{ textAlign: 'right' }}>
+    {priorityTicketCounts[priority] || 0}
+  </div>
+</button>
+
+
 ))}
+
 
         </div>
         {/* Status Filter */}
@@ -378,7 +405,7 @@ const handleDeleteTicket = async () => {
         {/* Type Filter */}
         <div className="ticket-filter-group">
           <div className="filter-group-title">Category</div>
-          {['hardware', 'software'].map(type => (
+          {['hardware', 'software','network'].map(type => (
             <button
               key={type}
               className={`ticket-filter-btn ${isActive(type) ? 'active' : ''}`}
