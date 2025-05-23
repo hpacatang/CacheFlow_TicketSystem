@@ -15,7 +15,7 @@ body, html {
 .filter-section {
   width: 17%;
   background-color: rgba(22, 123, 187, 0.22);
-  padding: 1rem;
+  padding: 1px 3px 1px 8px;
   display: flex;
   flex-direction: column;
 }
@@ -72,9 +72,9 @@ table th, table td {
 
 
 .filter-group-title {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: bold;
-  margin-top: 1.5rem;
+  margin-top: 5px;
   margin-bottom:1px;
   color: #0f4c81;
   padding-bottom: 0.3rem;
@@ -89,13 +89,13 @@ table th, table td {
 .ticket-filter-list {
   display: flex;
   flex-direction: column;
-  margin-top: 1rem;
-  gap: 0.5rem;
+  margin-top: 1px;
+  gap: 0.1rem;
 }
 .ticket-filter-btn {
   user-select: none;
   cursor: pointer;
-  margin: 4px;
+  margin: 1px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -104,7 +104,7 @@ table th, table td {
   border: none;
   color: rgb(0, 0, 0);
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1rem;
   user-select: none;
   -webkit-user-select: none; /* For Safari */
   -moz-user-select: none;    /* For Firefox */
@@ -126,10 +126,10 @@ table th, table td {
 .counter-div {
   background-color: #E5F1F9;
   color: #167BBB;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 0.7rem;
   border-radius: 9px;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: .7rem;
 }
 
 .create-ticket-wrapper {
@@ -181,3 +181,40 @@ td[class^="status-"] select {
 }
 
 
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.pagination-button,
+.pagination-number {
+  padding: 10px;
+  border: none;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  font-weight: bold;
+  min-width: 2.2rem;
+  height: 2.2rem;
+}
+
+.pagination-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination-number.active {
+  background-color: #167BBB;
+  color: white;
+  transform: scale(1.1);
+}
+
+.pagination-number:hover,
+.pagination-button:hover:not(:disabled) {
+  background-color: #d3eaff;
+}

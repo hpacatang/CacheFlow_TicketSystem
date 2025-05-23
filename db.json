@@ -10,31 +10,21 @@
     }
   ],
   "users": [
-    {
-      "name": "jamal",
-      "role": "agent",
-      "id": "9495"
-    },
-    {
-      "name": "kaye",
-      "role": "agent",
-      "id": "6265"
-    },
-    {
-      "name": "jhed",
-      "role": "agent",
-      "id": "7365"
-    },
-    {
-      "name": "yana",
-      "role": "user",
-      "id": "7147"
-    },
-    {
-      "name": "admin1",
-      "role": "admin",
-      "id": "754d"
-    }
+    { "name": "jamal", "role": "agent", "id": "9495" },
+    { "name": "kaye", "role": "agent", "id": "6265" },
+    { "name": "jhed", "role": "agent", "id": "7365" },
+    { "name": "yana", "role": "user", "id": "7147" },
+    { "name": "admin1", "role": "admin", "id": "754d" },
+    { "name": "dona", "role": "user", "id": "8123" },
+    { "name": "marvin", "role": "user", "id": "9921" },
+    { "name": "trish", "role": "agent", "id": "5882" },
+    { "name": "gelo", "role": "admin", "id": "3193" },
+    { "name": "ella", "role": "user", "id": "4747" },
+    { "name": "miguel", "role": "agent", "id": "2573" },
+    { "name": "ivy", "role": "user", "id": "3833" },
+    { "name": "leo", "role": "admin", "id": "9191" },
+    { "name": "felix", "role": "agent", "id": "3011" },
+    { "name": "sophia", "role": "user", "id": "9029" }
   ],
   "tickets": [
     {
@@ -89,6 +79,136 @@
       "assignee": "",
       "status": "open",
       "resolvedAt": null
+    },
+    {
+      "id": "5",
+      "summary": "Monitor flickering",
+      "name": "marvin",
+      "assignee": "trish",
+      "status": "open",
+      "resolvedAt": null,
+      "type": "hardware",
+      "description": "Monitor randomly flickers and shows lines.",
+      "dueDate": "2025-06-01",
+      "priority": "Medium",
+      "category": "Hardware"
+    },
+    {
+      "id": "6",
+      "summary": "Antivirus expired",
+      "name": "ella",
+      "assignee": "felix",
+      "status": "inProgress",
+      "resolvedAt": null,
+      "type": "software",
+      "description": "Antivirus software has expired and I cannot install a new one.",
+      "dueDate": "2025-06-02",
+      "priority": "Low",
+      "category": "Software"
+    },
+    {
+      "id": "7",
+      "summary": "Unable to print",
+      "name": "ivy",
+      "assignee": "jamal",
+      "status": "resolved",
+      "resolvedAt": "2025-05-20T10:20:00Z",
+      "type": "hardware",
+      "description": "Printer not responding even after restart.",
+      "dueDate": "2025-05-19",
+      "priority": "High",
+      "category": "Hardware"
+    },
+    {
+      "id": "8",
+      "summary": "VPN connectivity issue",
+      "name": "miguel",
+      "assignee": "kaye",
+      "status": "inProgress",
+      "resolvedAt": null,
+      "type": "network",
+      "description": "Cannot connect to VPN while working remotely.",
+      "dueDate": "2025-05-23",
+      "priority": "Medium",
+      "category": "Network"
+    },
+    {
+      "id": "9",
+      "summary": "Forgot system password",
+      "name": "sophia",
+      "assignee": "trish",
+      "status": "open",
+      "resolvedAt": null,
+      "type": "software",
+      "description": "I forgot my password and need access to my system ASAP.",
+      "dueDate": "2025-05-24",
+      "priority": "High",
+      "category": "Software"
+    },
+    {
+      "id": "10",
+      "summary": "Outlook email not syncing",
+      "name": "dona",
+      "assignee": "jhed",
+      "status": "open",
+      "resolvedAt": null,
+      "type": "software",
+      "description": "Outlook is not syncing my emails since yesterday.",
+      "dueDate": "2025-05-25",
+      "priority": "Medium",
+      "category": "Software"
+    },
+    {
+      "id": "11",
+      "summary": "PC overheating",
+      "name": "marvin",
+      "assignee": "felix",
+      "status": "open",
+      "resolvedAt": null,
+      "type": "hardware",
+      "description": "My desktop is overheating even while idle.",
+      "dueDate": "2025-05-26",
+      "priority": "High",
+      "category": "Hardware"
+    },
+    {
+      "id": "12",
+      "summary": "Wi-Fi disconnecting",
+      "name": "ella",
+      "assignee": "miguel",
+      "status": "inProgress",
+      "resolvedAt": null,
+      "type": "network",
+      "description": "Wi-Fi keeps disconnecting every few minutes.",
+      "dueDate": "2025-05-27",
+      "priority": "Low",
+      "category": "Network"
+    },
+    {
+      "id": "13",
+      "summary": "Keyboard not working",
+      "name": "ivy",
+      "assignee": "trish",
+      "status": "closed",
+      "resolvedAt": "2025-05-22T13:33:00Z",
+      "type": "hardware",
+      "description": "My keyboard is not responding after plugging it in.",
+      "dueDate": "2025-05-20",
+      "priority": "Medium",
+      "category": "Hardware"
+    },
+    {
+      "id": "14",
+      "summary": "Software license expired",
+      "name": "sophia",
+      "assignee": "kaye",
+      "status": "open",
+      "resolvedAt": null,
+      "type": "software",
+      "description": "My licensed design tool says license expired.",
+      "dueDate": "2025-06-01",
+      "priority": "High",
+      "category": "Software"
     }
   ],
   "articles": [

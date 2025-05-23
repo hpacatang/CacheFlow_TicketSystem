@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserSidebar } from '../../components/Sidebars/UserSidebar';
 import { AgentSidebar } from '../../components/Sidebars/AgentSidebar';
 import { AdminSidebar } from '../../components/Sidebars/AdminSidebar';
@@ -8,6 +8,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import './TicketDash.css';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, TextField, FormControl, Select, MenuItem } from '@mui/material';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+
 
 interface Ticket {
   id: number;
@@ -70,12 +72,12 @@ const userRole = (users.find(u => u.name === loggedInUser)?.role || 'user') as U
 
 // DATA FETCHING
  useEffect(() => {
-  fetch('http://localhost:3000/users')
+  fetch('http://localhost:3001/users')
     .then(res => res.json())
     .then(setUsers)
     .catch(err => console.error('Error fetching users:', err));
 
-  fetch('http://localhost:3000/tickets')
+  fetch('http://localhost:3001/tickets')
     .then(res => res.json())
     .then(setTickets)
     .catch(err => console.error('Error fetching tickets:', err));
@@ -150,43 +152,71 @@ const isActive = (type: string) => activeFilters.includes(type);
   userRole === 'user' ? ticket.name === loggedInUser : true
 );
 
-const filteredTickets = visibleTickets.filter(ticket => {
-  const statusFilters = activeFilters.filter(f => ['open', 'inProgress', 'resolved', 'closed'].includes(f));
-  const typeFilters = activeFilters.filter(f => ['hardware', 'software'].includes(f));
-  const priorityFilters = activeFilters.filter(f => ['high', 'medium', 'low'].includes(f));
-
-  const matchesStatus = statusFilters.length === 0 || statusFilters.includes(ticket.status);
-  const matchesType = typeFilters.length === 0 || typeFilters.includes(ticket.type);
-  const matchesPriority = priorityFilters.length === 0 || priorityFilters.includes(ticket.priority?.toLowerCase() || '');
-
-  const matchesSearch =
-    ticket.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    ticket.summary.toLowerCase().includes(searchQuery.toLowerCase());
-
-  return matchesStatus && matchesType && matchesPriority && matchesSearch;
-});
-
-//Sorting logic
 const priorityOrder: Record<'high' | 'medium' | 'low', number> = {
   high: 1,
   medium: 2,
   low: 3,
 };
+const sortedTickets = useMemo(() => {
+  const filtered = visibleTickets.filter(ticket => {
+    const statusFilters = activeFilters.filter(f => ['open', 'inProgress', 'resolved', 'closed'].includes(f));
+    const typeFilters = activeFilters.filter(f => ['hardware', 'software'].includes(f));
+    const priorityFilters = activeFilters.filter(f => ['high', 'medium', 'low'].includes(f));
 
-const sortedTickets = [...filteredTickets].sort((a, b) => {
-  const getPriorityValue = (priority?: string) => 
-    priorityOrder[priority?.toLowerCase() as 'high' | 'medium' | 'low'] ?? 4;
+    const matchesStatus = statusFilters.length === 0 || statusFilters.includes(ticket.status);
+    const matchesType = typeFilters.length === 0 || typeFilters.includes(ticket.type);
+    const matchesPriority = priorityFilters.length === 0 || priorityFilters.includes(ticket.priority?.toLowerCase() || '');
 
-  const priorityA = getPriorityValue(a.priority);
-  const priorityB = getPriorityValue(b.priority);
+    const matchesSearch =
+      ticket.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ticket.summary.toLowerCase().includes(searchQuery.toLowerCase());
 
-  if (priorityA !== priorityB) return priorityA - priorityB;
+    return matchesStatus && matchesType && matchesPriority && matchesSearch;
+  });
 
-  const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
-  const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+  return [...filtered].sort((a, b) => {
+    const getPriorityValue = (priority?: string) =>
+      priorityOrder[priority?.toLowerCase() as 'high' | 'medium' | 'low'] ?? 4;
 
-  return dateA - dateB;
-});
+    const priorityA = getPriorityValue(a.priority);
+    const priorityB = getPriorityValue(b.priority);
+
+    if (priorityA !== priorityB) return priorityA - priorityB;
+
+    const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+    const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+
+    return dateA - dateB;
+  });
+}, [visibleTickets, activeFilters, searchQuery]);
+
+
+//----- PAGINATION ----- 
+const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 12;
+
+const totalPages = Math.max(1, Math.ceil(sortedTickets.length / itemsPerPage));
+
+const paginatedTickets = sortedTickets.slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage
+);
+useEffect(() => {
+  if ((currentPage - 1) * itemsPerPage >= sortedTickets.length) {
+    setCurrentPage(1);
+  }
+}, [sortedTickets, currentPage]);
+
+useEffect(() => {
+  window.scrollTo(0, 0);
+}, [currentPage]);
+
+// Move this logging separately
+useEffect(() => {
+  console.log('Rendering Page', currentPage);
+  console.log('Tickets on page:', paginatedTickets.map(t => t.id));
+}, [currentPage, paginatedTickets]);
+
 
 //Ticket count
 const priorityTicketCounts = ['high', 'medium', 'low'].reduce((acc, priority) => {
@@ -206,22 +236,21 @@ const statusTicketCounts = ['open', 'inProgress', 'resolved', 'closed'].reduce((
   return acc;
 }, {} as { [key: string]: number });
 
-  
+  //RENDER CIRLE
+  const colorMap = {
+  high: 'red',
+  medium: 'orange',
+  low: 'blue',
+};
+const PriorityIcon = ({ priority }: { priority: 'high' | 'medium' | 'low' }) => {
+  const colorMap = {
+    high: 'red',
+    medium: 'orange',
+    low: 'blue',
+  };
 
-//----- PAGINATION ----- 
-const [currentPage, setCurrentPage] = useState(1);
-const itemsPerPage = 3;
-
-const totalPages = Math.ceil(sortedTickets.length / itemsPerPage);
-const paginatedTickets = sortedTickets.slice(
-  (currentPage - 1) * itemsPerPage,
-  currentPage * itemsPerPage
-);
-useEffect(() => {
-  setCurrentPage(1);
-}, [activeFilters, searchQuery]);
-
-
+  return <FiberManualRecordIcon style={{ color: colorMap[priority] || 'gray' }} />;
+};
 //----- MODALS ----- 
     const openModal = (ticket: Ticket) => {
     setSelectedTicket(ticket);
@@ -317,18 +346,20 @@ const handleDeleteTicket = async () => {
         {/* Priority Filter */}
         <div className="ticket-filter-group">
           <div className="filter-group-title">Priority</div>
-          {['high', 'medium', 'low'].map(priority => (
-            <button
-              key={priority}
-              className={`ticket-filter-btn ${isActive(priority) ? 'active' : ''}`}
-              onClick={() => toggleFilter(priority)}
-            >
-              {priority}
-              <div className="counter-div">{priorityTicketCounts[priority] || 0}</div>
-            </button>
-          ))}
-        </div>
+          {(['high', 'medium', 'low'] as const).map(priority => (
+  <button
+    key={priority}
+    className={`ticket-filter-btn ${isActive(priority) ? 'active' : ''}`}
+    onClick={() => toggleFilter(priority)}
+    style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+  >
+    <FiberManualRecordIcon style={{ color: colorMap[priority], fontSize: 16 }} />
+    {priority.charAt(0).toUpperCase() + priority.slice(1)}
+    <div className="counter-div">{priorityTicketCounts[priority] || 0}</div>
+  </button>
+))}
 
+        </div>
         {/* Status Filter */}
         <div className="ticket-filter-group">
           <div className="filter-group-title">Status</div>
@@ -376,87 +407,120 @@ const handleDeleteTicket = async () => {
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>
-          {paginatedTickets.map(ticket => (
-            <tr key={ticket.id} className="clickable-row">
-              {userRole !== 'user' && (<td>{ticket.priority}</td>)}
-              <td>
-                <span
-                  style={{ color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}
-                  onClick={e => {
-                    e.stopPropagation();
-                    setSelectedTicket(ticket);
-                    setShowViewModal(true);
-                  }}
-                >
-                  {ticket.summary}
-                </span>
-              </td>
-              {userRole !== 'user' && (<td>{ticket.name}</td>)}
-              {userRole !== 'agent' && (<td className={`assignee-${ticket.assignee}`}>{ticket.assignee}</td>)}
-              <td className={`status-${ticket.status}`}>
-                {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
-              </td>
-              <td>{ticket.dueDate
-                ? new Date(ticket.dueDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
-                : '—'}</td>
-              <td>
-                {ticket.resolvedAt
-                ? new Date(ticket.resolvedAt).toLocaleString('en-US', {
-                    month: '2-digit',
-                    day: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                  })
-                : '—'}
-              </td>
-              <td>
-                <Button
-                  onClick={() => {
-                    setSelectedTicket(ticket);
-                    setEditTicket(ticket);     
-                    setShowEditModal(true);   
-                  }}
-                  sx={{ minWidth: 'auto', padding: 0, color: '#1976d2', ml: 1 }}
-                  title="Edit Ticket"
-                >
-                  <EditIcon />
-                </Button>
-                <Button
-                  className="icon-button"
-                  onClick={async () => {
-                    setEditTicket(ticket);    
-                    await handleDeleteTicket();
-                  }}
-                  sx={{ minWidth: 'auto', padding: 0, color: '#d32f2f', ml: 1 }}
-                  title="Delete Ticket"
-                >
-                  <DeleteIcon />
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+       <tbody>
+  {paginatedTickets.map(ticket => (
+    <tr key={ticket.id} className="clickable-row">
+      {userRole !== 'user' && (
+        <td>
+          <PriorityIcon priority={ticket.priority?.toLowerCase() as 'high' | 'medium' | 'low'} />
+        </td>
+      )}
 
-      {/* Pagination */}
-      <div className="pagination">
-        <button
-          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
+      <td>
+        <span
+          style={{ color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}
+          onClick={e => {
+            e.stopPropagation();
+            setSelectedTicket(ticket);
+            setShowViewModal(true);
+          }}
         >
-          Prev
-        </button>
-        <span>Page {currentPage} of {totalPages}</span>
-        <button
-          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
+          {ticket.summary}
+        </span>
+      </td>
+
+      {userRole !== 'user' && <td>{ticket.name}</td>}
+      {userRole !== 'agent' && <td className={`assignee-${ticket.assignee}`}>{ticket.assignee}</td>}
+
+      <td className={`status-${ticket.status}`}>
+        {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
+      </td>
+
+      <td>
+        {ticket.dueDate
+          ? new Date(ticket.dueDate).toLocaleDateString('en-US', {
+              month: '2-digit',
+              day: '2-digit',
+              year: 'numeric',
+            })
+          : '—'}
+      </td>
+
+      <td>
+        {ticket.resolvedAt
+          ? new Date(ticket.resolvedAt).toLocaleString('en-US', {
+              month: '2-digit',
+              day: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            })
+          : '—'}
+      </td>
+
+      <td>
+        <Button
+          onClick={() => {
+            setSelectedTicket(ticket);
+            setEditTicket(ticket);
+            setShowEditModal(true);
+          }}
+          sx={{ minWidth: 'auto', padding: 0, color: '#1976d2', ml: 1 }}
+          title="Edit Ticket"
         >
-          Next
-        </button>
-      </div>
+          <EditIcon />
+        </Button>
+        <Button
+          className="icon-button"
+          onClick={async () => {
+            setEditTicket(ticket);
+            await handleDeleteTicket();
+          }}
+          sx={{ minWidth: 'auto', padding: 0, color: '#d32f2f', ml: 1 }}
+          title="Delete Ticket"
+        >
+          <DeleteIcon />
+        </Button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
+      </table>
+            
+      <div className="pagination-container">
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="pagination-button"
+          >
+            &#8592;
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <button
+              key={page}
+              onClick={() => {
+                console.log('Clicked page', page);
+                setCurrentPage(page);
+              }}
+              className={`pagination-number ${page === currentPage ? 'active' : ''}`}
+            >
+              {page}
+            </button>
+          ))}
+
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="pagination-button"
+          >
+            &#8594;
+          </button>
+        </div>
+
+
 
       </div>
 
