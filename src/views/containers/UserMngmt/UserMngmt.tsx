@@ -39,10 +39,10 @@ export const UserMngmt: React.FC = () => {
     setUsers(prev => [...prev, newUser]);
   };
 
-  const handleUpdateUser = (updatedUser: User) => {
+  const handleUpdateUser = (updatedUser: User, originalUsername: string) => {
     setUsers(prev =>
       prev.map(u =>
-        u.username === updatedUser.username ? updatedUser : u
+        u.username === originalUsername ? updatedUser : u
       )
     );
   };
@@ -101,9 +101,21 @@ export const UserMngmt: React.FC = () => {
                   <td>
                     <button
                       className="actions-btn"
+                      style={{ marginRight: 8 }}
                       onClick={() => setEditUser(u)}
                     >
-                      ⋯
+                      Edit
+                    </button>
+                    <button
+                      className="actions-btn"
+                      style={{ marginRight: 8 }}
+                      onClick={() => {
+                        if (window.confirm("Delete this user?")) {
+                          handleDeleteUser(u.username);
+                        }
+                      }}
+                    >
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -124,13 +136,27 @@ export const UserMngmt: React.FC = () => {
               user={editUser}
               onClose={() => setEditUser(null)}
               onUpdateUser={handleUpdateUser}
-              onDeleteUser={handleDeleteUser}
             />
           )}
         </div>
       </div>
     </div>
   );
+};
+
+// Password validation
+const isValidPassword = (password: string) => {
+  return (
+    password.length >= 12 &&
+    /[A-Z]/.test(password) &&
+    /\d/.test(password) &&
+    /[^A-Za-z0-9]/.test(password)
+  );
+};
+
+// Email validation
+const isValidEmail = (email: string) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
 // Add User Modal
@@ -142,10 +168,22 @@ const AddUserModal: React.FC<{
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username || !role) return;
+    if (!isValidEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (!isValidPassword(password)) {
+      setError(
+        "Password must be at least 12 characters, include an uppercase letter, a number, and a special character."
+      );
+      return;
+    }
+    setError('');
     onAddUser({
       username,
       email,
@@ -176,7 +214,14 @@ const AddUserModal: React.FC<{
             <option value="Admin">Admin</option>
           </select>
           <label>Password</label>
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            minLength={12}
+            required
+          />
+          {error && <div style={{ color: 'red', fontSize: '0.95em' }}>{error}</div>}
           <button className="modal-add-btn" type="submit">Add User</button>
         </form>
       </div>
@@ -188,24 +233,35 @@ const AddUserModal: React.FC<{
 const EditUserModal: React.FC<{
   user: User;
   onClose: () => void;
-  onUpdateUser: (user: User) => void;
-  onDeleteUser: (username: string) => void;
-}> = ({ user, onClose, onUpdateUser, onDeleteUser }) => {
+  onUpdateUser: (user: User, originalUsername: string) => void;
+}> = ({ user, onClose, onUpdateUser }) => {
   const [username, setUsername] = useState(user.username);
   const [email, setEmail] = useState(user.email);
   const [role, setRole] = useState(user.role);
   const [password, setPassword] = useState(user.password);
+  const [error, setError] = useState('');
+  const originalUsername = user.username;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username || !role) return;
-    onUpdateUser({
-      username,
-      email,
-      role,
-      password,
-      status: user.status
-    });
+    if (!isValidPassword(password)) {
+      setError(
+        "Password must be at least 12 characters, include an uppercase letter, a number, and a special character."
+      );
+      return;
+    }
+    setError('');
+    onUpdateUser(
+      {
+        username,
+        email,
+        role,
+        password,
+        status: user.status
+      },
+      originalUsername
+    );
     onClose();
   };
 
@@ -229,29 +285,16 @@ const EditUserModal: React.FC<{
             <option value="Admin">Admin</option>
           </select>
           <label>Password</label>
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            minLength={12}
+            required
+          />
+          {error && <div style={{ color: 'red', fontSize: '0.95em' }}>{error}</div>}
           <button className="modal-add-btn" type="submit">Update User</button>
         </form>
-        <button
-          className="modal-delete-btn"
-          style={{
-            color: "red",
-            background: "none",
-            border: "none",
-            fontSize: "1.6rem",
-            position: "absolute",
-            right: 24,
-            bottom: 24,
-            cursor: "pointer"
-          }}
-          onClick={() => {
-            if (window.confirm("Delete this user?")) {
-              onDeleteUser(user.username);
-            }
-          }}
-        >
-          🗑️
-        </button>
       </div>
     </div>
   );

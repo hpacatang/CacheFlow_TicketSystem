@@ -71,10 +71,29 @@
 }
 
 .actions-btn {
-  background: none;
   border: none;
-  font-size: 22px;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-weight: 600;
+  font-size: 16px;
   cursor: pointer;
+  margin-right: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.actions-btn:first-child {
+  background: #2563eb;
+  color: #fff;
+}
+
+.actions-btn:last-child {
+  background: #ef4444;
+  color: #fff;
+  margin-right: 0;
+}
+
+.actions-btn:hover {
+  opacity: 0.9;
 }
 
 .modal-backdrop {
@@ -91,8 +110,8 @@
   background: #f8fafc;
   border-radius: 12px;
   padding: 32px 28px 24px 28px;
-  min-width: 400px;
-  width: 420px;
+  min-width: 500px;   /* was 400px */
+  width: 540px;       /* was 420px */
   box-shadow: 0 4px 24px rgba(0,0,0,0.10);
   position: relative;
 }
