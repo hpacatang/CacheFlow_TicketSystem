@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserSidebar } from '../../components/Sidebars/UserSidebar';
 import { AgentSidebar } from '../../components/Sidebars/AgentSidebar';
 import { AdminSidebar } from '../../components/Sidebars/AdminSidebar';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+
 import './TicketDash.css';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, TextField, FormControl, Select, MenuItem } from '@mui/material';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+
 
 interface Ticket {
   id: number;
@@ -31,173 +34,224 @@ interface User {
 
 
 export const TicketDash = () => {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showViewModal, setShowViewModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editTicket, setEditTicket] = useState<Ticket | null>(null);
-  const loggedInUser = 'yana'; //CHANGE USER HERE
-  
-  const SidebarRole = localStorage.getItem('userRole') || 'user';
-  type UserRole = 'user' | 'agent' | 'admin' | 'superadmin';
-  const userRole = (users.find(u => u.name === loggedInUser)?.role || 'user') as UserRole;
-  
-  
-  
-  //GETTER
-  useEffect(() => {
-    fetch('http://localhost:3001/users')
-      .then(res => res.json())
-      .then(setUsers)
-      .catch(err => console.error('Error fetching users:', err));
+ // Main data
+const [tickets, setTickets] = useState<Ticket[]>([]);
+const [users, setUsers] = useState<User[]>([]);
 
-    fetch('http://localhost:3001/tickets')
-      .then(res => res.json())
-      .then(setTickets)
-      .catch(err => console.error('Error fetching tickets:', err));
-  }, []);
+// Filters & search
+const [activeFilters, setActiveFilters] = useState<string[]>([]);
+const [searchQuery, setSearchQuery] = useState('');
 
-  //FILTERS
-  const [isCreateTicketOpen, setIsCreateTicketOpen] = useState(false);
-  const [newTicket, setNewTicket] = useState({
-    summary: '',
-    type: '',
-    description: '',
-    dueDate: '',
-    priority: '',
-    category: '',
-    attachment: null as File | null,
-  });
+// Ticket modals
+const [showModal, setShowModal] = useState(false);
+const [showCreateModal, setShowCreateModal] = useState(false);
+const [showViewModal, setShowViewModal] = useState(false);
+const [showEditModal, setShowEditModal] = useState(false);
 
-  const handleCreateTicketOpen = () => setIsCreateTicketOpen(true);
-  const handleCreateTicketClose = () => setIsCreateTicketOpen(false);
-  const handleNewTicketChange = (field: string, value: string | File | null) => {
-    setNewTicket(prev => ({ ...prev, [field]: value }));
-  };
-  const handleCreateTicket = async () => {
-    // Find the next available integer ID
-    const usedIds = tickets.map(t => t.id).sort((a, b) => a - b);
-    let nextId = 1;
-    for (let i = 1; i < usedIds.length; i++) {
-      if (usedIds[i] !== i + 1) {
-        nextId = i + 1;
-        break;
-      }
-      if (i === usedIds.length - 1) {
-        nextId = usedIds.length + 1;
-      }
+// Ticket selection/edit
+const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+const [editTicket, setEditTicket] = useState<Ticket | null>(null);
+
+// Create ticket form
+const [isCreateTicketOpen, setIsCreateTicketOpen] = useState(false);
+const [newTicket, setNewTicket] = useState({
+  summary: '',
+  type: '',
+  description: '',
+  dueDate: '',
+  priority: '',
+  category: '',
+  attachment: null as File | null,
+});
+
+// loggedInUser
+const loggedInUser = 'admin1'; // CHANGE USER HERE
+const SidebarRole = localStorage.getItem('userRole') || 'user';
+type UserRole = 'user' | 'agent' | 'admin' | 'superadmin';
+const userRole = (users.find(u => u.name === loggedInUser)?.role || 'user') as UserRole;
+
+// DATA FETCHING
+ useEffect(() => {
+  fetch('http://localhost:3001/users')
+    .then(res => res.json())
+    .then(setUsers)
+    .catch(err => console.error('Error fetching users:', err));
+
+  fetch('http://localhost:3001/tickets')
+    .then(res => res.json())
+    .then(setTickets)
+    .catch(err => console.error('Error fetching tickets:', err));
+}, []);
+
+useEffect(() => {
+  console.log('Tickets count:', tickets.length);
+}, [tickets]);
+
+
+
+// Create ticket handlers
+const handleCreateTicketOpen = () => setIsCreateTicketOpen(true);
+const handleCreateTicketClose = () => setIsCreateTicketOpen(false);
+
+const handleNewTicketChange = (field: string, value: string | File | null) => {
+  setNewTicket(prev => ({ ...prev, [field]: value }));
+};
+
+const handleCreateTicket = async () => {
+  const usedIds = tickets.map(t => t.id).sort((a, b) => a - b);
+  let nextId = 1;
+  for (let i = 1; i < usedIds.length; i++) {
+    if (usedIds[i] !== i + 1) {
+      nextId = i + 1;
+      break;
     }
-    if (usedIds.length === 0) nextId = 1;
-
-    // Build the new ticket object
-    const ticketToCreate = {
-      ...newTicket,
-      id: nextId,
-      name: loggedInUser,
-      assignee: '', // or assign as needed
-      status: 'open',
-      resolvedAt: null,
-      type: newTicket.type || 'hardware', // default if needed
-    };
-
-    try {
-      const response = await fetch('http://localhost:3001/tickets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(ticketToCreate),
-      });
-      const createdTicket = await response.json();
-      setTickets(prev => [...prev, createdTicket]);
-    } catch (error) {
-      console.error('Failed to create ticket:', error);
+    if (i === usedIds.length - 1) {
+      nextId = usedIds.length + 1;
     }
+  }
+  if (usedIds.length === 0) nextId = 1;
 
-    handleCreateTicketClose();
-    setNewTicket({ summary: '', type: '', description: '', dueDate: '', priority: '', category: '', attachment: null });
+  const ticketToCreate = {
+    ...newTicket,
+    id: nextId,
+    name: loggedInUser,
+    assignee: '',
+    status: 'open',
+    resolvedAt: null,
+    type: newTicket.type || 'hardware',
   };
 
-  const toggleFilter = (type: string) => {
-    setActiveFilters(prev =>
-      prev.includes(type) ? prev.filter(f => f !== type) : [...prev, type]
-    );
-  };
+  try {
+    const response = await fetch('http://localhost:3001/tickets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(ticketToCreate),
+    });
+    const createdTicket = await response.json();
+    setTickets(prev => [...prev, createdTicket]);
+  } catch (error) {
+    console.error('Failed to create ticket:', error);
+  }
 
-  const isActive = (type: string) => activeFilters.includes(type);
+  handleCreateTicketClose();
+  setNewTicket({ summary: '', type: '', description: '', dueDate: '', priority: '', category: '', attachment: null });
+};
 
-  const visibleTickets = tickets.filter(ticket =>
-    userRole === 'user' ? ticket.name === loggedInUser : true
+
+//Filter logic
+ const toggleFilter = (type: string) => {
+  setActiveFilters(prev =>
+    prev.includes(type) ? prev.filter(f => f !== type) : [...prev, type]
   );
+};
 
-  const typeTicketCounts = ['hardware', 'software'].reduce((acc, type) => {
-    acc[type] = visibleTickets.filter(ticket => ticket.type === type).length;
-    return acc;
-  }, {} as { [key: string]: number });
+const isActive = (type: string) => activeFilters.includes(type);
 
-  const statusTicketCounts = ['open', 'inProgress', 'resolved', 'closed'].reduce((acc, status) => {
-    acc[status] = visibleTickets.filter(ticket => ticket.status === status).length;
-    return acc;
-  }, {} as { [key: string]: number });
+//Ticket filtering
+  const visibleTickets = tickets.filter(ticket =>
+  userRole === 'user' ? ticket.name === loggedInUser : true
+);
 
-  const filteredTickets = visibleTickets.filter(ticket => {
-    const matchesFilter =
-      activeFilters.length === 0 ||
-      activeFilters.includes(ticket.status) ||
-      activeFilters.includes(ticket.type);
+const priorityOrder: Record<'high' | 'medium' | 'low', number> = {
+  high: 1,
+  medium: 2,
+  low: 3,
+};
+const sortedTickets = useMemo(() => {
+  const filtered = visibleTickets.filter(ticket => {
+    const statusFilters = activeFilters.filter(f => ['open', 'inProgress', 'resolved', 'closed'].includes(f));
+    const typeFilters = activeFilters.filter(f => ['hardware', 'software','network'].includes(f));
+    const priorityFilters = activeFilters.filter(f => ['high', 'medium', 'low'].includes(f));
+
+    const matchesStatus = statusFilters.length === 0 || statusFilters.includes(ticket.status);
+    const matchesType = typeFilters.length === 0 || typeFilters.includes(ticket.type);
+    const matchesPriority = priorityFilters.length === 0 || priorityFilters.includes(ticket.priority?.toLowerCase() || '');
 
     const matchesSearch =
       ticket.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ticket.summary.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesFilter && matchesSearch;
+    return matchesStatus && matchesType && matchesPriority && matchesSearch;
   });
 
-  //PATCHER + FITER
- const handleStatusChange = async (id: number, newStatus: Ticket['status']) => {
-  const resolvedAt = (newStatus === 'resolved' || newStatus === 'closed') 
-    ? new Date().toISOString() 
-    : null;
+  return [...filtered].sort((a, b) => {
+    const getPriorityValue = (priority?: string) =>
+      priorityOrder[priority?.toLowerCase() as 'high' | 'medium' | 'low'] ?? 4;
 
-  setTickets(prev =>
-    prev.map(ticket =>
-      ticket.id === id ? { ...ticket, status: newStatus, resolvedAt } : ticket
-    )
-  );
+    const priorityA = getPriorityValue(a.priority);
+    const priorityB = getPriorityValue(b.priority);
 
-  try {
-    await fetch(`http://localhost:3001/tickets/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: newStatus, resolvedAt }),
-    });
-  } catch (error) {
-    console.error('Failed to update status:', error);
+    if (priorityA !== priorityB) return priorityA - priorityB;
+
+    const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+    const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+
+    return dateA - dateB;
+  });
+}, [visibleTickets, activeFilters, searchQuery]);
+
+
+//----- PAGINATION ----- 
+const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 12;
+
+const totalPages = Math.max(1, Math.ceil(sortedTickets.length / itemsPerPage));
+
+const paginatedTickets = sortedTickets.slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage
+);
+useEffect(() => {
+  if ((currentPage - 1) * itemsPerPage >= sortedTickets.length) {
+    setCurrentPage(1);
   }
+}, [sortedTickets, currentPage]);
+
+useEffect(() => {
+  window.scrollTo(0, 0);
+}, [currentPage]);
+
+// Move this logging separately
+useEffect(() => {
+  console.log('Rendering Page', currentPage);
+  console.log('Tickets on page:', paginatedTickets.map(t => t.id));
+}, [currentPage, paginatedTickets]);
+
+
+//Ticket count
+const priorityTicketCounts = ['high', 'medium', 'low'].reduce((acc, priority) => {
+  acc[priority] = visibleTickets.filter(ticket =>
+    ticket.priority?.toLowerCase() === priority
+  ).length;
+  return acc;
+}, {} as { [key: string]: number });
+
+const typeTicketCounts = ['hardware', 'software','network'].reduce((acc, type) => {
+  acc[type] = visibleTickets.filter(ticket => ticket.type === type).length;
+  return acc;
+}, {} as { [key: string]: number });
+
+const statusTicketCounts = ['open', 'inProgress', 'resolved', 'closed'].reduce((acc, status) => {
+  acc[status] = visibleTickets.filter(ticket => ticket.status === status).length;
+  return acc;
+}, {} as { [key: string]: number });
+
+  //RENDER CIRLE
+  const colorMap = {
+  high: 'red',
+  medium: 'orange',
+  low: 'blue',
 };
-const handleAssigneeChange = async (id: number, newAssignee: string) => {
-  setTickets(prev =>
-    prev.map(ticket =>
-      ticket.id === id ? { ...ticket, assignee: newAssignee } : ticket
-    )
-  );
+const PriorityIcon = ({ priority }: { priority: 'high' | 'medium' | 'low' }) => {
+  const colorMap = {
+    high: 'red',
+    medium: 'orange',
+    low: 'blue',
+  };
 
-  try {
-    await fetch(`http://localhost:3001/tickets/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ assignee: newAssignee }),
-    });
-  } catch (error) {
-    console.error('Failed to update assignee:', error);
-  }
+  return <FiberManualRecordIcon style={{ color: colorMap[priority] || 'gray' }} />;
 };
-
-
-    //MODALS 
+//----- MODALS ----- 
     const openModal = (ticket: Ticket) => {
     setSelectedTicket(ticket);
     setShowModal(true);
@@ -267,29 +321,75 @@ const handleDeleteTicket = async () => {
 };
 
   return (
-    <div className='parent-container'>
+  <div className='parent-container'>
+    {SidebarRole === 'user' && <UserSidebar />}
+    {SidebarRole === 'agent' && <AgentSidebar />}
+    {(SidebarRole === 'admin' || userRole === 'superadmin') && <AdminSidebar />}
 
-        {SidebarRole === 'user' && <UserSidebar />}
-        {SidebarRole === 'agent' && <AgentSidebar />}
-        {(SidebarRole === 'admin' || userRole === 'superadmin') && <AdminSidebar />}
+    <div className='filter-section'>
+      <div className={`create-ticket-wrapper ${userRole === 'user' ? '' : 'hidden'}`}>
+        <button className='create-btn' onClick={handleCreateTicketOpen}>Create Ticket</button>
+      </div>
 
-      <div className='filter-section'>
-        <div className={`create-ticket-wrapper ${userRole === 'user' ? '' : 'hidden'}`}>
-          <button className='create-btn' onClick={handleCreateTicketOpen}>Create Ticket</button>
+      <div className="search-wrapper">
+        <SearchIcon className="search-icon" />
+        <input
+          type="text"
+          className="search-filter"
+          placeholder="Search in All Tickets"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
+      <div className="ticket-filter-list">
+        {/* Priority Filter */}
+        <div className="ticket-filter-group">
+ <div className="filter-group-title">Priority</div>
+  {(['high', 'medium', 'low'] as const).map(priority => (
+  <button
+  key={priority}
+  className={`ticket-filter-btn ${isActive(priority) ? 'active' : ''}`}
+  onClick={() => toggleFilter(priority)}
+  style={{
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between', // spread left and right
+    padding: '0.5rem 1rem',
+  }}
+>
+  {/* Left: text */}
+  <span style={{ flex: 1, textAlign: 'left' }}>
+    {priority.charAt(0).toUpperCase() + priority.slice(1)}
+  </span>
+
+  {/* Center: circle */}
+  <FiberManualRecordIcon
+    style={{
+      position: 'absolute',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      color: colorMap[priority],
+      fontSize: 16,
+      pointerEvents: 'none', // so circle doesn’t block button clicks
+    }}
+  />
+
+  {/* Right: counter */}
+  <div className="counter-div" style={{ textAlign: 'right' }}>
+    {priorityTicketCounts[priority] || 0}
+  </div>
+</button>
+
+
+))}
+
+
         </div>
-
-        <div className="search-wrapper">
-          <SearchIcon className="search-icon" />
-          <input
-            type="text"
-            className="search-filter"
-            placeholder="Search in All Tickets"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-
-        <div className='ticket-filter-list'>
+        {/* Status Filter */}
+        <div className="ticket-filter-group">
+          <div className="filter-group-title">Status</div>
           {['open', 'inProgress', 'resolved', 'closed'].map(status => (
             <button
               key={status}
@@ -297,92 +397,158 @@ const handleDeleteTicket = async () => {
               onClick={() => toggleFilter(status)}
             >
               {status}
-              <div className="counter-div">
-                <span className="counter-value">{statusTicketCounts[status] || 0}</span>
-              </div>
+              <div className="counter-div">{statusTicketCounts[status] || 0}</div>
             </button>
           ))}
+        </div>
 
-          {['hardware', 'software'].map(type => (
+        {/* Type Filter */}
+        <div className="ticket-filter-group">
+          <div className="filter-group-title">Category</div>
+          {['hardware', 'software','network'].map(type => (
             <button
               key={type}
               className={`ticket-filter-btn ${isActive(type) ? 'active' : ''}`}
               onClick={() => toggleFilter(type)}
             >
               {type}
-              <div className="counter-div">
-                <span className="counter-value">{typeTicketCounts[type] || 0}</span>
-              </div>
+              <div className="counter-div">{typeTicketCounts[type] || 0}</div>
             </button>
           ))}
         </div>
       </div>
+    </div>
 
-      {/* Main content/dashboard */}
-      <div className='main-content'>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Summary</th>
-              <th>Name</th>
-              <th>Assignee</th>
-              <th>Status</th>
-              <th>Resolved At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredTickets.map(ticket => (
-              <tr key={ticket.id} className="clickable-row">
-                <td>{ticket.id}</td>
-                <td>
-                  <span
-                    style={{ color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}
-                    onClick={e => {
-                      e.stopPropagation();
-                      setSelectedTicket(ticket);
-                      setShowViewModal(true);
-                    }}
-                  >
-                    {ticket.summary}
-                  </span>
-                </td>
-                <td>{ticket.name}</td>
-                <td className={`assignee-${ticket.assignee}`}>
-                  {(userRole === 'agent' || userRole === 'admin') ? (
-                    <select
-                      value={ticket.assignee}
-                      onChange={(e) => handleAssigneeChange(ticket.id, e.target.value)}
-                    >
-                      {users
-                        .filter(user => user.role === 'agent')
-                        .map(agent => (
-                          <option key={agent.name} value={agent.name}>
-                            {agent.name}
-                          </option>
-                        ))}
-                    </select>
-                  ) : (
-                    ticket.assignee
-                  )}
-                </td>
-                <td className={`status-${ticket.status}`}>
-                  <select
-                    value={ticket.status}
-                   onChange={(e) => handleStatusChange(ticket.id, e.target.value as Ticket['status'])}
-                  >
-                    {['Open', 'InProgress', 'Resolved', 'Closed'].map(status => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>{ticket.resolvedAt || '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    {/* Main dashboard content */}
+    <div className='main-content'>
+      <table>
+        <thead>
+          <tr>
+             {userRole !== 'user' && <th>Priority</th>}
+            <th>Summary</th>
+             {userRole !== 'user' && <th>Name</th>}
+             {userRole !== 'agent' && <th>Assignee</th>}
+            <th>Status</th>
+            <th>Due date</th>
+            <th>Resolved At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+       <tbody>
+  {paginatedTickets.map(ticket => (
+    <tr key={ticket.id} className="clickable-row">
+      {userRole !== 'user' && (
+        <td>
+          <PriorityIcon priority={ticket.priority?.toLowerCase() as 'high' | 'medium' | 'low'} />
+        </td>
+      )}
+
+      <td>
+        <span
+          style={{ color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}
+          onClick={e => {
+            e.stopPropagation();
+            setSelectedTicket(ticket);
+            setShowViewModal(true);
+          }}
+        >
+          {ticket.summary}
+        </span>
+      </td>
+
+      {userRole !== 'user' && <td>{ticket.name}</td>}
+      {userRole !== 'agent' && <td className={`assignee-${ticket.assignee}`}>{ticket.assignee}</td>}
+
+      <td className={`status-${ticket.status}`}>
+        {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
+      </td>
+
+      <td>
+        {ticket.dueDate
+          ? new Date(ticket.dueDate).toLocaleDateString('en-US', {
+              month: '2-digit',
+              day: '2-digit',
+              year: 'numeric',
+            })
+          : '—'}
+      </td>
+
+      <td>
+        {ticket.resolvedAt
+          ? new Date(ticket.resolvedAt).toLocaleString('en-US', {
+              month: '2-digit',
+              day: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            })
+          : '—'}
+      </td>
+
+      <td>
+        <Button
+          onClick={() => {
+            setSelectedTicket(ticket);
+            setEditTicket(ticket);
+            setShowEditModal(true);
+          }}
+          sx={{ minWidth: 'auto', padding: 0, color: '#1976d2', ml: 1 }}
+          title="Edit Ticket"
+        >
+          <EditIcon />
+        </Button>
+        <Button
+          className="icon-button"
+          onClick={async () => {
+            setEditTicket(ticket);
+            await handleDeleteTicket();
+          }}
+          sx={{ minWidth: 'auto', padding: 0, color: '#d32f2f', ml: 1 }}
+          title="Delete Ticket"
+        >
+          <DeleteIcon />
+        </Button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
+      </table>
+            
+      <div className="pagination-container">
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="pagination-button"
+          >
+            &#8592;
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <button
+              key={page}
+              onClick={() => {
+                console.log('Clicked page', page);
+                setCurrentPage(page);
+              }}
+              className={`pagination-number ${page === currentPage ? 'active' : ''}`}
+            >
+              {page}
+            </button>
+          ))}
+
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="pagination-button"
+          >
+            &#8594;
+          </button>
+        </div>
+
+
+
       </div>
 
       {/* Create ticket modal */}
