@@ -260,12 +260,19 @@ const EditUserModal: React.FC<{
   onClose: () => void;
   onUpdateUser: (user: User, originalUsername: string) => void;
 }> = ({ user, onClose, onUpdateUser }) => {
-  const [username, setUsername] = useState(user.username);
-  const [email, setEmail] = useState(user.email);
-  const [role, setRole] = useState(user.role);
-  const [password, setPassword] = useState(user.password);
+  const [username, setUsername] = useState(user.username ?? "");
+  const [email, setEmail] = useState(user.email ?? "");
+  const [role, setRole] = useState(user.role ?? "");
+  const [password, setPassword] = useState(user.password ?? "");
   const [error, setError] = useState('');
-  const originalUsername = user.username;
+  const originalUsername = user.username ?? "";
+
+  useEffect(() => {
+    setUsername(user.username ?? "");
+    setEmail(user.email ?? "");
+    setRole(user.role ?? "");
+    setPassword(user.password ?? "");
+  }, [user]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
