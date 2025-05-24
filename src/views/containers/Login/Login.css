@@ -179,3 +179,13 @@ html, body {
   color: #1e90ff;
   text-decoration: none;
 }
+
+.error-message {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  border-left: 4px solid #d32f2f;
+}

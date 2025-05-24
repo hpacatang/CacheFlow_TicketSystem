@@ -10,21 +10,89 @@
     }
   ],
   "users": [
-    { "name": "jamal", "role": "agent", "id": "9495" },
-    { "name": "kaye", "role": "agent", "id": "6265" },
-    { "name": "jhed", "role": "agent", "id": "7365" },
-    { "name": "yana", "role": "user", "id": "7147" },
-    { "name": "admin1", "role": "admin", "id": "754d" },
-    { "name": "dona", "role": "user", "id": "8123" },
-    { "name": "marvin", "role": "user", "id": "9921" },
-    { "name": "trish", "role": "agent", "id": "5882" },
-    { "name": "gelo", "role": "admin", "id": "3193" },
-    { "name": "ella", "role": "user", "id": "4747" },
-    { "name": "miguel", "role": "agent", "id": "2573" },
-    { "name": "ivy", "role": "user", "id": "3833" },
-    { "name": "leo", "role": "admin", "id": "9191" },
-    { "name": "felix", "role": "agent", "id": "3011" },
-    { "name": "sophia", "role": "user", "id": "9029" }
+    {
+      "name": "jamal",
+      "role": "agent",
+      "id": "9495"
+    },
+    {
+      "name": "kaye",
+      "role": "agent",
+      "id": "6265"
+    },
+    {
+      "name": "jhed",
+      "role": "agent",
+      "id": "7365"
+    },
+    {
+      "name": "yana",
+      "role": "user",
+      "id": "7147"
+    },
+    {
+      "name": "admin1",
+      "role": "admin",
+      "id": "754d"
+    },
+    {
+      "name": "dona",
+      "role": "user",
+      "id": "8123"
+    },
+    {
+      "name": "marvin",
+      "role": "user",
+      "id": "9921"
+    },
+    {
+      "name": "trish",
+      "role": "agent",
+      "id": "5882"
+    },
+    {
+      "name": "gelo",
+      "role": "admin",
+      "id": "3193"
+    },
+    {
+      "name": "ella",
+      "role": "user",
+      "id": "4747"
+    },
+    {
+      "name": "miguel",
+      "role": "agent",
+      "id": "2573"
+    },
+    {
+      "name": "ivy",
+      "role": "user",
+      "id": "3833"
+    },
+    {
+      "name": "leo",
+      "role": "admin",
+      "id": "9191"
+    },
+    {
+      "name": "felix",
+      "role": "agent",
+      "id": "3011"
+    },
+    {
+      "name": "sophia",
+      "role": "user",
+      "id": "9029"
+    },
+    {
+      "id": "6117",
+      "name": "john",
+      "email": "john@mail.com",
+      "password": "12345678",
+      "role": "admin",
+      "status": "Active"
+    }
   ],
   "tickets": [
     {
