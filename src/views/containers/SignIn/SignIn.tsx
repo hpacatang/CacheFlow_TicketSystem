@@ -24,7 +24,7 @@ export const SignIn = () => {
     };
 
     const isValidPassword = (password: string) => {
-        return password.length >= 8;
+        return password.length >= 3;
     };
 
     const handleSignUp = async (e: React.FormEvent) => {
@@ -80,7 +80,7 @@ export const SignIn = () => {
             const newUser = {
                 name: username,
                 email: email,
-                password: password, // In a real app, we'd hash this
+                password: password, 
                 role: "user", // Default role for new registrations
                 id: generateId(),
                 status: "Active"

@@ -65,10 +65,10 @@ const [newTicket, setNewTicket] = useState({
 });
 
 // loggedInUser
-const loggedInUser = 'admin1'; // CHANGE USER HERE
+const loggedInUser = localStorage.getItem('username') || 'admin1'; // Get username from localStorage
 const SidebarRole = localStorage.getItem('userRole') || 'user';
 type UserRole = 'user' | 'agent' | 'admin' | 'superadmin';
-const userRole = (users.find(u => u.name === loggedInUser)?.role || 'user') as UserRole;
+const userRole = SidebarRole as UserRole; // Use the same role as the sidebar
 
 // DATA FETCHING
  useEffect(() => {
@@ -327,7 +327,7 @@ const handleDeleteTicket = async () => {
     {(SidebarRole === 'admin' || userRole === 'superadmin') && <AdminSidebar />}
 
     <div className='filter-section'>
-      <div className={`create-ticket-wrapper ${userRole === 'user' ? '' : 'hidden'}`}>
+      <div className={`create-ticket-wrapper ${SidebarRole === 'user' ? '' : 'hidden'}`}>
         <button className='create-btn' onClick={handleCreateTicketOpen}>Create Ticket</button>
       </div>
 
