@@ -529,10 +529,11 @@ const KnowBase = () => {
                         sx={{
                           minWidth: '50px',
                           padding: '4px',
-                          color: 'black',
+                          color: 'white',
                           textTransform: 'none',
-                          backgroundColor: '#E2E2E2',
+                          backgroundColor: 'blue',
                           marginRight: '5px',
+                          fontWeight: '600',
                           '&:hover': {
                             backgroundColor: 'lightgray',
                             textTransform: 'none'
@@ -553,7 +554,8 @@ const KnowBase = () => {
                           padding: '4px',
                           color: 'white',
                           textTransform: 'none',
-                          backgroundColor: 'black', 
+                          backgroundColor: 'red',
+                          fontWeight: '600',
                           '&:hover': {
                             backgroundColor: 'darkred',
                           },
