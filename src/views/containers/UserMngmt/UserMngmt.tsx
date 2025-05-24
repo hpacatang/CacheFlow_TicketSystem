@@ -234,9 +234,9 @@ const AddUserModal: React.FC<{
           <label>Role</label>
           <select value={role} onChange={e => setRole(e.target.value)}>
             <option value="">Select Role</option>
-            <option value="User">User</option>
-            <option value="Agent">Agent</option>
-            <option value="Admin">Admin</option>
+            <option value="user">User</option>
+            <option value="agent">Agent</option>
+            <option value="admin">Admin</option>
           </select>
           <label>Password</label>
           <input
