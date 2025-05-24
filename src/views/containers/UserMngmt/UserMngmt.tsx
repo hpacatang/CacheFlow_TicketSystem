@@ -16,6 +16,8 @@ export const UserMngmt: React.FC = () => {
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editUser, setEditUser] = useState<User | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 10;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -56,6 +58,12 @@ export const UserMngmt: React.FC = () => {
     u.username.toLowerCase().includes(search.toLowerCase())
   );
 
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * usersPerPage,
+    currentPage * usersPerPage
+  );
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
       <AdminSidebar />
@@ -93,7 +101,7 @@ export const UserMngmt: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((u, i) => (
+              {paginatedUsers.map((u, i) => (
                 <tr key={i}>
                   <td>{u.username}</td>
                   <td>{u.role}</td>
@@ -138,6 +146,23 @@ export const UserMngmt: React.FC = () => {
               onUpdateUser={handleUpdateUser}
             />
           )}
+          <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0' }}>
+            <button
+              className="pagination-btn"
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span style={{ alignSelf: 'center' }}>Page {currentPage} of {totalPages}</span>
+            <button
+              className="pagination-btn"
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>
