@@ -58,13 +58,15 @@ const StyledTableHeaderCell = styled(TableCell)(({ theme }) => ({
   fontWeight: "bold",
   borderBottom: "3px solid #000",
   padding: "20px",
-  backgroundColor: "rgba(22, 123, 187, 0.1)",
+  backgroundColor: "#e8f3f9",
+  wordBreak: "break-word",
+  whiteSpace: "normal",
 }))
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   padding: theme.spacing(2),
   border: "none",
-  backgroundColor: "rgba(22, 123, 187, 0.1)",
+  backgroundColor: "#e8f3f9",
 }))
 
 const ViewButton = styled(Button)(({ theme }) => ({
@@ -152,14 +154,14 @@ export const CustomerFeedback: React.FC = () => {
             <Table stickyHeader aria-label="customer feedback table">
               <TableHead>
                 <TableRow>
-                  <StyledTableHeaderCell>ID</StyledTableHeaderCell>
-                  <StyledTableHeaderCell>Summary</StyledTableHeaderCell>
-                  <StyledTableHeaderCell>Reporter</StyledTableHeaderCell>
-                  <StyledTableHeaderCell>Assignee</StyledTableHeaderCell>
-                  <StyledTableHeaderCell>Status</StyledTableHeaderCell>
-                  <StyledTableHeaderCell>Due Date</StyledTableHeaderCell>
-                  <StyledTableHeaderCell>Resolved at</StyledTableHeaderCell>
-                  <StyledTableHeaderCell align="center">Actions</StyledTableHeaderCell>
+                  <StyledTableHeaderCell style={{ minWidth: 60 }}>ID</StyledTableHeaderCell>
+                  <StyledTableHeaderCell style={{ minWidth: 180 }}>Summary</StyledTableHeaderCell>
+                  <StyledTableHeaderCell style={{ minWidth: 120 }}>Reporter</StyledTableHeaderCell>
+                  <StyledTableHeaderCell style={{ minWidth: 120 }}>Assignee</StyledTableHeaderCell>
+                  <StyledTableHeaderCell style={{ minWidth: 100 }}>Status</StyledTableHeaderCell>
+                  <StyledTableHeaderCell style={{ minWidth: 120 }}>Due Date</StyledTableHeaderCell>
+                  <StyledTableHeaderCell style={{ minWidth: 140 }}>Resolved at</StyledTableHeaderCell>
+                  <StyledTableHeaderCell align="center" style={{ minWidth: 120 }}>Actions</StyledTableHeaderCell>
                 </TableRow>
               </TableHead>
               <TableBody>
