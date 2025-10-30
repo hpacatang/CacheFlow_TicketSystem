@@ -9,6 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import './TicketDash.css';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, TextField, FormControl, Select, MenuItem } from '@mui/material';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import { ticketApi } from '../../../constant/ticketApi';
 
 
 interface Ticket {
@@ -72,13 +73,11 @@ const userRole = SidebarRole as UserRole; // Use the same role as the sidebar
 
 // DATA FETCHING
  useEffect(() => {
-  fetch('http://localhost:3001/users')
-    .then(res => res.json())
+  ticketApi.getUsers()
     .then(setUsers)
     .catch(err => console.error('Error fetching users:', err));
 
-  fetch('http://localhost:3001/tickets')
-    .then(res => res.json())
+  ticketApi.getTickets()
     .then(setTickets)
     .catch(err => console.error('Error fetching tickets:', err));
 }, []);
@@ -98,36 +97,25 @@ const handleNewTicketChange = (field: string, value: string | File | null) => {
 };
 
 const handleCreateTicket = async () => {
-  const usedIds = tickets.map(t => t.id).sort((a, b) => a - b);
-  let nextId = 1;
-  for (let i = 1; i < usedIds.length; i++) {
-    if (usedIds[i] !== i + 1) {
-      nextId = i + 1;
-      break;
-    }
-    if (i === usedIds.length - 1) {
-      nextId = usedIds.length + 1;
-    }
-  }
-  if (usedIds.length === 0) nextId = 1;
-
+  // Create ticket object matching C# model structure
   const ticketToCreate = {
-    ...newTicket,
-    id: nextId,
+    summary: newTicket.summary,
     name: loggedInUser,
-    assignee: '',
-    status: 'open',
-    resolvedAt: null,
+    assignee: '', // Users can't assign tickets, leave empty
     type: newTicket.type || 'hardware',
+    description: newTicket.description || '',
+    dueDate: newTicket.dueDate ? new Date(newTicket.dueDate).toISOString() : null,
+    priority: newTicket.priority || 'medium',
+    category: newTicket.category || 'Hardware',
+    status: 'open',
+    resolvedAt: null
   };
 
+  console.log('Sending ticket data:', ticketToCreate); // Debug log
+
   try {
-    const response = await fetch('http://localhost:3001/tickets', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(ticketToCreate),
-    });
-    const createdTicket = await response.json();
+    const createdTicket = await ticketApi.createTicket(ticketToCreate);
+    console.log('Created ticket response:', createdTicket); // Debug log
     setTickets(prev => [...prev, createdTicket]);
   } catch (error) {
     console.error('Failed to create ticket:', error);
@@ -287,17 +275,13 @@ const PriorityIcon = ({ priority }: { priority: 'high' | 'medium' | 'low' }) => 
     setShowEditModal(false);
     setShowViewModal(true);
     try {
-      await fetch(`http://localhost:3001/tickets/${editTicket.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          summary: editTicket.summary,
-          description: editTicket.description,
-          dueDate: editTicket.dueDate,
-          priority: editTicket.priority,
-          category: editTicket.category,
-          attachment: typeof editTicket.attachment === 'string' ? editTicket.attachment : (editTicket.attachment && 'name' in editTicket.attachment ? editTicket.attachment.name : null),
-        }),
+      await ticketApi.updateTicket(editTicket.id, {
+        summary: editTicket.summary,
+        description: editTicket.description,
+        dueDate: editTicket.dueDate,
+        priority: editTicket.priority,
+        category: editTicket.category,
+        attachment: typeof editTicket.attachment === 'string' ? editTicket.attachment : (editTicket.attachment && 'name' in editTicket.attachment ? editTicket.attachment.name : null),
       });
     } catch (error) {
       console.error('Failed to update ticket:', error);
@@ -306,11 +290,16 @@ const PriorityIcon = ({ priority }: { priority: 'high' | 'medium' | 'low' }) => 
 
   // Deleting a ticket
 const handleDeleteTicket = async () => {
-  if (!editTicket) return;
+  console.log('Delete button clicked');
+  console.log('editTicket:', editTicket);
+  if (!editTicket) {
+    console.log('No editTicket found, returning');
+    return;
+  }
   try {
-    await fetch(`http://localhost:3001/tickets/${editTicket.id}`, {
-      method: 'DELETE',
-    });
+    console.log('Calling delete API for ticket ID:', editTicket.id);
+    await ticketApi.deleteTicket(editTicket.id);
+    console.log('Delete API call successful');
     setTickets(prev => prev.filter(t => t.id !== editTicket.id));
     setShowEditModal(false);
     setShowViewModal(false);

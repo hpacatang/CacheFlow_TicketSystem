@@ -7,6 +7,14 @@ module.exports = {
   devServer: {
     hot: true,
     open: true,
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'https://localhost:56201',
+        changeOrigin: true,
+        secure: false,
+      },
+    ],
   },
   plugins: [
     new ReactRefreshWebpackPlugin(),
