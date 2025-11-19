@@ -4,11 +4,13 @@ import LockIcon from "@mui/icons-material/Lock";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../contexts/AuthContext";
 
 import "./Login.css";
 
 export const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -37,10 +39,13 @@ export const Login = () => {
       );
       
       if (user) {
-        // Store user info in localStorage
-        localStorage.setItem('userRole', user.role);
-        localStorage.setItem('username', user.name);
-        localStorage.setItem('userId', user.id);
+        // Use AuthContext login method
+        login({
+          id: user.id.toString(),
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        });
         
         navigate("/dashboard");
       } else {

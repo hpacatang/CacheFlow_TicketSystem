@@ -12,17 +12,11 @@ import {
   TableRow,
   Button,
   CircularProgress,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Drawer,
   Snackbar,
   Alert,
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import AdminSidebar from "../../components/Sidebars/AdminSidebar"
-import { AgentSidebar } from "../../components/Sidebars/AgentSidebar"
+import Layout from "../../Layout"
 import FeedbackModal from "../../components/Modals/FeedbackModal"
 import VisibilityIcon from "@mui/icons-material/Visibility"
 
@@ -83,17 +77,11 @@ const ViewButton = styled(Button)(({ theme }) => ({
 }))
 
 export const CustomerFeedback: React.FC = () => {
-  const sidebarRole = localStorage.getItem("userRole")
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true)
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [selectedFeedback, setSelectedFeedback] = useState<FeedbackDetails | null>(null)
-
-  const handleDrawerClose = () => {
-    setSidebarOpen(false)
-  }
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -136,10 +124,7 @@ export const CustomerFeedback: React.FC = () => {
   }
 
   return (
-    <Box display="flex">
-       {sidebarRole === 'agent' && <AgentSidebar />}
-            {(sidebarRole === 'admin' || sidebarRole === 'superadmin') && <AdminSidebar />}
-      
+    <Layout module="customerFeedback">
       <Box p={3} flexGrow={1}>
         <Typography marginTop="3rem" marginLeft="2rem" variant="h4" gutterBottom fontWeight="bold">
           Customer Feedback
@@ -187,7 +172,7 @@ export const CustomerFeedback: React.FC = () => {
         )}
       </Box>
       <FeedbackModal open={modalOpen} onClose={() => setModalOpen(false)} feedback={selectedFeedback} />
-    </Box>
+    </Layout>
   )
 }
 

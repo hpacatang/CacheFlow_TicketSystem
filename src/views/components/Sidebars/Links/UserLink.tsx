@@ -15,7 +15,7 @@ export const UserLinks = () => {
   return (
     <div>
       <Link to="/dashboard">Tickets</Link>
-      <Link to="/knowledge-base-user">Knowledge Base</Link>
+      <Link to="/knowledge-base">Knowledge Base</Link>
       <a href="#" onClick={handleOpenModal}>Submit Feedback</a>
       <FeedbackRatingModal
         open={open}
