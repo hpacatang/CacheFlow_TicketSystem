@@ -141,8 +141,16 @@ export const SubmitFeedback: React.FC = () => {
 
   if (error) {
     return (
-      <Box p={3}>
-        <Typography color="error">{error}</Typography>
+      <Box display="flex">
+        <UserSidebar />
+        <Box p={3} flexGrow={1}>
+          <Typography marginTop="2rem" marginLeft="2rem" variant="h4" gutterBottom fontWeight="bold">
+            Submit Feedback
+          </Typography>
+          <Box display="flex" justifyContent="center" my={4}>
+            <Typography color="error">{error}</Typography>
+          </Box>
+        </Box>
       </Box>
     )
   }

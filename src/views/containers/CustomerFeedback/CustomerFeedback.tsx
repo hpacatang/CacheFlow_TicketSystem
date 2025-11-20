@@ -123,9 +123,16 @@ export const CustomerFeedback: React.FC = () => {
 
   if (error) {
     return (
-      <Box p={3}>
-        <Typography color="error">{error}</Typography>
-      </Box>
+      <Layout module="customerFeedback">
+        <Box p={3} flexGrow={1}>
+          <Typography marginTop="3rem" marginLeft="2rem" variant="h4" gutterBottom fontWeight="bold">
+            Customer Feedback
+          </Typography>
+          <Box display="flex" justifyContent="center" my={4}>
+            <Typography color="error">{error}</Typography>
+          </Box>
+        </Box>
+      </Layout>
     )
   }
 
