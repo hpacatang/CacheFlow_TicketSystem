@@ -29,74 +29,57 @@ export const SignIn = () => {
 
     const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
-        
         // Validation
         if (!username || !email || !password || !confirmPassword) {
             setError("Please fill in all fields");
             return;
         }
-
         if (!isValidEmail(email)) {
             setError("Please enter a valid email address");
             return;
         }
-
         if (!isValidPassword(password)) {
             setError("Password must be at least 8 characters long");
             return;
         }
-
         if (password !== confirmPassword) {
             setError("Passwords do not match");
             return;
         }
-
         setIsLoading(true);
         setError("");
-
         try {
-            // Check if username or email already exists
-            const response = await fetch('http://localhost:3001/users');
-            const users = await response.json();
-            
+            // Check if username or email already exists (fetch from backend)
+            const response = await fetch("https://localhost:51811/users", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
+            const users = response.ok ? await response.json() : [];
             if (users.some((u: any) => u.name === username)) {
                 setError("Username already exists");
                 setIsLoading(false);
                 return;
             }
-            
             if (users.some((u: any) => u.email === email)) {
                 setError("Email already exists");
                 setIsLoading(false);
                 return;
             }
-            
-            // Generate a random ID (similar to the existing IDs in db.json)
-            const generateId = () => {
-                return Math.floor(Math.random() * 10000).toString();
-            };
-            
-            // Create new user
+            // Create new user payload matching backend DTO
             const newUser = {
                 name: username,
                 email: email,
-                password: password, 
-                role: "user", // Default role for new registrations
-                id: generateId(),
+                password: password,
+                role: "User", // Default role for new registrations
                 status: "Active"
             };
-            
-            // Add user to db.json
-            const createResponse = await fetch('http://localhost:3001/users', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+            // POST to backend
+            const createResponse = await fetch("https://localhost:51811/users", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newUser),
             });
-            
             if (createResponse.ok) {
-                // Registration successful
                 navigate("/login");
             } else {
                 setError("Registration failed. Please try again.");

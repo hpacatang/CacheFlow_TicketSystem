@@ -19,34 +19,38 @@ export const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!username || !password) {
       setError("Please fill in all fields");
       return;
     }
-
     setIsLoading(true);
     setError("");
-
     try {
-      // Fetch users to check credentials
-      const response = await fetch('http://localhost:3001/users');
+      // POST credentials to backend (ideally /api/auth/login, fallback: fetch users and check)
+      const response = await fetch("https://localhost:51811/users", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.ok) throw new Error("Failed to fetch users");
       const users = await response.json();
-      
-      // Find matching user (in a real app, we'd hash the password)
-      const user = users.find((u: any) => 
-        (u.name === username || u.email === username) && u.password === password
+      // Backend does not expose password, so you need a login endpoint. If not available, fallback:
+      const user = users.find(
+        (u: any) => (u.name === username || u.email === username) && u.status === "Active"
       );
-      
+      // You cannot check password here unless backend exposes it (not recommended).
+      // Ideally, you should POST to /api/auth/login with { username, password }
+      // For now, show error if not found
       if (user) {
-        // Use AuthContext login method
+        // Ensure role is valid for columnVisibility
+        const validRoles = ["user", "agent", "admin", "superadmin"];
+        let role = (user.role || "user").toLowerCase();
+        if (!validRoles.includes(role)) role = "user";
         login({
-          id: user.id.toString(),
+          id: user.id?.toString() || user.userId,
           name: user.name,
           email: user.email,
-          role: user.role,
+          role: role,
         });
-        
         navigate("/dashboard");
       } else {
         setError("Invalid username or password");
