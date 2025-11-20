@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import AppBar from '../../components/AppBar';
-import DrawerHeader from '../../components/DrawerHeader';
-import Main from '../../components/Main';
+import Layout from '../../Layout';
+import { useAuth } from '../../../contexts/AuthContext';
 import {
   Button,
   Tabs,
@@ -15,30 +14,19 @@ import {
   TableRow,
   Paper,
   InputAdornment,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   MenuItem,
   Select,
-  InputLabel,
   FormControl,
   Typography,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import HomeIcon from '@mui/icons-material/Home';
-import ArticleIcon from '@mui/icons-material/Article';
-import FeedbackIcon from '@mui/icons-material/Feedback';
 import './KnowBase.css';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
-import { AdminSidebar } from '../../components/Sidebars/AdminSidebar';
-import { AgentSidebar } from '../../components/Sidebars/AgentSidebar';
 
 
 // Define a type for the articles
@@ -52,7 +40,10 @@ interface Article {
 }
 
 const KnowBase = () => {
-  const sidebarRole = localStorage.getItem('userRole');
+  const { getUserRole } = useAuth();
+  const userRole = getUserRole();
+  const canManageKnowledgeBase = userRole === 'agent' || userRole === 'admin' || userRole === 'superadmin';
+  
   const [activeTab, setActiveTab] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -204,69 +195,13 @@ const KnowBase = () => {
     }
   };
 
-  const menuItems = [
-    { text: 'Ticket Management', icon: <HomeIcon />, textColor: 'white' },
-    { text: 'Ticket Assignment', icon: <ArticleIcon />, textColor: 'white' },
-    { text: 'Ticket Tracking', icon: <ArticleIcon />, textColor: 'white' },
-    { text: 'Notifications', icon: <FeedbackIcon />, textColor: 'white' },
-    { text: 'Reporting & Analytics', icon: <FeedbackIcon />, textColor: 'white' },
-    { text: 'Knowledge Base', icon: <ArticleIcon />, textColor: 'white' },
-    { text: 'Customer Feedback', icon: <FeedbackIcon />, textColor: 'white' },
-  ];
-
   return (
-    <div style={{ display: 'flex' }}>
-      {/* Sidebar */}
-      {/* <Drawer
-        variant="permanent"
-        anchor="left"
-        sx={{
-          width: 240,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: 270,
-            boxSizing: 'border-box',
-            backgroundColor: '#1B65AD',
-            color: 'white',
-          },
-        }}
-      >
-        <div className="sidebar-header">
-        <img src="/cacheflowlogo.png" alt="CacheFlow Logo" className="sidebar-logo" />
-          <h3 className="sidebar-title">Support Agent</h3>
-        </div>
-        <List>
-          {menuItems.map((item, index) => (
-            <ListItem
-              component="button"
-              key={index}
-              sx={{
-                backgroundColor: '#1B65AD',
-                border: 'none',
-                '&:hover': {
-                  backgroundColor: '#1565c0',
-                  color: 'white',
-                },
-              }}
-            >
-              <ListItemIcon sx={{ color: 'white' }}>{item.icon}</ListItemIcon> {/* Icon color */}
-              {/* <ListItemText
-                primary={item.text}
-              />
-            </ListItem>
-          ))}
-        </List>
-      </Drawer> */}
-      {sidebarRole === 'agent' && <AgentSidebar />}
-      {(sidebarRole === 'admin' || sidebarRole === 'superadmin') && <AdminSidebar />}
-
-      {/* Main Content */}
-      
-      <Main style={{ marginLeft: 80 }}>
-        <AppBar title="Knowledge Base" />
-        <DrawerHeader />
-        <h1 className="knowledge-base-title">Knowledge Base</h1>
-        <div className="knowledge-base-container" style={{ width: '109%', maxWidth: '1100px', margin: '0 auto', padding: '20px' }}>
+    <Layout module="knowledgeBase">
+      <h1 className="knowledge-base-title">Knowledge Base</h1>
+      <div className="knowledge-base-container" style={{ width: '109%', maxWidth: '1100px', margin: '0 auto', padding: '20px' }}>
+        
+        {/* Tabs - Only for agents/admins who can manage */}
+        {canManageKnowledgeBase && (
           <Tabs
             value={activeTab}
             onChange={handleTabChange}
@@ -287,30 +222,34 @@ const KnowBase = () => {
               className={activeTab === 2 ? 'active-tab' : 'inactive-tab'}
             />
           </Tabs>
+        )}
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <TextField
-              placeholder="Search Articles"
-              variant="outlined"
-              fullWidth
-              value={searchQuery}
-              onChange={handleSearchChange}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <TextField
+            placeholder="Search Articles"
+            variant="outlined"
+            fullWidth
+            value={searchQuery}
+            onChange={handleSearchChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              borderRadius: '8px',
+              '& .MuiOutlinedInput-root': { 
                 borderRadius: '8px',
-                '& .MuiOutlinedInput-root': { 
-                  borderRadius: '8px',
-                  height: '40px',},
-                marginRight: '16px', width: '100%', maxWidth: '500px',
-                backgroundColor: 'white',
-              }}
-            />
+                height: '40px',},
+              marginRight: '16px', width: '100%', maxWidth: '500px',
+              backgroundColor: 'white',
+            }}
+          />
+          
+          {/* Create Article Button - Only for agents/admins who can create */}
+          {canManageKnowledgeBase && (
             <Button
               variant="contained"
               color="primary"
@@ -319,7 +258,8 @@ const KnowBase = () => {
             >
               Create Article
             </Button>
-          </div>
+          )}
+        </div>
 
           <div className="table-container">
             {/* Modal for Create Article */}
@@ -503,7 +443,11 @@ const KnowBase = () => {
                   <TableCell sx={{ fontWeight: 'bold' }}>Categories</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Views</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Last Updated</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+                  
+                  {/* Actions column - Only for agents/admins who can edit */}
+                  {canManageKnowledgeBase && (
+                    <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -518,52 +462,55 @@ const KnowBase = () => {
                     <TableCell>{article.category}</TableCell>
                     <TableCell>{article.views}</TableCell>
                     <TableCell>{article.lastUpdated}</TableCell>
-                    <TableCell>
+                    
+                    {/* Actions - Only for agents/admins who can edit/delete */}
+                    {canManageKnowledgeBase && (
+                      <TableCell>
+                        {/* Edit button */}
+                        <Button
+                          onClick={() => {
+                            setSelectedArticle(article);
+                            handleEditModalOpen();
+                          }}
+                          sx={{
+                            minWidth: '50px',
+                            padding: '4px',
+                            color: 'white',
+                            textTransform: 'none',
+                            backgroundColor: 'blue',
+                            marginRight: '5px',
+                            fontWeight: '600',
+                            '&:hover': {
+                              backgroundColor: 'lightgray',
+                              textTransform: 'none'
+                            },
+                          }}
+                        >
+                        Edit
+                        </Button>
 
-                      {/* Edit button */}
-                      <Button
-                        onClick={() => {
-                          setSelectedArticle(article);
-                          handleEditModalOpen();
-                        }}
-                        sx={{
-                          minWidth: '50px',
-                          padding: '4px',
-                          color: 'white',
-                          textTransform: 'none',
-                          backgroundColor: 'blue',
-                          marginRight: '5px',
-                          fontWeight: '600',
-                          '&:hover': {
-                            backgroundColor: 'lightgray',
-                            textTransform: 'none'
-                          },
-                        }}
-                      >
-                      Edit
-                      </Button>
-
-                      {/* Delete button */}
-                      <Button
-                        onClick={() => {
-                          setSelectedArticle(article);
-                          handleDeleteArticle(); 
-                        }}
-                        sx={{
-                          minWidth: '50px',
-                          padding: '4px',
-                          color: 'white',
-                          textTransform: 'none',
-                          backgroundColor: 'red',
-                          fontWeight: '600',
-                          '&:hover': {
-                            backgroundColor: 'darkred',
-                          },
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
+                        {/* Delete button */}
+                        <Button
+                          onClick={() => {
+                            setSelectedArticle(article);
+                            handleDeleteArticle(); 
+                          }}
+                          sx={{
+                            minWidth: '50px',
+                            padding: '4px',
+                            color: 'white',
+                            textTransform: 'none',
+                            backgroundColor: 'red',
+                              fontWeight: '600',
+                              '&:hover': {
+                                backgroundColor: 'darkred',
+                              },
+                            }}
+                          >
+                            Delete
+                          </Button>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
@@ -865,8 +812,7 @@ const KnowBase = () => {
             </Button>
           </DialogActions>
         </Dialog>
-      </Main>
-    </div>
+    </Layout>
   );
 };
 

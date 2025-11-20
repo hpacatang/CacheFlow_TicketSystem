@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import './notifications.css';
-import { UserSidebar } from '../../components/Sidebars/UserSidebar';
-import { AgentSidebar } from '../../components/Sidebars/AgentSidebar';
+import './Notifications.css';
+import Layout from '../../Layout';
+import { useAuth } from '../../../contexts/AuthContext';
 
-interface NotificationsProps {
-  role: 'user' | 'agent';
-}
+interface NotificationsProps {}
 
 const FILTERS_USER = [
   'All',
@@ -93,7 +91,11 @@ const notificationsData: NotificationsDataType = {
     }
   };
   
-  export const Notifications: React.FC<NotificationsProps> = ({ role }) => {
+  export const Notifications: React.FC<NotificationsProps> = () => {
+    const { getUserRole } = useAuth();
+    const userRole = getUserRole();
+    // Normalize role to 'user' or 'agent' for notifications data
+    const role: 'user' | 'agent' = userRole === 'user' ? 'user' : 'agent';
     const [tab, setTab] = useState<'read' | 'unread'>('unread');
     const [filter, setFilter] = useState<string>('All');
     const [filterOpen, setFilterOpen] = useState<boolean>(false);
@@ -120,9 +122,7 @@ const notificationsData: NotificationsDataType = {
     }));
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      {role === 'user' && <UserSidebar />}
-      {role === 'agent' && <AgentSidebar />}
+    <Layout module="notifications">
       <div style={{ flex: 1 }}>
         <div className="notifications-container">
           <div className="notifications-tabs">
@@ -188,7 +188,7 @@ const notificationsData: NotificationsDataType = {
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

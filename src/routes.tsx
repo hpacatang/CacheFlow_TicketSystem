@@ -18,12 +18,11 @@ export const AppRoutes = () => {
         <Route path={PATHS.LOGOUT.path} element={<Views.Logout />} />
         <Route path={PATHS.NOT_FOUND.path} element={<Views.NotFound />} />
         <Route path={PATHS.KNOWLEDGE_BASE.path} element={<Views.KnowledgeBase />} />
-        <Route path={PATHS.KNOWLEDGE_BASE_USER.path} element={<Views.KnowledgeBaseUser />} />
         <Route path={PATHS.SIGN_IN.path} element={<Views.SignIn />} />
         <Route path={PATHS.FORGOT_PASSWORD.path} element={<Views.ForgotPass />} />
         <Route path={PATHS.ANALYTICS.path} element={<Views.Analytics />} />
-        <Route path={PATHS.SETTINGS.path} element={<Views.Settings role="user" />} />{/* agent */}
-        <Route path={PATHS.NOTIFICATION.path} element={<Views.Notifications role="user" />} />
+        <Route path={PATHS.SETTINGS.path} element={<Views.Settings />} />
+        <Route path={PATHS.NOTIFICATION.path} element={<Views.Notifications />} />
         <Route path={PATHS.USER_MNGMT.path} element={<Views.UserMngmt />} />
         <Route path={PATHS.ACCESS_CNTRL.path} element={<Views.AccessCntrl />} />
         <Route path={PATHS.SUBMITFEEDBACK.path} element={<Views.SubmitFeedback />} />

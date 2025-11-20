@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect } from "react";
+import Layout from '../../Layout';
 
 export const Dashboard = () => {
   // Run json-server --watch db.json --port 3000
@@ -19,8 +20,10 @@ export const Dashboard = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Dashboard Screen</h1>
-    </div>
+    <Layout module="dashboard">
+      <div>
+        <h1>Dashboard Screen</h1>
+      </div>
+    </Layout>
   );
 };

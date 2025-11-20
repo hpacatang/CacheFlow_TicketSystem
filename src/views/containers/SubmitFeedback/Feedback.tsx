@@ -15,7 +15,7 @@ import {
   Alert,
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import UserSidebar from '../../components/Sidebars/UserSidebar'
+import Layout from '../../Layout'
 import FeedbackRatingModal from '../../components/Modals/FeedbackRatingModal'
 
 interface Ticket {
@@ -106,8 +106,7 @@ export const SubmitFeedback: React.FC = () => {
   }
 
   return (
-    <Box display="flex">
-      <UserSidebar />
+    <Layout module="submitFeedback">
       <Box p={3} flexGrow={1}>
         <Typography marginTop="3rem" marginLeft="2rem" variant="h4" gutterBottom fontWeight="bold">
           Submit Feedback
@@ -176,7 +175,7 @@ export const SubmitFeedback: React.FC = () => {
           Feedback submitted!
         </Alert>
       </Snackbar>
-    </Box>
+    </Layout>
   )
 }
 

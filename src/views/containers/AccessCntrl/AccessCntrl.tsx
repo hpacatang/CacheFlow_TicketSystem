@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./AccessCntrl.css";
-import { AdminSidebar } from '../../components/Sidebars/AdminSidebar'; // Import the sidebar
+import Layout from '../../Layout';
 
 type Role = "user" | "agent" | "admin";
 
@@ -40,8 +40,7 @@ export const AccessCntrl: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <AdminSidebar />
+    <Layout module="access-control">
       <div style={{ flex: 1 }}>
         <div className="access-cntrl-container">
           <div className="access-cntrl-header">
@@ -96,7 +95,7 @@ export const AccessCntrl: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

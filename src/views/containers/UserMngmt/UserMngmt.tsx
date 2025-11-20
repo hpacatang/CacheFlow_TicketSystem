@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import './UserMngmt.css';
-import { AdminSidebar } from '../../components/Sidebars/AdminSidebar';
+import Layout from '../../Layout';
 
 interface User {
   username: string;
@@ -65,17 +65,15 @@ export const UserMngmt: React.FC = () => {
   );
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <AdminSidebar />
-      <div style={{ flex: 1 }}>
-        <div className="user-mngmt-container">
-          <div className="user-mngmt-header">
-            <h2>Users</h2>
-            <button className="add-user-btn" onClick={() => setShowModal(true)}>
-              Add User
-            </button>
-          </div>
-          <div className="user-mngmt-controls">
+    <Layout module="userManagement">
+      <div className="user-mngmt-container">
+        <div className="user-mngmt-header">
+          <h2>Users</h2>
+          <button className="add-user-btn" onClick={() => setShowModal(true)}>
+            Add User
+          </button>
+        </div>
+        <div className="user-mngmt-controls">
             <div className="search-box">
               <input
                 type="text"
@@ -164,8 +162,7 @@ export const UserMngmt: React.FC = () => {
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </Layout>
   );
 };
 

@@ -14,10 +14,12 @@ body, html {
 
 .filter-section {
   width: 17%;
+  min-width: 200px; /* Ensure filter section has minimum width */
   background-color: rgba(22, 123, 187, 0.22);
   padding: 1px 3px 1px 8px;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0; /* Prevent filter section from shrinking */
 }
 .filter-section input{
   padding: 15px 9 5 10;
@@ -54,11 +56,14 @@ body, html {
   padding: 1rem;
   background-color: #f4f4f4;
   display: flex;       
-  flex-direction: column; 
+  flex-direction: column;
+  overflow-x: hidden; /* Hide horizontal overflow */
+  min-height: 100vh;
 }
 table {
   width: 100%;       
   border-collapse: collapse;
+  table-layout: fixed; /* Force table to use 100% width and distribute columns evenly */
 }
 
 thead tr {
@@ -68,6 +73,8 @@ thead tr {
 table th, table td {
   padding: 0.8rem;
   text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 

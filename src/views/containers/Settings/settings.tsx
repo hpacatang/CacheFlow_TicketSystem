@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import './settings.css';
-import { UserSidebar } from '../../components/Sidebars/UserSidebar';
-import { AgentSidebar } from '../../components/Sidebars/AgentSidebar';
-import { AdminSidebar } from '../../components/Sidebars/AdminSidebar';
+import Layout from '../../Layout';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const TABS = [
   { label: 'Notification Settings' },
@@ -10,12 +9,11 @@ const TABS = [
   { label: 'Others' }
 ];
 
-interface SettingsProps {
-  role?: 'user' | 'agent' | 'admin'; //optional for now 
-}
+interface SettingsProps {}
 
-export const Settings: React.FC<SettingsProps> = ({ role }) => {
-  const sidebarRole = (localStorage.getItem('userRole')); //use local storage to get role
+export const Settings: React.FC<SettingsProps> = () => {
+  const { getUserRole } = useAuth();
+  const role = getUserRole();
   const [activeTab, setActiveTab] = useState(0);
 
   const [darkMode, setDarkMode] = useState(false);
@@ -47,10 +45,7 @@ export const Settings: React.FC<SettingsProps> = ({ role }) => {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      {sidebarRole === 'user' && <UserSidebar />}
-      {sidebarRole === 'agent' && <AgentSidebar />}
-      {sidebarRole === 'admin' && <AdminSidebar />}
+    <Layout module="settings">
       <div style={{ flex: 1 }}>
         <div className="settings-container">
           <h2>Settings</h2>
@@ -71,7 +66,7 @@ export const Settings: React.FC<SettingsProps> = ({ role }) => {
               <div>
                 <section>
                   <div className="section-title">Enable/Disable Notifications When:</div>
-                  {role === 'agent' ? (
+                  {role !== 'user' ? (
                     <>
                       <label>
                         <input
@@ -144,8 +139,8 @@ export const Settings: React.FC<SettingsProps> = ({ role }) => {
                   )}
                 </section>
                 <section>
-                  <div className="section-title">{role === 'agent' ? 'System' : 'Reminders'}</div>
-                  {role === 'agent' ? (
+                  <div className="section-title">{role !== 'user' ? 'System' : 'Reminders'}</div>
+                  {role !== 'user' ? (
                     <>
                       <label>
                         <input
@@ -194,8 +189,8 @@ export const Settings: React.FC<SettingsProps> = ({ role }) => {
                   )}
                 </section>
                 <section>
-                  <div className="section-title">{role === 'agent' ? 'Reminders' : 'Announcements'}</div>
-                  {role === 'agent' ? (
+                  <div className="section-title">{role !== 'user' ? 'Reminders' : 'Announcements'}</div>
+                  {role !== 'user' ? (
                     <>
                       <label>
                         <input
@@ -241,7 +236,7 @@ export const Settings: React.FC<SettingsProps> = ({ role }) => {
             {/* Ticket Views */}
             {activeTab === 1 && (
               <div>
-                {role === 'agent' ? (
+                {role !== 'user' ? (
                   <>
                     <section>
                       <div className="section-title">Default Dashboard View</div>
@@ -424,6 +419,6 @@ export const Settings: React.FC<SettingsProps> = ({ role }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
