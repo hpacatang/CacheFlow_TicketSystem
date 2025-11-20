@@ -462,56 +462,61 @@ const KnowBase = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {articles.map((article, index) => (
-                  <TableRow key={index}>
-                    <TableCell
-                      onClick={() => handleViewArticle(article)}
-                      sx={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
-                    >
-                      {article.title}
-                    </TableCell>
-                    <TableCell>{article.category}</TableCell>
-                    <TableCell>{article.views}</TableCell>
-                    <TableCell>{article.lastUpdated.split('T')[0]}</TableCell>
-                    
-                    {/* Actions - Only for agents/admins who can edit/delete */}
-                    {canManageKnowledgeBase && (
-                      <TableCell>
-                        {/* Edit button */}
-                        <Button
-                          onClick={() => {
-                            setSelectedArticle(article);
-                            handleEditModalOpen();
-                          }}
-                          sx={{
-                            minWidth: '50px',
-                            padding: '4px',
-                            color: 'white',
-                            textTransform: 'none',
-                            backgroundColor: 'blue',
-                            marginRight: '5px',
-                            fontWeight: '600',
-                            '&:hover': {
-                              backgroundColor: 'lightgray',
-                              textTransform: 'none'
-                            },
-                          }}
-                        >
-                        Edit
-                        </Button>
+                {articles
+                  .filter((article) =>
+                    article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    article.category.toLowerCase().includes(searchQuery.toLowerCase())
+                  )
+                  .map((article, index) => (
+                    <TableRow key={index}>
+                      <TableCell
+                        onClick={() => handleViewArticle(article)}
+                        sx={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
+                      >
+                        {article.title}
+                      </TableCell>
+                      <TableCell>{article.category}</TableCell>
+                      <TableCell>{article.views}</TableCell>
+                      <TableCell>{article.lastUpdated.split('T')[0]}</TableCell>
+                      
+                      {/* Actions - Only for agents/admins who can edit/delete */}
+                      {canManageKnowledgeBase && (
+                        <TableCell>
+                          {/* Edit button */}
+                          <Button
+                            onClick={() => {
+                              setSelectedArticle(article);
+                              handleEditModalOpen();
+                            }}
+                            sx={{
+                              minWidth: '50px',
+                              padding: '4px',
+                              color: 'white',
+                              textTransform: 'none',
+                              backgroundColor: 'blue',
+                              marginRight: '5px',
+                              fontWeight: '600',
+                              '&:hover': {
+                                backgroundColor: 'lightgray',
+                                textTransform: 'none',
+                              },
+                            }}
+                          >
+                          Edit
+                          </Button>
 
-                        {/* Delete button */}
-                        <Button
-                          onClick={() => {
-                            setSelectedArticle(article);
-                            handleDeleteArticle(); 
-                          }}
-                          sx={{
-                            minWidth: '50px',
-                            padding: '4px',
-                            color: 'white',
-                            textTransform: 'none',
-                            backgroundColor: 'red',
+                          {/* Delete button */}
+                          <Button
+                            onClick={() => {
+                              setSelectedArticle(article);
+                              handleDeleteArticle();
+                            }}
+                            sx={{
+                              minWidth: '50px',
+                              padding: '4px',
+                              color: 'white',
+                              textTransform: 'none',
+                              backgroundColor: 'red',
                               fontWeight: '600',
                               '&:hover': {
                                 backgroundColor: 'darkred',
@@ -520,10 +525,10 @@ const KnowBase = () => {
                           >
                             Delete
                           </Button>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                ))}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
