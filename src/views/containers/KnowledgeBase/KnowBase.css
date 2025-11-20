@@ -9,7 +9,6 @@ body {
   width: 90%;
   max-width: none;
   margin: 0 auto;
-  margin-top: 60px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -102,11 +101,12 @@ body {
 }
 
 .knowledge-base-title {
-  text-align: left;
   margin-bottom: 15px;
   font-size: 2rem;
   font-weight: bold;
   color: #333;
+  margin-top: 50px;
+  margin-left: 70px;
 }
 
 .sidebar-header {

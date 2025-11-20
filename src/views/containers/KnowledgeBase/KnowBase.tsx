@@ -208,8 +208,8 @@ const KnowBase = () => {
 
   return (
     <Layout module="knowledgeBase">
+      <h1 className="knowledge-base-title">Knowledge Base</h1>
       <div className="knowledge-base-container">
-        <h1 className="knowledge-base-title">Knowledge Base</h1>
         
         {/* Tabs - Only for agents/admins who can manage */}
         {canManageKnowledgeBase && (
