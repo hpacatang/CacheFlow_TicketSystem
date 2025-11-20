@@ -6,9 +6,10 @@ body {
   background-color: #e8f3f9;
   padding: 20px;
   border-radius: 10px;
-  width: 110%;
+  width: 90%;
   max-width: none;
   margin: 0 auto;
+  margin-top: 60px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -106,7 +107,6 @@ body {
   font-size: 2rem;
   font-weight: bold;
   color: #333;
-  margin-top: -40px;
 }
 
 .sidebar-header {

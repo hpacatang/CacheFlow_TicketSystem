@@ -74,7 +74,7 @@ const KnowBase = () => {
   //Axios and db.json implementation for permanent data storage
   useEffect(() => {
     // Fetch articles from JSON Server
-    axios.get('http://localhost:3001/articles')
+    axios.get('https://localhost:44310/api/article')
       .then((response) => {
         setArticles(response.data);
       })
@@ -133,17 +133,28 @@ const KnowBase = () => {
   // Add a function to add the new article to the articles array.
   const handleCreateArticle = () => {
     console.log('Create Article button clicked');
-    const newArticleWithId = { ...newArticle, id: uuidv4(), views: 0, lastUpdated: new Date().toLocaleDateString() };
+
+    // Generate a unique integer ID based on the current articles
+    const newId = articles.length > 0 ? Math.max(...articles.map(article => parseInt(article.id))) + 1 : 1;
+
+    const newArticleWithId = {
+      ...newArticle,
+      id: newId, // Use the generated integer ID
+      views: 0,
+      lastUpdated: new Date().toISOString(), // Use ISO format for the date
+    };
+
     console.log('New article data:', newArticleWithId);
-    axios.post('http://localhost:3001/articles', newArticleWithId)
+
+    axios.post('https://localhost:44310/api/article', newArticleWithId)
       .then((response) => {
         console.log('Article created successfully:', response.data);
         setArticles([...articles, response.data]);
         setIsModalOpen(false);
-        setNewArticle({ id: uuidv4(), title: '', category: '', views: 0, lastUpdated: '', body: '' }); // Reset the form
+        setNewArticle({ id: uuidv4(), title: '', category: '', views: 0, lastUpdated: new Date().toLocaleDateString(), body: '' }); // Reset the form
       })
       .catch((error) => {
-        console.error('Error creating article:', error);
+        console.error('Error creating article:', error.response || error.message);
       });
   };
 
@@ -197,8 +208,8 @@ const KnowBase = () => {
 
   return (
     <Layout module="knowledgeBase">
-      <h1 className="knowledge-base-title">Knowledge Base</h1>
-      <div className="knowledge-base-container" style={{ width: '109%', maxWidth: '1100px', margin: '0 auto', padding: '20px' }}>
+      <div className="knowledge-base-container">
+        <h1 className="knowledge-base-title">Knowledge Base</h1>
         
         {/* Tabs - Only for agents/admins who can manage */}
         {canManageKnowledgeBase && (
@@ -461,7 +472,7 @@ const KnowBase = () => {
                     </TableCell>
                     <TableCell>{article.category}</TableCell>
                     <TableCell>{article.views}</TableCell>
-                    <TableCell>{article.lastUpdated}</TableCell>
+                    <TableCell>{article.lastUpdated.split('T')[0]}</TableCell>
                     
                     {/* Actions - Only for agents/admins who can edit/delete */}
                     {canManageKnowledgeBase && (
