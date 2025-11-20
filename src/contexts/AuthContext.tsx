@@ -1,9 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
-// ============================================================
-// TYPE DEFINITIONS
-// ============================================================
-
 // Define user roles
 export type UserRole = 'user' | 'agent' | 'admin' | 'superadmin';
 
@@ -76,9 +71,7 @@ const TICKET_COLUMN_VISIBILITY: Record<UserRole, TicketColumnVisibility> = {
   },
 };
 
-// ============================================================
 // AUTH CONTEXT INTERFACE
-// ============================================================
 
 interface AuthContextType {
   user: User | null;

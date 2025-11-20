@@ -1,7 +1,6 @@
 import React from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import Permission from '../../components/Permission';
 
 interface TicketFilterSectionProps {
   searchQuery: string;
@@ -12,6 +11,7 @@ interface TicketFilterSectionProps {
   statusTicketCounts: { [key: string]: number };
   typeTicketCounts: { [key: string]: number };
   onCreateTicketOpen: () => void;
+  userRole: string;
 }
 
 const colorMap = {
@@ -29,16 +29,17 @@ export const TicketFilterSection: React.FC<TicketFilterSectionProps> = ({
   statusTicketCounts,
   typeTicketCounts,
   onCreateTicketOpen,
+  userRole,
 }) => {
   const isActive = (type: string) => activeFilters.includes(type);
 
   return (
     <div className='filter-section'>
-      <Permission module="tickets" action="create">
+      {userRole === 'user' && (
         <div className="create-ticket-wrapper">
           <button className='create-btn' onClick={onCreateTicketOpen}>Create Ticket</button>
         </div>
-      </Permission>
+      )}
 
       <div className="search-wrapper">
         <SearchIcon className="search-icon" />
@@ -52,8 +53,7 @@ export const TicketFilterSection: React.FC<TicketFilterSectionProps> = ({
       </div>
 
       <div className="ticket-filter-list">
-        {/* Priority Filter - Only for Agent/Admin/SuperAdmin */}
-        <Permission module="tickets" action="manage">
+        {(
           <div className="ticket-filter-group">
             <div className="filter-group-title">Priority</div>
             {(['high', 'medium', 'low'] as const).map(priority => (
@@ -69,12 +69,9 @@ export const TicketFilterSection: React.FC<TicketFilterSectionProps> = ({
                   padding: '0.5rem 1rem',
                 }}
               >
-                {/* Left: text */}
                 <span style={{ flex: 1, textAlign: 'left' }}>
                   {priority.charAt(0).toUpperCase() + priority.slice(1)}
                 </span>
-
-                {/* Center: circle */}
                 <FiberManualRecordIcon
                   style={{
                     position: 'absolute',
@@ -85,17 +82,14 @@ export const TicketFilterSection: React.FC<TicketFilterSectionProps> = ({
                     pointerEvents: 'none',
                   }}
                 />
-
-                {/* Right: counter */}
                 <div className="counter-div" style={{ textAlign: 'right' }}>
                   {priorityTicketCounts[priority] || 0}
                 </div>
               </button>
             ))}
           </div>
-        </Permission>
+        )}
 
-        {/* Status Filter */}
         <div className="ticket-filter-group">
           <div className="filter-group-title">Status</div>
           {['open', 'inProgress', 'resolved', 'closed'].map(status => (
@@ -110,7 +104,6 @@ export const TicketFilterSection: React.FC<TicketFilterSectionProps> = ({
           ))}
         </div>
 
-        {/* Type Filter */}
         <div className="ticket-filter-group">
           <div className="filter-group-title">Category</div>
           {['hardware', 'software', 'network'].map(type => (

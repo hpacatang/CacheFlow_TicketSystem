@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
@@ -7,6 +6,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, 
 import Layout from '../../Layout';
 import { useAuth } from '../../../contexts/AuthContext';
 import { ticketApi } from '../../../constant/ticketApi';
+import { TicketFilterSection } from '../../filters/TicketFilterSection';
 import './TicketDash.css';
 
 interface Ticket {
@@ -142,25 +142,25 @@ const sortedTickets = useMemo(() => {
     const getPriorityValue = (priority?: string) =>
       priorityOrder[priority?.toLowerCase() as 'high' | 'medium' | 'low'] ?? 4;
 
-    // Check if due date is unassigned (9999-12-31 or far-future date)
+    // Check if due date is unassigned (9999-12-31 at max)
     const isUnassignedA = a.dueDate && new Date(a.dueDate).getFullYear() >= 9999;
     const isUnassignedB = b.dueDate && new Date(b.dueDate).getFullYear() >= 9999;
 
-    // Prioritize unassigned due dates first
+    // first unassigned due dates first
     if (isUnassignedA && !isUnassignedB) return -1;
     if (!isUnassignedA && isUnassignedB) return 1;
 
-    // For assigned due dates, sort by priority first
+    // priority after
     const priorityA = getPriorityValue(a.priority);
     const priorityB = getPriorityValue(b.priority);
     if (priorityA !== priorityB) return priorityA - priorityB;
 
-    // Then by due date chronologically (closest first)
+    // due date chronological order
     const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
     const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
     if (dateA !== dateB) return dateA - dateB;
 
-    // Finally by ID (newest first as tiebreaker)
+    // by id newest
     return b.id - a.id;
   });
 }, [visibleTickets, activeFilters, searchQuery]);
@@ -290,100 +290,20 @@ const sortedTickets = useMemo(() => {
     }
   };
 
-  // ========== RENDER ==========
   return (
     <Layout module="tickets">
       <div className='parent-container'>
-        <div className='filter-section'>
-      {/* All logged-in users can create tickets */}
-      <div className="create-ticket-wrapper">
-        <button className='create-btn' onClick={handleCreateTicketOpen}>Create Ticket</button>
-      </div>
-
-      <div className="search-wrapper">
-        <SearchIcon className="search-icon" />
-        <input
-          type="text"
-          className="search-filter"
-          placeholder="Search in All Tickets"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+        <TicketFilterSection
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          activeFilters={activeFilters}
+          onToggleFilter={toggleFilter}
+          priorityTicketCounts={priorityTicketCounts}
+          statusTicketCounts={statusTicketCounts}
+          typeTicketCounts={typeTicketCounts}
+          onCreateTicketOpen={handleCreateTicketOpen}
+          userRole={userRole}
         />
-      </div>
-
-      <div className="ticket-filter-list">
-        {/* Priority Filter - Available to all users since they can set/view priority */}
-        <div className="ticket-filter-group">
-          <div className="filter-group-title">Priority</div>
-          {(['high', 'medium', 'low'] as const).map(priority => (
-              <button
-                key={priority}
-                className={`ticket-filter-btn ${isActive(priority) ? 'active' : ''}`}
-                onClick={() => toggleFilter(priority)}
-  style={{
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between', // spread left and right
-    padding: '0.5rem 1rem',
-  }}
->
-  {/* Left: text */}
-  <span style={{ flex: 1, textAlign: 'left' }}>
-    {priority.charAt(0).toUpperCase() + priority.slice(1)}
-  </span>
-
-  {/* Center: circle */}
-  <FiberManualRecordIcon
-    style={{
-      position: 'absolute',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      color: colorMap[priority],
-      fontSize: 16,
-      pointerEvents: 'none', // so circle doesn’t block button clicks
-    }}
-  />
-
-  {/* Right: counter */}
-  <div className="counter-div" style={{ textAlign: 'right' }}>
-    {priorityTicketCounts[priority] || 0}
-  </div>
-</button>
-            ))}
-          </div>
-        
-        {/* Status Filter */}
-        <div className="ticket-filter-group">
-          <div className="filter-group-title">Status</div>
-          {['open', 'inProgress', 'resolved', 'closed'].map(status => (
-            <button
-              key={status}
-              className={`ticket-filter-btn ${isActive(status) ? 'active' : ''}`}
-              onClick={() => toggleFilter(status)}
-            >
-              {status}
-              <div className="counter-div">{statusTicketCounts[status] || 0}</div>
-            </button>
-          ))}
-        </div>
-
-        {/* Type Filter */}
-        <div className="ticket-filter-group">
-          <div className="filter-group-title">Category</div>
-          {['hardware', 'software','network'].map(type => (
-            <button
-              key={type}
-              className={`ticket-filter-btn ${isActive(type) ? 'active' : ''}`}
-              onClick={() => toggleFilter(type)}
-            >
-              {type}
-              <div className="counter-div">{typeTicketCounts[type] || 0}</div>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
 
     {/* Main dashboard content */}
     <div className='main-content'>
