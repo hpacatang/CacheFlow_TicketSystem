@@ -162,7 +162,7 @@ const KnowBase = () => {
   const handleUpdateArticle = () => {
     if (selectedArticle) {
       const updatedArticle = { ...selectedArticle, lastUpdated: new Date().toLocaleDateString() };
-      axios.put(`http://localhost:3001/articles/${selectedArticle.id}`, updatedArticle)
+      axios.put(`https://localhost:44310/api/article/${selectedArticle.id}`, updatedArticle)
         .then(() => {
           setArticles(
             articles.map((article) =>
@@ -186,7 +186,7 @@ const KnowBase = () => {
 
   const confirmDeleteArticle = () => {
     if (selectedArticle) {
-      axios.delete(`http://localhost:3001/articles/${selectedArticle.id}`)
+      axios.delete(`https://localhost:44310/api/article/${selectedArticle.id}`)
         .then(() => {
           setArticles(articles.filter((article) => article.id !== selectedArticle.id));
           setIsEditModalOpen(false); // Close edit modal if open
