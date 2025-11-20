@@ -63,7 +63,7 @@ export const PATHS = {
     path: "/CustomerFeedback",
     label: "Customer Feedback"},
   SUBMITFEEDBACK: {
-    path: "/Feedback",
+    path: "/SubmitFeedback",
     label: "Submit Ticket"},
 };
 
