@@ -308,7 +308,6 @@ export const TicketDash = () => {
   // Edit modal open/close helpers 
   const handleEditModalOpen = () => {
     if (selectedTicket) {
-      // selectedTicket.status is already typed, but guard against any legacy/raw values just in case
       const rawStatus = (selectedTicket.status as unknown as string) || 'open';
       const normalizedStatus: Ticket['status'] =
         rawStatus === 'inProgress' || rawStatus === 'inprogress'
