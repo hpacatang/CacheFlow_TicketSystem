@@ -23,8 +23,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility"
 interface Ticket {
   id: string
   summary: string
-  name: string
-  assignee: string
+  userID: number      
+  agentID: number 
   status: string
   resolvedAt: string | null
   dueDate: string
@@ -89,7 +89,7 @@ export const CustomerFeedback: React.FC = () => {
     const fetchTickets = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`${API_BASE_URL}/ticket`)
+        const response = await fetch(`${API_BASE_URL}/ticket/with-feedback/all`)
         if (!response.ok) throw new Error("Failed to fetch tickets!")
         const data = await response.json()
         setTickets(data)
@@ -154,8 +154,8 @@ export const CustomerFeedback: React.FC = () => {
                 <TableRow>
                   <StyledTableHeaderCell style={{ minWidth: 60 }}>ID</StyledTableHeaderCell>
                   <StyledTableHeaderCell style={{ minWidth: 180 }}>Summary</StyledTableHeaderCell>
-                  <StyledTableHeaderCell style={{ minWidth: 120 }}>Reporter</StyledTableHeaderCell>
-                  <StyledTableHeaderCell style={{ minWidth: 120 }}>Assignee</StyledTableHeaderCell>
+                  <StyledTableHeaderCell style={{ minWidth: 120 }}>User ID</StyledTableHeaderCell>
+                  <StyledTableHeaderCell style={{ minWidth: 120 }}>Agent ID</StyledTableHeaderCell>
                   <StyledTableHeaderCell style={{ minWidth: 100 }}>Status</StyledTableHeaderCell>
                   <StyledTableHeaderCell style={{ minWidth: 120 }}>Due Date</StyledTableHeaderCell>
                   <StyledTableHeaderCell style={{ minWidth: 140 }}>Resolved at</StyledTableHeaderCell>
@@ -167,8 +167,8 @@ export const CustomerFeedback: React.FC = () => {
                   <TableRow key={ticket.id} hover>
                     <StyledTableCell>{ticket.id}</StyledTableCell>
                     <StyledTableCell>{ticket.summary}</StyledTableCell>
-                    <StyledTableCell>{ticket.name}</StyledTableCell>
-                    <StyledTableCell>{ticket.assignee}</StyledTableCell>
+                    <StyledTableCell>{ticket.userID}</StyledTableCell>
+                    <StyledTableCell>{ticket.agentID}</StyledTableCell>
                     <StyledTableCell>{ticket.status}</StyledTableCell>
                     <StyledTableCell>{ticket.dueDate}</StyledTableCell>
                     <StyledTableCell>{ticket.resolvedAt || ""}</StyledTableCell>
