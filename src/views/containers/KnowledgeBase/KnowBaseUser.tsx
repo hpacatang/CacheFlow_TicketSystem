@@ -225,7 +225,7 @@ const KnowBaseUser = () => {
               <strong>Category:</strong> {selectedArticle?.category}
             </Typography>
             <Typography variant="subtitle1" sx={{ marginBottom: '8px' }}>
-              <strong>Last Updated:</strong> {selectedArticle?.lastUpdated}
+              <strong>Last Updated:</strong> {selectedArticle?.lastUpdated?.split('T')[0] || 'N/A'}
             </Typography>
             <Typography variant="body1" sx={{ marginBottom: '16px', whiteSpace: 'pre-line' }}>
               {selectedArticle?.body || 'No content available.'}
