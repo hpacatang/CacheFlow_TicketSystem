@@ -43,7 +43,7 @@ const KnowBaseUser = () => {
 
   // Fetch articles from the backend
   useEffect(() => {
-    axios.get('http://localhost:3001/articles')
+    axios.get('https://localhost:51811/api/articles')
       .then((response) => {
         setArticles(response.data);
       })
@@ -55,6 +55,35 @@ const KnowBaseUser = () => {
   const handleViewArticle = (article: Article) => {
     setSelectedArticle(article);
     setIsViewModalOpen(true);
+    
+    // Increment the view count
+    const updatedArticle = {
+      ...article,
+      views: (article.views || 0) + 1,
+      lastUpdated: new Date().toISOString(),
+    };
+    
+    console.log('Sending updated article:', updatedArticle);
+    console.log('Current views:', article.views, 'New views:', updatedArticle.views);
+    
+    axios.put(`https://localhost:51811/api/articles/${article.id}`, updatedArticle)
+      .then((putResponse) => {
+        console.log('PUT Response:', putResponse);
+        console.log('PUT Response Data:', putResponse.data);
+        console.log('View count update sent successfully');
+        // Refetch all articles to get the latest data from backend
+        return axios.get('https://localhost:51811/api/articles');
+      })
+      .then((response) => {
+        console.log('Articles refetched:', response.data);
+        const updatedArticleFromBackend = response.data.find((a: Article) => a.id === article.id);
+        console.log('Updated article from backend:', updatedArticleFromBackend);
+        setArticles(response.data);
+      })
+      .catch((error) => {
+        console.error('Error incrementing view count:', error);
+        console.error('Error response:', error.response);
+      });
   };
 
   const handleViewModalClose = () => {
@@ -136,7 +165,7 @@ const KnowBaseUser = () => {
                 <TableRow sx={{ backgroundColor: '#F8F8F8' }}>
                   <TableCell sx={{ fontWeight: 'bold' }}>Article</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Categories</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Views</TableCell>
+                  {/* <TableCell sx={{ fontWeight: 'bold' }}>Views</TableCell> */}
                   <TableCell sx={{ fontWeight: 'bold' }}>Last Updated</TableCell>
                 </TableRow>
               </TableHead>
@@ -150,7 +179,7 @@ const KnowBaseUser = () => {
                       {article.title}
                     </TableCell>
                     <TableCell>{article.category}</TableCell>
-                    <TableCell>{article.views}</TableCell>
+                    {/* <TableCell>{article.views}</TableCell> */}
                     <TableCell>{article.lastUpdated}</TableCell>
                   </TableRow>
                 ))}
