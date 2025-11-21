@@ -15,8 +15,9 @@ import {
   Alert,
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import Layout from '../../Layout'
+import UserSidebar from '../../components/Sidebars/UserSidebar'
 import FeedbackRatingModal from '../../components/Modals/FeedbackRatingModal'
+import EditIcon from '@mui/icons-material/Edit'
 
 interface Ticket {
   id: string
@@ -44,22 +45,21 @@ const StyledTableHeaderCell = styled(TableCell)(({ theme }) => ({
   fontWeight: 'bold',
   borderBottom: '3px solid #000',
   padding: '20px',
-  backgroundColor: 'rgba(22, 123, 187, 0.1)',
+  backgroundColor: '#e8f3f9',
 }))
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   padding: theme.spacing(2),
   border: 'none',
-  backgroundColor: 'rgba(22, 123, 187, 0.1)',
+  backgroundColor: '#e8f3f9',
 }))
 
 const SubmitButton = styled(Button)(({ theme }) => ({
-  backgroundColor: 'transparent',
-  color: 'black',
+  backgroundColor: '#0074d9',
+  color: 'white',
   border: 'none',
   boxShadow: 'none',
   '&:hover': {
-    color: '#1B65AD',
     border: 'none',
     boxShadow: 'none',
   },
@@ -68,18 +68,23 @@ const SubmitButton = styled(Button)(({ theme }) => ({
 }))
 
 export const SubmitFeedback: React.FC = () => {
+  const API_BASE_URL = 'https://localhost:51811/api'
+  
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false)
+  const [snackbarMessage, setSnackbarMessage] = useState<string>('Feedback submitted!')
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success')
 
   useEffect(() => {
     const fetchTickets = async () => {
       try {
         setLoading(true)
-        const response = await fetch('http://localhost:3001/tickets')
+        
+        const response = await fetch(`${API_BASE_URL}/ticket`)
         if (!response.ok) throw new Error('Failed to fetch tickets!')
         const data = await response.json()
         setTickets(data)
@@ -92,21 +97,67 @@ export const SubmitFeedback: React.FC = () => {
     fetchTickets()
   }, [])
 
-  const handleSubmitFeedback = (rating: number, feedback: string) => {
-    // Here you would send feedback to the backend
-    setSnackbarOpen(true)
+  const handleSubmitFeedback = async (rating: number, feedback: string) => {
+    try {
+      if (!selectedTicketId) {
+        throw new Error('No ticket selected')
+      }
+
+      const feedbackData = {
+        ticketId: parseInt(selectedTicketId),
+        userID: 1,
+        agentID: 1,
+        rating: rating,
+        comment: feedback,
+        feedbackDate: new Date().toISOString(),
+        status: 'Submitted'
+      }
+
+      // Send feedback to backend
+      const response = await fetch(`${API_BASE_URL}/feedback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(feedbackData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to submit feedback')
+      }
+
+      setSnackbarMessage('Feedback submitted successfully!')
+      setSnackbarSeverity('success')
+      setSnackbarOpen(true)
+      setModalOpen(false)
+      setSelectedTicketId(null)
+
+    } catch (err) {
+      setSnackbarMessage(err instanceof Error ? err.message : 'Failed to submit feedback')
+      setSnackbarSeverity('error')
+      setSnackbarOpen(true)
+    }
   }
 
   if (error) {
     return (
-      <Box p={3}>
-        <Typography color="error">{error}</Typography>
+      <Box display="flex">
+        <UserSidebar />
+        <Box p={3} flexGrow={1}>
+          <Typography marginTop="2rem" marginLeft="2rem" variant="h4" gutterBottom fontWeight="bold">
+            Submit Feedback
+          </Typography>
+          <Box display="flex" justifyContent="center" my={4}>
+            <Typography color="error">{error}</Typography>
+          </Box>
+        </Box>
       </Box>
     )
   }
 
   return (
-    <Layout module="submitFeedback">
+    <Box display="flex">
+      <UserSidebar />
       <Box p={3} flexGrow={1}>
         <Typography marginTop="3rem" marginLeft="2rem" variant="h4" gutterBottom fontWeight="bold">
           Submit Feedback
@@ -127,7 +178,7 @@ export const SubmitFeedback: React.FC = () => {
                   <StyledTableHeaderCell>Status</StyledTableHeaderCell>
                   <StyledTableHeaderCell>Due Date</StyledTableHeaderCell>
                   <StyledTableHeaderCell>Resolved at</StyledTableHeaderCell>
-                  <StyledTableHeaderCell align="center"></StyledTableHeaderCell>
+                  <StyledTableHeaderCell align="center">Actions</StyledTableHeaderCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -144,6 +195,7 @@ export const SubmitFeedback: React.FC = () => {
                       <SubmitButton
                         variant="contained"
                         size="small"
+                        startIcon={<EditIcon />}
                         onClick={() => {
                           setSelectedTicketId(ticket.id)
                           setModalOpen(true)
@@ -171,14 +223,12 @@ export const SubmitFeedback: React.FC = () => {
         onClose={() => setSnackbarOpen(false)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert severity="success" onClose={() => setSnackbarOpen(false)}>
-          Feedback submitted!
+        <Alert severity={snackbarSeverity} onClose={() => setSnackbarOpen(false)}>
+          {snackbarMessage}
         </Alert>
       </Snackbar>
-    </Layout>
+    </Box>
   )
 }
 
 export default SubmitFeedback
-
-

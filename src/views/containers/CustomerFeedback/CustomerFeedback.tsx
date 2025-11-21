@@ -38,6 +38,8 @@ interface FeedbackDetails {
   feedback: string
 }
 
+const API_BASE_URL = "https://localhost:51811/api"
+
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   borderRadius: "20px",
   padding: 0,
@@ -87,7 +89,7 @@ export const CustomerFeedback: React.FC = () => {
     const fetchTickets = async () => {
       try {
         setLoading(true)
-        const response = await fetch("http://localhost:3001/tickets")
+        const response = await fetch(`${API_BASE_URL}/ticket`)
         if (!response.ok) throw new Error("Failed to fetch tickets!")
         const data = await response.json()
         setTickets(data)
@@ -101,25 +103,36 @@ export const CustomerFeedback: React.FC = () => {
     fetchTickets()
   }, [])
 
-  const handleViewFeedback = (id: string) => {
-    // In a real app, this would fetch the feedback details from an API
-    // For demo purposes, we'll create mock feedback data
-    const mockFeedback = {
-      id,
-      rating: 5,
-      feedback:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+  const handleViewFeedback = async (id: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/ticket/${id}/with-feedback`)
+      if (!response.ok) throw new Error("Failed to fetch feedback!")
+      const ticketWithFeedback = await response.json()
+      
+      const feedback = ticketWithFeedback.feedback[0] || {}
+      setSelectedFeedback({
+        id,
+        rating: feedback.rating || 0,
+        feedback: feedback.comment || "No feedback available"
+      })
+      setModalOpen(true)
+    } catch (err) {
+      setError("Failed to fetch feedback!")
     }
-
-    setSelectedFeedback(mockFeedback)
-    setModalOpen(true)
   }
 
   if (error) {
     return (
-      <Box p={3}>
-        <Typography color="error">{error}</Typography>
-      </Box>
+      <Layout module="customerFeedback">
+        <Box p={3} flexGrow={1}>
+          <Typography marginTop="3rem" marginLeft="2rem" variant="h4" gutterBottom fontWeight="bold">
+            Customer Feedback
+          </Typography>
+          <Box display="flex" justifyContent="center" my={4}>
+            <Typography color="error">{error}</Typography>
+          </Box>
+        </Box>
+      </Layout>
     )
   }
 
