@@ -21,7 +21,7 @@ export const UserMngmt: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('/api/users')
+    fetch('https://localhost:51811/api/users')
       .then(res => res.json())
       .then(data => {
         // Map backend users to expected User interface
@@ -42,6 +42,22 @@ export const UserMngmt: React.FC = () => {
   };
 
   const handleUpdateUser = (updatedUser: User, originalUsername: string) => {
+    // Persist role change to backend
+    const payload = {
+      name: updatedUser.username,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      password: updatedUser.password,
+      status: updatedUser.status
+    };
+    
+    fetch(`https://localhost:51811/api/users/${updatedUser.username}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(err => console.error('Failed to update user:', err));
+
+    // Update local state
     setUsers(prev =>
       prev.map(u =>
         u.username === originalUsername ? updatedUser : u
@@ -69,9 +85,9 @@ export const UserMngmt: React.FC = () => {
       <div className="user-mngmt-container">
         <div className="user-mngmt-header">
           <h2>Users</h2>
-          <button className="add-user-btn" onClick={() => setShowModal(true)}>
+          {/* <button className="add-user-btn" onClick={() => setShowModal(true)}>
             Add User
-          </button>
+          </button> */}
         </div>
         <div className="user-mngmt-controls">
             <div className="search-box">
@@ -82,12 +98,12 @@ export const UserMngmt: React.FC = () => {
                 onChange={e => setSearch(e.target.value)}
               />
             </div>
-            <button
+            {/* <button
               className="manage-permissions-btn"
               onClick={() => navigate("/AccessControl")}
             >
               Manage Permissions
-            </button>
+            </button> */}
           </div>
           <table className="user-table">
             <thead>
@@ -166,8 +182,9 @@ export const UserMngmt: React.FC = () => {
   );
 };
 
-// Password validation
+// Password validation (optional, only validate if provided)
 const isValidPassword = (password: string) => {
+  if (!password || password.length === 0) return true; // Allow empty password
   return (
     password.length >= 12 &&
     /[A-Z]/.test(password) &&
@@ -274,7 +291,7 @@ const EditUserModal: React.FC<{
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username || !role) return;
-    if (!isValidPassword(password)) {
+    if (password && !isValidPassword(password)) {
       setError(
         "Password must be at least 12 characters, include an uppercase letter, a number, and a special character."
       );
@@ -319,7 +336,7 @@ const EditUserModal: React.FC<{
             value={password}
             onChange={e => setPassword(e.target.value)}
             minLength={12}
-            required
+            placeholder="Leave blank to keep current password"
           />
           {error && <div style={{ color: 'red', fontSize: '0.95em' }}>{error}</div>}
           <button className="modal-add-btn" type="submit">Update User</button>

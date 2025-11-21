@@ -47,18 +47,18 @@ export const PATHS = {
   VERIFY_EMAIL: { 
     path: '/verify-email', 
     label: 'Verify Email' },
-  SETTINGS: {
-    path: "/settings",
-    label: "Settings"},
-  NOTIFICATION: {
-    path: "/Notifications",
-    label: "Notifications"},
+  // SETTINGS: {
+  //   path: "/settings",
+  //   label: "Settings"},
+  // NOTIFICATION: {
+  //   path: "/Notifications",
+  //   label: "Notifications"},
   USER_MNGMT: {
     path: "/UserManagement",
     label: "User Management"},
-  ACCESS_CNTRL: {
-    path: "/AccessControl",
-    label: "Access Control"},
+  // ACCESS_CNTRL: {
+  //   path: "/AccessControl",
+  //   label: "Access Control"},
   CUSTOMERFEEDBACK: {
     path: "/CustomerFeedback",
     label: "Customer Feedback"},
