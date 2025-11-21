@@ -46,7 +46,7 @@ export const Login = () => {
         let role = (user.role || "user").toLowerCase();
         if (!validRoles.includes(role)) role = "user";
         login({
-          id: user.id?.toString() || user.userId,
+          id: typeof user.id === 'string' ? Number(user.id) : user.id ?? Number(user.userId),
           name: user.name,
           email: user.email,
           role: role,

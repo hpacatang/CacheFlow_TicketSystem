@@ -2,7 +2,7 @@ const BASE_URL = '/api';
 
 export const ticketApi = {
   getUsers: async () => {
-    const response = await fetch(`${BASE_URL}/user`);
+    const response = await fetch(`https://localhost:51811/users`);
     if (!response.ok) {
       throw new Error('Failed to fetch users');
     }
@@ -11,7 +11,7 @@ export const ticketApi = {
 
 
   getTickets: async () => {
-    const response = await fetch(`${BASE_URL}/ticket`);
+    const response = await fetch(`https://localhost:51811/api/ticket`);
     if (!response.ok) {
       throw new Error('Failed to fetch tickets');
     }
@@ -19,7 +19,7 @@ export const ticketApi = {
   },
 
   createTicket: async (ticketData: any) => {
-    const response = await fetch(`${BASE_URL}/ticket`, {
+    const response = await fetch(`https://localhost:51811/api/ticket`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(ticketData),
@@ -33,7 +33,7 @@ export const ticketApi = {
   },
 
   updateTicket: async (ticketId: number, ticketData: any) => {
-    const response = await fetch(`${BASE_URL}/ticket/${ticketId}`, {
+    const response = await fetch(`https://localhost:51811/api/ticket/${ticketId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(ticketData),
@@ -43,13 +43,12 @@ export const ticketApi = {
       console.error('Update ticket error:', errorText);
       throw new Error(`Failed to update ticket: ${response.status} - ${errorText}`);
     }
-    
     const text = await response.text();
     return text ? JSON.parse(text) : { success: true };
   },
 
   deleteTicket: async (ticketId: number) => {
-    const response = await fetch(`${BASE_URL}/ticket/${ticketId}`, {
+    const response = await fetch(`https://localhost:51811/api/ticket/${ticketId}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

@@ -11,6 +11,7 @@ import './TicketDash.css';
 
 interface Ticket {
   id: number;
+  userId: number;
   summary: string;
   name: string;
   assignee: string;
@@ -61,14 +62,47 @@ export const TicketDash = () => {
   const itemsPerPage = 12;
 
   const { user, getUserRole, getTicketColumnVisibility } = useAuth();
-  const loggedInUser = user?.name || 'admin1';
+  const loggedInUserId = user?.id ? Number(user.id) : undefined;
   const userRole = getUserRole();
   const columnVisibility = getTicketColumnVisibility();
 
   // ========== DATA FETCHING ==========
   useEffect(() => {
-    ticketApi.getUsers().then(setUsers).catch(err => console.error('Error fetching users:', err));
-    ticketApi.getTickets().then(setTickets).catch(err => console.error('Error fetching tickets:', err));
+    const fetchData = async () => {
+      try {
+        // First fetch users
+        const usersData = await ticketApi.getUsers();
+        console.log('Fetched users:', usersData);
+        setUsers(usersData);
+        
+        // Then fetch tickets and map with user data
+        const rawTickets = await ticketApi.getTickets();
+        console.log('Fetched raw tickets:', rawTickets);
+        
+        // Map backend fields to frontend Ticket interface
+        const mappedTickets = rawTickets.map((t: any) => ({
+          id: t.Id ?? t.id,
+          userId: t.UserID ?? t.userId ?? t.userid ?? t.userID,
+          summary: t.Summary ?? t.summary,
+          name: usersData.find((u: any) => u.Id === t.UserID)?.Name || '',
+          assignee: usersData.find((u: any) => u.Id === t.AgentID)?.Name || 'Unassigned',
+          status: (t.Status ?? t.status ?? 'open').toLowerCase(),
+          resolvedAt: t.ResolvedAt ? new Date(t.ResolvedAt).toISOString() : null,
+          type: t.Type ?? t.type ?? '',
+          description: t.Description ?? t.description ?? '',
+          dueDate: t.DueDate ? new Date(t.DueDate).toISOString().slice(0, 10) : '',
+          priority: t.Priority ?? t.priority ?? '',
+          category: t.Category ?? t.category ?? '',
+          attachment: null,
+        }));
+        console.log('Mapped tickets:', mappedTickets);
+        setTickets(mappedTickets);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+      }
+    };
+    
+    fetchData();
   }, []);
 
   // ========== TICKET HANDLERS ==========
@@ -81,7 +115,8 @@ export const TicketDash = () => {
   const handleCreateTicket = async () => {
     const ticketToCreate = {
       summary: newTicket.title,
-      name: loggedInUser,
+      userId: loggedInUserId,
+      name: user?.name || '',
       assignee: 'Unassigned',
       type: newTicket.category?.toLowerCase() || 'hardware',
       description: newTicket.description || '',
@@ -111,10 +146,10 @@ export const TicketDash = () => {
 
 const isActive = (type: string) => activeFilters.includes(type);
 
-//Ticket filtering
+  //Ticket filtering
   const visibleTickets = tickets.filter(ticket =>
-  userRole === 'user' ? ticket.name === loggedInUser : true
-);
+    userRole === 'user' ? ticket.userId === loggedInUserId : true
+  );
 
 const priorityOrder: Record<'high' | 'medium' | 'low', number> = {
   high: 1,
