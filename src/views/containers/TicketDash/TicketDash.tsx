@@ -66,36 +66,44 @@ export const TicketDash = () => {
   const userRole = getUserRole();
   const columnVisibility = getTicketColumnVisibility();
 
-  // ========== DATA FETCHING ==========
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // First fetch users
         const usersData = await ticketApi.getUsers();
-        console.log('Fetched users:', usersData);
-        setUsers(usersData);
         
-        // Then fetch tickets and map with user data
+        const normalizedUsers = usersData.map((u: any) => ({
+          Id: u.Id ?? u.id,
+          UserId: u.UserId ?? u.userId,
+          Email: u.Email ?? u.email,
+          Name: u.Name ?? u.name,
+          Password: u.Password ?? u.password,
+          Role: u.Role ?? u.role,
+          Status: u.Status ?? u.status,
+          CreatedBy: u.CreatedBy ?? u.createdBy,
+          CreatedTime: u.CreatedTime ?? u.createdTime,
+          UpdatedBy: u.UpdatedBy ?? u.updatedBy,
+          UpdatedTime: u.UpdatedTime ?? u.updatedTime,
+        }));
+        
+        setUsers(normalizedUsers);
+        
         const rawTickets = await ticketApi.getTickets();
-        console.log('Fetched raw tickets:', rawTickets);
         
-        // Map backend fields to frontend Ticket interface
         const mappedTickets = rawTickets.map((t: any) => ({
           id: t.Id ?? t.id,
           userId: t.UserID ?? t.userId ?? t.userid ?? t.userID,
           summary: t.Summary ?? t.summary,
-          name: usersData.find((u: any) => u.Id === t.UserID)?.Name || '',
-          assignee: usersData.find((u: any) => u.Id === t.AgentID)?.Name || 'Unassigned',
+          name: normalizedUsers.find((u: any) => u.Id === (t.UserID ?? t.userId))?.Name || '',
+          assignee: normalizedUsers.find((u: any) => u.Id === (t.AgentID ?? t.agentID))?.Name || 'Unassigned',
           status: (t.Status ?? t.status ?? 'open').toLowerCase(),
-          resolvedAt: t.ResolvedAt ? new Date(t.ResolvedAt).toISOString() : null,
+          resolvedAt: t.ResolvedAt && new Date(t.ResolvedAt).getFullYear() < 9999 ? new Date(t.ResolvedAt).toISOString() : null,
           type: t.Type ?? t.type ?? '',
           description: t.Description ?? t.description ?? '',
-          dueDate: t.DueDate ? new Date(t.DueDate).toISOString().slice(0, 10) : '',
+          dueDate: t.DueDate && new Date(t.DueDate).getFullYear() < 9999 ? new Date(t.DueDate).toISOString().slice(0, 10) : '',
           priority: t.Priority ?? t.priority ?? '',
           category: t.Category ?? t.category ?? '',
           attachment: t.AttachmentPath ?? t.attachmentPath ?? null,
         }));
-        console.log('Mapped tickets:', mappedTickets);
         setTickets(mappedTickets);
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -105,7 +113,6 @@ export const TicketDash = () => {
     fetchData();
   }, []);
 
-  // ========== TICKET HANDLERS ==========
   const handleCreateTicketOpen = () => setIsCreateTicketOpen(true);
   const handleCreateTicketClose = () => setIsCreateTicketOpen(false);
   const handleNewTicketChange = (field: string, value: string | File | null) => {
@@ -120,15 +127,39 @@ export const TicketDash = () => {
       assignee: 'Unassigned',
       type: newTicket.category?.toLowerCase() || 'hardware',
       description: newTicket.description || '',
-      dueDate: '9999-12-31',
+      dueDate: '9999-12-31T23:59:59',
       priority: newTicket.priority || 'Medium',
       category: newTicket.category || 'Hardware',
       status: 'open',
     };
 
     try {
-      const createdTicket = await ticketApi.createTicket(ticketToCreate, newTicket.attachment);
-      setTickets(prev => [...prev, createdTicket]);
+      await ticketApi.createTicket(ticketToCreate, newTicket.attachment);
+      
+      const updatedTickets = await ticketApi.getTickets();
+      
+      const normalizedUsers = users.map((u: any) => ({
+        Id: u.Id ?? u.id,
+        Name: u.Name ?? u.name,
+      }));
+      
+      const mappedTickets = updatedTickets.map((t: any) => ({
+        id: t.Id ?? t.id,
+        userId: t.UserID ?? t.userId ?? t.userid ?? t.userID,
+        summary: t.Summary ?? t.summary,
+        name: normalizedUsers.find((u: any) => u.Id === (t.UserID ?? t.userId))?.Name || '',
+        assignee: normalizedUsers.find((u: any) => u.Id === (t.AgentID ?? t.agentID))?.Name || 'Unassigned',
+        status: (t.Status ?? t.status ?? 'open').toLowerCase(),
+        resolvedAt: t.ResolvedAt && new Date(t.ResolvedAt).getFullYear() < 9999 ? new Date(t.ResolvedAt).toISOString() : null,
+        type: t.Type ?? t.type ?? '',
+        description: t.Description ?? t.description ?? '',
+        dueDate: t.DueDate && new Date(t.DueDate).getFullYear() < 9999 ? new Date(t.DueDate).toISOString().slice(0, 10) : '',
+        priority: t.Priority ?? t.priority ?? '',
+        category: t.Category ?? t.category ?? '',
+        attachment: t.AttachmentPath ?? t.attachmentPath ?? null,
+      }));
+      
+      setTickets(mappedTickets);
     } catch (error) {
       console.error('Failed to create ticket:', error);
     }
@@ -137,70 +168,63 @@ export const TicketDash = () => {
     setNewTicket({ title: '', description: '', priority: '', category: '', attachment: null });
   };
 
-  // ========== FILTER LOGIC ==========
   const toggleFilter = (type: string) => {
     setActiveFilters(prev =>
       prev.includes(type) ? prev.filter(f => f !== type) : [...prev, type]
     );
   };
 
-const isActive = (type: string) => activeFilters.includes(type);
+  const isActive = (type: string) => activeFilters.includes(type);
 
-  //Ticket filtering
   const visibleTickets = tickets.filter(ticket =>
     userRole === 'user' ? ticket.userId === loggedInUserId : true
   );
 
-const priorityOrder: Record<'high' | 'medium' | 'low', number> = {
-  high: 1,
-  medium: 2,
-  low: 3,
-};
-const sortedTickets = useMemo(() => {
-  const filtered = visibleTickets.filter(ticket => {
-    const statusFilters = activeFilters.filter(f => ['open', 'inProgress', 'resolved', 'closed'].includes(f));
-    const typeFilters = activeFilters.filter(f => ['hardware', 'software','network'].includes(f));
-    const priorityFilters = activeFilters.filter(f => ['high', 'medium', 'low'].includes(f));
+  const priorityOrder: Record<'high' | 'medium' | 'low', number> = {
+    high: 1,
+    medium: 2,
+    low: 3,
+  };
 
-    const matchesStatus = statusFilters.length === 0 || statusFilters.includes(ticket.status);
-    const matchesType = typeFilters.length === 0 || typeFilters.includes(ticket.type);
-    const matchesPriority = priorityFilters.length === 0 || priorityFilters.includes(ticket.priority?.toLowerCase() || '');
+  const sortedTickets = useMemo(() => {
+    const filtered = visibleTickets.filter(ticket => {
+      const statusFilters = activeFilters.filter(f => ['open', 'inProgress', 'resolved', 'closed'].includes(f));
+      const typeFilters = activeFilters.filter(f => ['hardware', 'software','network'].includes(f));
+      const priorityFilters = activeFilters.filter(f => ['high', 'medium', 'low'].includes(f));
 
-    const matchesSearch =
-      ticket.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.summary.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStatus = statusFilters.length === 0 || statusFilters.includes(ticket.status);
+      const matchesType = typeFilters.length === 0 || typeFilters.includes(ticket.type);
+      const matchesPriority = priorityFilters.length === 0 || priorityFilters.includes(ticket.priority?.toLowerCase() || '');
 
-    return matchesStatus && matchesType && matchesPriority && matchesSearch;
-  });
+      const matchesSearch =
+        ticket.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        ticket.summary.toLowerCase().includes(searchQuery.toLowerCase());
 
-  return [...filtered].sort((a, b) => {
-    const getPriorityValue = (priority?: string) =>
-      priorityOrder[priority?.toLowerCase() as 'high' | 'medium' | 'low'] ?? 4;
+      return matchesStatus && matchesType && matchesPriority && matchesSearch;
+    });
 
-    // Check if due date is unassigned (9999-12-31 at max)
-    const isUnassignedA = a.dueDate && new Date(a.dueDate).getFullYear() >= 9999;
-    const isUnassignedB = b.dueDate && new Date(b.dueDate).getFullYear() >= 9999;
+    return [...filtered].sort((a, b) => {
+      const getPriorityValue = (priority?: string) =>
+        priorityOrder[priority?.toLowerCase() as 'high' | 'medium' | 'low'] ?? 4;
 
-    // first unassigned due dates first
-    if (isUnassignedA && !isUnassignedB) return -1;
-    if (!isUnassignedA && isUnassignedB) return 1;
+      const isUnassignedA = a.dueDate && new Date(a.dueDate).getFullYear() >= 9999;
+      const isUnassignedB = b.dueDate && new Date(b.dueDate).getFullYear() >= 9999;
 
-    // priority after
-    const priorityA = getPriorityValue(a.priority);
-    const priorityB = getPriorityValue(b.priority);
-    if (priorityA !== priorityB) return priorityA - priorityB;
+      if (isUnassignedA && !isUnassignedB) return -1;
+      if (!isUnassignedA && isUnassignedB) return 1;
 
-    // due date chronological order
-    const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
-    const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
-    if (dateA !== dateB) return dateA - dateB;
+      const priorityA = getPriorityValue(a.priority);
+      const priorityB = getPriorityValue(b.priority);
+      if (priorityA !== priorityB) return priorityA - priorityB;
 
-    // by id newest
-    return b.id - a.id;
-  });
-}, [visibleTickets, activeFilters, searchQuery]);
+      const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+      const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+      if (dateA !== dateB) return dateA - dateB;
 
-  // ========== PAGINATION ==========
+      return b.id - a.id;
+    });
+  }, [visibleTickets, activeFilters, searchQuery]);
+
   const totalPages = Math.max(1, Math.ceil(sortedTickets.length / itemsPerPage));
   const paginatedTickets = sortedTickets.slice(
     (currentPage - 1) * itemsPerPage,
@@ -215,7 +239,6 @@ const sortedTickets = useMemo(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  // ========== TICKET COUNTS ==========
   const priorityTicketCounts = ['high', 'medium', 'low'].reduce((acc, priority) => {
     acc[priority] = visibleTickets.filter(ticket => ticket.priority?.toLowerCase() === priority).length;
     return acc;
@@ -231,7 +254,6 @@ const sortedTickets = useMemo(() => {
     return acc;
   }, {} as { [key: string]: number });
 
-  // ========== ICON COMPONENTS ==========
   const colorMap = { high: 'red', medium: 'orange', low: 'blue' };
   
   const PriorityIcon = ({ priority }: { priority: 'high' | 'medium' | 'low' }) => (
@@ -243,7 +265,6 @@ const sortedTickets = useMemo(() => {
     return <FiberManualRecordIcon style={{ color: statusColors[status] || 'gray' }} />;
   };
 
-  // ========== MODAL HANDLERS ==========
   const openModal = (ticket: Ticket) => {
     setSelectedTicket(ticket);
     setShowModal(true);
@@ -276,38 +297,63 @@ const sortedTickets = useMemo(() => {
     let resolvedAtValue = editTicket.resolvedAt;
     if ((editTicket.status === 'resolved' || editTicket.status === 'closed') && !editTicket.resolvedAt) {
       resolvedAtValue = new Date().toISOString();
-      console.log('Setting resolvedAt to:', resolvedAtValue, 'for status:', editTicket.status);
     } else if (editTicket.status === 'open' || editTicket.status === 'inProgress') {
       resolvedAtValue = null;
-      console.log('Clearing resolvedAt - ticket reopened');
     }
     
-    const updatedTicket = { ...editTicket, resolvedAt: resolvedAtValue };
-    setTickets(prev => prev.map(t => t.id === updatedTicket.id ? updatedTicket : t));
-    setSelectedTicket(updatedTicket);
-    setShowEditModal(false);
-    setShowViewModal(true);
+    const assignedAgent = users.find((u: any) => u.Name === editTicket.assignee);
+    const agentId = assignedAgent ? assignedAgent.Id : null;
+    
+    const dueDateValue = editTicket.dueDate && editTicket.dueDate.trim() !== '' 
+      ? `${editTicket.dueDate}T00:00:00`
+      : '9999-12-31T23:59:59';
     
     const updatePayload = {
-      summary: updatedTicket.summary,
-      description: updatedTicket.description,
-      dueDate: updatedTicket.dueDate,
-      priority: updatedTicket.priority,
-      category: updatedTicket.category,
-      status: updatedTicket.status,
-      assignee: updatedTicket.assignee,
-      name: updatedTicket.name,
-      type: updatedTicket.type,
-      resolvedAt: updatedTicket.resolvedAt,
+      summary: editTicket.summary,
+      description: editTicket.description,
+      dueDate: dueDateValue,
+      priority: editTicket.priority,
+      category: editTicket.category,
+      status: editTicket.status,
+      agentID: agentId,
+      userID: editTicket.userId,
+      type: editTicket.type,
+      resolvedAt: resolvedAtValue,
     };
 
-    // Only pass attachment if it's a new File object
-    const attachmentFile = (updatedTicket.attachment && typeof updatedTicket.attachment !== 'string')
-      ? updatedTicket.attachment as File
+    const attachmentFile = (editTicket.attachment && typeof editTicket.attachment !== 'string')
+      ? editTicket.attachment as File
       : null;
     
     try {
-      await ticketApi.updateTicket(updatedTicket.id, updatePayload, attachmentFile);
+      await ticketApi.updateTicket(editTicket.id, updatePayload, attachmentFile);
+      
+      const updatedTicketFromBackend = await ticketApi.getTickets();
+      const refreshedTicket = updatedTicketFromBackend.find((t: any) => (t.Id ?? t.id) === editTicket.id);
+      
+      if (refreshedTicket) {
+        const mappedTicket = {
+          id: refreshedTicket.Id ?? refreshedTicket.id,
+          userId: refreshedTicket.UserID ?? refreshedTicket.userId ?? refreshedTicket.userid ?? refreshedTicket.userID,
+          summary: refreshedTicket.Summary ?? refreshedTicket.summary,
+          name: users.find((u: any) => u.Id === refreshedTicket.UserID)?.Name || '',
+          assignee: users.find((u: any) => u.Id === refreshedTicket.AgentID)?.Name || 'Unassigned',
+          status: (refreshedTicket.Status ?? refreshedTicket.status ?? 'open').toLowerCase(),
+          resolvedAt: refreshedTicket.ResolvedAt && new Date(refreshedTicket.ResolvedAt).getFullYear() < 9999 ? new Date(refreshedTicket.ResolvedAt).toISOString() : null,
+          type: refreshedTicket.Type ?? refreshedTicket.type ?? '',
+          description: refreshedTicket.Description ?? refreshedTicket.description ?? '',
+          dueDate: refreshedTicket.DueDate && new Date(refreshedTicket.DueDate).getFullYear() < 9999 ? new Date(refreshedTicket.DueDate).toISOString().slice(0, 10) : '',
+          priority: refreshedTicket.Priority ?? refreshedTicket.priority ?? '',
+          category: refreshedTicket.Category ?? refreshedTicket.category ?? '',
+          attachment: refreshedTicket.AttachmentPath ?? refreshedTicket.attachmentPath ?? null,
+        };
+        
+        setTickets(prev => prev.map(t => t.id === mappedTicket.id ? mappedTicket : t));
+        setSelectedTicket(mappedTicket);
+      }
+      
+      setShowEditModal(false);
+      setShowViewModal(true);
     } catch (error) {
       console.error('Failed to update ticket:', error);
     }
@@ -344,8 +390,7 @@ const sortedTickets = useMemo(() => {
           userRole={userRole}
         />
 
-    {/* Main dashboard content */}
-    <div className='main-content'>
+        <div className='main-content'>
       <table>
         <thead>
           <tr>
@@ -417,7 +462,7 @@ const sortedTickets = useMemo(() => {
 
       {columnVisibility.dueDate && (
         <td>
-          {ticket.dueDate
+          {ticket.dueDate && new Date(ticket.dueDate).getFullYear() < 9999
             ? new Date(ticket.dueDate).toLocaleDateString('en-US', {
                 month: '2-digit',
                 day: '2-digit',
@@ -444,7 +489,6 @@ const sortedTickets = useMemo(() => {
 
       {columnVisibility.actions && (
         <td>
-          {/* All logged-in users can edit and delete tickets */}
           <Button
             onClick={() => {
               setSelectedTicket(ticket);
@@ -494,12 +538,8 @@ const sortedTickets = useMemo(() => {
             &#8594;
           </button>
         </div>
-
-
-
       </div>
 
-      {/* ========== CREATE TICKET MODAL ========== */}
       <Dialog open={isCreateTicketOpen} onClose={handleCreateTicketClose} sx={{ '& .MuiDialog-paper': { width: '800px', maxWidth: '95%', borderRadius: '16px' } }}>
         <DialogTitle sx={{ fontWeight: 'bold', fontSize: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           Create Ticket
@@ -539,22 +579,41 @@ const sortedTickets = useMemo(() => {
             </div>
           </div>
 
-          <Typography variant="subtitle1" sx={{ marginBottom: '4px' }}>Attachments</Typography>
-          <div style={{ border: '2px dashed black', borderRadius: '8px', padding: '16px', textAlign: 'center', marginBottom: '5px', backgroundColor: '#f9f9f9' }} onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); const files = Array.from(e.dataTransfer.files); handleNewTicketChange('attachment', files[0] || null); }}>
-            Drag and drop files here, or click to upload
-            <input type="file" style={{ display: 'none' }} id="ticket-attachment-input" onChange={e => handleNewTicketChange('attachment', e.target.files ? e.target.files[0] : null)} />
-            <Button variant="outlined" component="label" htmlFor="ticket-attachment-input" sx={{ mt: 1 }}>Browse Files</Button>
-            {newTicket.attachment && 'name' in newTicket.attachment && (
-              <div style={{ marginTop: 8 }}>Selected: {newTicket.attachment.name}</div>
-            )}
-          </div>
+          <Typography variant="subtitle1" sx={{ marginBottom: '8px' }}>Attachments</Typography>
+          
+          {newTicket.attachment && (
+            <div style={{ border: '1px solid #4caf50', borderRadius: '8px', padding: '16px', marginBottom: '16px', backgroundColor: '#f1f8f4' }}>
+              <Typography variant="subtitle2" sx={{ marginBottom: '8px', fontWeight: 'bold', color: '#4caf50' }}>File Selected:</Typography>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="body2">{newTicket.attachment.name}</Typography>
+                <Button 
+                  size="small" 
+                  onClick={() => handleNewTicketChange('attachment', null)}
+                  sx={{ color: 'red', textTransform: 'none' }}
+                >
+                  Remove
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {!newTicket.attachment && (
+            <div style={{ border: '2px dashed #ccc', borderRadius: '8px', padding: '24px', textAlign: 'center', marginBottom: '16px', backgroundColor: '#fafafa' }} onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); const files = Array.from(e.dataTransfer.files); handleNewTicketChange('attachment', files[0] || null); }}>
+              <Typography variant="body2" sx={{ marginBottom: '12px', color: '#666' }}>
+                Drag and drop a file here, or click to browse
+              </Typography>
+              <input type="file" style={{ display: 'none' }} id="ticket-attachment-input" onChange={e => handleNewTicketChange('attachment', e.target.files ? e.target.files[0] : null)} />
+              <Button variant="outlined" component="label" htmlFor="ticket-attachment-input" sx={{ textTransform: 'none' }}>
+                Browse Files
+              </Button>
+            </div>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCreateTicket} sx={{ backgroundColor: '#1E90FF', color: 'white', '&:hover': { backgroundColor: 'darkblue' }, display: 'block', margin: '0 auto', padding: '8px 16px', borderRadius: '8px', fontWeight: 'bold', textTransform: 'none', marginBottom: '10px', fontSize: '16px' }}>Create Ticket</Button>
         </DialogActions>
       </Dialog>
 
-      {/* ========== VIEW TICKET MODAL ========== */}
       <Dialog open={showViewModal} onClose={() => setShowViewModal(false)} sx={{ '& .MuiDialog-paper': { width: '800px', maxWidth: '95%', borderRadius: '16px' } }}>
         <DialogTitle sx={{ fontWeight: 'bold', fontSize: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -569,16 +628,43 @@ const sortedTickets = useMemo(() => {
               <Typography variant="subtitle1"><b>Title:</b> {selectedTicket.summary}</Typography>
               <Typography variant="subtitle1"><b>Description:</b> {selectedTicket.description || '—'}</Typography>
               <Typography variant="subtitle1"><b>Status:</b> {selectedTicket.status ? (selectedTicket.status === 'inProgress' ? 'In Progress' : selectedTicket.status.charAt(0).toUpperCase() + selectedTicket.status.slice(1)) : '—'}</Typography>
-              <Typography variant="subtitle1"><b>Due Date:</b> {selectedTicket.dueDate || '—'}</Typography>
+              <Typography variant="subtitle1"><b>Due Date:</b> {selectedTicket.dueDate && new Date(selectedTicket.dueDate).getFullYear() < 9999 ? selectedTicket.dueDate : '—'}</Typography>
+              <Typography variant="subtitle1"><b>Resolved At:</b> {selectedTicket.resolvedAt ? new Date(selectedTicket.resolvedAt).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }) : '—'}</Typography>
               <Typography variant="subtitle1"><b>Priority:</b> {selectedTicket.priority || '—'}</Typography>
               <Typography variant="subtitle1"><b>Category:</b> {selectedTicket.category || '—'}</Typography>
-              <Typography variant="subtitle1"><b>Attachment:</b> {selectedTicket.attachment ? (typeof selectedTicket.attachment === 'string' ? <a href={selectedTicket.attachment} target="_blank" rel="noopener noreferrer">View Attachment</a> : (selectedTicket.attachment && 'name' in selectedTicket.attachment ? selectedTicket.attachment.name : '—')) : '—'}</Typography>
+              
+              {selectedTicket.attachment && typeof selectedTicket.attachment === 'string' && (
+                <div>
+                  <Typography variant="subtitle1" sx={{ marginBottom: '8px' }}><b>Attachment:</b></Typography>
+                  {/\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(selectedTicket.attachment) ? (
+                    <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '16px', backgroundColor: '#f9f9f9' }}>
+                      <img 
+                        src={`https://localhost:51811${selectedTicket.attachment}`}
+                        alt="Attachment preview" 
+                        style={{ 
+                          maxWidth: '100%', 
+                          maxHeight: '300px', 
+                          borderRadius: '8px',
+                          objectFit: 'contain',
+                          display: 'block',
+                          margin: '0 auto'
+                        }} 
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <a href={`https://localhost:51811${selectedTicket.attachment}`} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2', textDecoration: 'underline' }}>
+                        View File ({selectedTicket.attachment.split('/').pop()})
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </DialogContent>
       </Dialog>
 
-      {/* ========== EDIT TICKET MODAL ========== */}
       <Dialog open={showEditModal} onClose={handleEditModalClose} sx={{ '& .MuiDialog-paper': { width: '800px', maxWidth: '95%', borderRadius: '16px' } }}>
         <DialogTitle sx={{ fontWeight: 'bold', fontSize: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>Edit Ticket</span>
@@ -644,38 +730,127 @@ const sortedTickets = useMemo(() => {
                       <Select displayEmpty value={editTicket.assignee || ''} onChange={e => handleEditTicketChange('assignee', e.target.value)} sx={{ borderRadius: '8px', height: '40px' }}>
                         <MenuItem value="" disabled><span style={{ color: 'gray' }}>Select Agent</span></MenuItem>
                         <MenuItem value="Unassigned">Unassigned</MenuItem>
-                        {users.filter(u => u.Role === 'agent').map(user => (<MenuItem key={user.Id} value={user.Name}>{user.Name}</MenuItem>))}
+                        {users.filter(u => u.Role === 'Agent').map(user => (<MenuItem key={user.Id} value={user.Name}>{user.Name}</MenuItem>))}
                       </Select>
                     </FormControl>
                   </div>
                 </div>
               )}
 
-              <Typography variant="subtitle1" sx={{ marginBottom: '4px' }}>Attachments</Typography>
-              <div style={{ border: '2px dashed black', borderRadius: '8px', padding: '16px', textAlign: 'center', marginBottom: '5px', backgroundColor: '#f9f9f9' }} onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); const files = Array.from(e.dataTransfer.files); handleEditTicketChange('attachment', files[0] || null); }}>
-                Drag and drop files here, or click to upload
-                <input type="file" style={{ display: 'none' }} id="edit-ticket-attachment-input" onChange={e => handleEditTicketChange('attachment', e.target.files ? e.target.files[0] : null)} />
-                <Button variant="outlined" component="label" htmlFor="edit-ticket-attachment-input" sx={{ mt: 1 }}>Browse Files</Button>
-                {editTicket.attachment && (typeof editTicket.attachment === 'string'
-                  ? <div style={{ marginTop: 8, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-                      <a href={editTicket.attachment} target="_blank" rel="noopener noreferrer">Current Attachment</a>
-                      <Button size="small" onClick={async () => { 
-                        try { 
-                          await ticketApi.deleteAttachment(editTicket.id); 
-                          handleEditTicketChange('attachment', null); 
-                        } catch (error) { 
-                          console.error('Failed to delete attachment:', error); 
-                        } 
-                      }} sx={{ color: 'red' }}>Delete</Button>
+              <Typography variant="subtitle1" sx={{ marginBottom: '8px' }}>Attachments</Typography>
+              
+              {editTicket.attachment && typeof editTicket.attachment === 'string' && (
+                <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '16px', marginBottom: '16px', backgroundColor: '#f9f9f9' }}>
+                  <Typography variant="subtitle2" sx={{ marginBottom: '8px', fontWeight: 'bold' }}>Current Attachment:</Typography>
+                  {/\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(editTicket.attachment) ? (
+                    <div style={{ marginBottom: '12px' }}>
+                      <img 
+                        src={`https://localhost:51811${editTicket.attachment}`}
+                        alt="Attachment preview" 
+                        style={{ 
+                          maxWidth: '100%', 
+                          maxHeight: '300px', 
+                          borderRadius: '8px',
+                          objectFit: 'contain',
+                          display: 'block',
+                          margin: '0 auto'
+                        }} 
+                      />
                     </div>
-                  : (editTicket.attachment && 'name' in editTicket.attachment ? <div style={{ marginTop: 8 }}>New: {editTicket.attachment.name}</div> : null))}
-              </div>
+                  ) : (
+                    <div style={{ marginBottom: '12px' }}>
+                      <a href={`https://localhost:51811${editTicket.attachment}`} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2', textDecoration: 'underline' }}>
+                        View File ({editTicket.attachment.split('/').pop()})
+                      </a>
+                    </div>
+                  )}
+                  {(userRole === 'user' || userRole === 'superadmin') && (
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                      <Button 
+                        variant="outlined" 
+                        component="label" 
+                        htmlFor="edit-replace-attachment-input"
+                        sx={{ textTransform: 'none' }}
+                      >
+                        Replace File
+                      </Button>
+                      <input 
+                        type="file" 
+                        style={{ display: 'none' }} 
+                        id="edit-replace-attachment-input" 
+                        onChange={e => handleEditTicketChange('attachment', e.target.files ? e.target.files[0] : null)} 
+                      />
+                      <Button 
+                        variant="outlined" 
+                        color="error"
+                        onClick={async () => { 
+                          try { 
+                            await ticketApi.deleteAttachment(editTicket.id); 
+                            handleEditTicketChange('attachment', null); 
+                          } catch (error) { 
+                            console.error('Failed to delete attachment:', error); 
+                          } 
+                        }}
+                        sx={{ textTransform: 'none' }}
+                      >
+                        Delete File
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {editTicket.attachment && typeof editTicket.attachment !== 'string' && 'name' in editTicket.attachment && (
+                <div style={{ border: '1px solid #4caf50', borderRadius: '8px', padding: '16px', marginBottom: '16px', backgroundColor: '#f1f8f4' }}>
+                  <Typography variant="subtitle2" sx={{ marginBottom: '8px', fontWeight: 'bold', color: '#4caf50' }}>New File Selected:</Typography>
+                  
+                  {/\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(editTicket.attachment.name) ? (
+                    <div style={{ marginBottom: '12px' }}>
+                      <img 
+                        src={URL.createObjectURL(editTicket.attachment)}
+                        alt="New file preview" 
+                        style={{ 
+                          maxWidth: '100%', 
+                          maxHeight: '300px', 
+                          borderRadius: '8px',
+                          objectFit: 'contain',
+                          display: 'block',
+                          margin: '0 auto'
+                        }} 
+                      />
+                    </div>
+                  ) : (
+                    <Typography variant="body2" sx={{ marginBottom: '12px' }}>{editTicket.attachment.name}</Typography>
+                  )}
+                  
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Button 
+                      size="small" 
+                      onClick={() => handleEditTicketChange('attachment', null)}
+                      sx={{ color: 'red', textTransform: 'none' }}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {!editTicket.attachment && (userRole === 'user' || userRole === 'superadmin') && (
+                <div style={{ border: '2px dashed #ccc', borderRadius: '8px', padding: '24px', textAlign: 'center', marginBottom: '16px', backgroundColor: '#fafafa' }} onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); const files = Array.from(e.dataTransfer.files); handleEditTicketChange('attachment', files[0] || null); }}>
+                  <Typography variant="body2" sx={{ marginBottom: '12px', color: '#666' }}>
+                    Drag and drop a file here, or click to browse
+                  </Typography>
+                  <input type="file" style={{ display: 'none' }} id="edit-ticket-attachment-input" onChange={e => handleEditTicketChange('attachment', e.target.files ? e.target.files[0] : null)} />
+                  <Button variant="outlined" component="label" htmlFor="edit-ticket-attachment-input" sx={{ textTransform: 'none' }}>
+                    Browse Files
+                  </Button>
+                </div>
+              )}
             </>
           )}
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'center' }}>
           <Button onClick={handleEditTicketSave} sx={{ backgroundColor: '#1E90FF', color: 'white', '&:hover': { backgroundColor: 'darkblue' }, padding: '8px 16px', borderRadius: '8px', fontWeight: 'bold', textTransform: 'none', marginBottom: '10px', fontSize: '16px', mr: 2 }}>Save Changes</Button>
-          <Button onClick={() => handleDeleteTicket()} sx={{ minWidth: '40px', height: '40px', backgroundColor: '#ff4d4f', color: 'white', borderRadius: '50%', ml: 2, mb: '10px', '&:hover': { backgroundColor: '#b71c1c' }, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }} aria-label="Delete Ticket"><DeleteIcon fontSize="medium" /></Button>
         </DialogActions>
       </Dialog>
       </div>
