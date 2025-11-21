@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, TextField, FormControl, Select, MenuItem } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, TextField, FormControl, Select, MenuItem, Snackbar } from '@mui/material';
 import Layout from '../../Layout';
 import { useAuth } from '../../../contexts/AuthContext';
 import { ticketApi } from '../../../constant/ticketApi';
@@ -40,6 +40,7 @@ interface User {
 }
 
 export const TicketDash = () => {
+  // states
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
@@ -60,12 +61,56 @@ export const TicketDash = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Auth / role info and column visibility preferences
   const { user, getUserRole, getTicketColumnVisibility } = useAuth();
   const loggedInUserId = user?.id ? Number(user.id) : undefined;
   const userRole = getUserRole();
   const columnVisibility = getTicketColumnVisibility();
 
+  // Helper to normalize raw API ticket into UI Ticket shape
+  const mapApiTicketToTicket = (t: any, allUsers: User[]): Ticket => {
+    const rawDue = t.DueDate ?? t.dueDate;
+    const rawResolved = t.ResolvedAt ?? t.resolvedAt;
+    const rawStatus = (t.Status ?? t.status ?? 'open') as string;
+
+    const normalizedStatus: Ticket['status'] =
+      rawStatus === 'inProgress' || rawStatus === 'inprogress'
+        ? 'inProgress'
+        : (rawStatus.toLowerCase() as Ticket['status']);
+
+    const dueDate =
+      rawDue && new Date(rawDue).getFullYear() < 9999
+        ? new Date(rawDue).toISOString().slice(0, 10)
+        : '';
+
+    const resolvedAt =
+      rawResolved && new Date(rawResolved).getFullYear() < 9999
+        ? new Date(rawResolved).toISOString()
+        : null;
+
+    const userId = t.UserID ?? t.userId ?? t.userid ?? t.userID;
+    const agentId = t.AgentID ?? t.agentID;
+
+    return {
+      id: t.Id ?? t.id,
+      userId,
+      summary: t.Summary ?? t.summary,
+      name: allUsers.find((u: any) => u.Id === userId)?.Name || '',
+      assignee: allUsers.find((u: any) => u.Id === agentId)?.Name || 'Unassigned',
+      status: normalizedStatus,
+      resolvedAt,
+      type: t.Type ?? t.type ?? '',
+      description: t.Description ?? t.description ?? '',
+      dueDate,
+      priority: t.Priority ?? t.priority ?? '',
+      category: t.Category ?? t.category ?? '',
+      attachment: t.AttachmentPath ?? t.attachmentPath ?? null,
+    };
+  };
+
+  // Initial load: fetch users and tickets, normalize + map into UI shape
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -88,22 +133,7 @@ export const TicketDash = () => {
         setUsers(normalizedUsers);
         
         const rawTickets = await ticketApi.getTickets();
-        
-        const mappedTickets = rawTickets.map((t: any) => ({
-          id: t.Id ?? t.id,
-          userId: t.UserID ?? t.userId ?? t.userid ?? t.userID,
-          summary: t.Summary ?? t.summary,
-          name: normalizedUsers.find((u: any) => u.Id === (t.UserID ?? t.userId))?.Name || '',
-          assignee: normalizedUsers.find((u: any) => u.Id === (t.AgentID ?? t.agentID))?.Name || 'Unassigned',
-          status: (t.Status ?? t.status ?? 'open').toLowerCase(),
-          resolvedAt: t.ResolvedAt && new Date(t.ResolvedAt).getFullYear() < 9999 ? new Date(t.ResolvedAt).toISOString() : null,
-          type: t.Type ?? t.type ?? '',
-          description: t.Description ?? t.description ?? '',
-          dueDate: t.DueDate && new Date(t.DueDate).getFullYear() < 9999 ? new Date(t.DueDate).toISOString().slice(0, 10) : '',
-          priority: t.Priority ?? t.priority ?? '',
-          category: t.Category ?? t.category ?? '',
-          attachment: t.AttachmentPath ?? t.attachmentPath ?? null,
-        }));
+        const mappedTickets = rawTickets.map((t: any) => mapApiTicketToTicket(t, normalizedUsers));
         setTickets(mappedTickets);
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -113,12 +143,14 @@ export const TicketDash = () => {
     fetchData();
   }, []);
 
+  // Handlers for opening/closing the create ticket modal
   const handleCreateTicketOpen = () => setIsCreateTicketOpen(true);
   const handleCreateTicketClose = () => setIsCreateTicketOpen(false);
   const handleNewTicketChange = (field: string, value: string | File | null) => {
     setNewTicket(prev => ({ ...prev, [field]: value }));
   };
 
+  // Create a new ticket then refresh ticket list from backend
   const handleCreateTicket = async () => {
     const ticketToCreate = {
       summary: newTicket.title,
@@ -135,39 +167,28 @@ export const TicketDash = () => {
 
     try {
       await ticketApi.createTicket(ticketToCreate, newTicket.attachment);
-      
+
+      // Always refresh full list from backend so newest data is shown everywhere
       const updatedTickets = await ticketApi.getTickets();
-      
-      const normalizedUsers = users.map((u: any) => ({
-        Id: u.Id ?? u.id,
-        Name: u.Name ?? u.name,
-      }));
-      
-      const mappedTickets = updatedTickets.map((t: any) => ({
-        id: t.Id ?? t.id,
-        userId: t.UserID ?? t.userId ?? t.userid ?? t.userID,
-        summary: t.Summary ?? t.summary,
-        name: normalizedUsers.find((u: any) => u.Id === (t.UserID ?? t.userId))?.Name || '',
-        assignee: normalizedUsers.find((u: any) => u.Id === (t.AgentID ?? t.agentID))?.Name || 'Unassigned',
-        status: (t.Status ?? t.status ?? 'open').toLowerCase(),
-        resolvedAt: t.ResolvedAt && new Date(t.ResolvedAt).getFullYear() < 9999 ? new Date(t.ResolvedAt).toISOString() : null,
-        type: t.Type ?? t.type ?? '',
-        description: t.Description ?? t.description ?? '',
-        dueDate: t.DueDate && new Date(t.DueDate).getFullYear() < 9999 ? new Date(t.DueDate).toISOString().slice(0, 10) : '',
-        priority: t.Priority ?? t.priority ?? '',
-        category: t.Category ?? t.category ?? '',
-        attachment: t.AttachmentPath ?? t.attachmentPath ?? null,
-      }));
-      
+      const mappedTickets = updatedTickets.map((t: any) => mapApiTicketToTicket(t, users));
       setTickets(mappedTickets);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create ticket:', error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data ||
+        error?.message ||
+        'Failed to create ticket.';
+
+      setErrorMessage(message);
     }
 
     handleCreateTicketClose();
     setNewTicket({ title: '', description: '', priority: '', category: '', attachment: null });
   };
 
+  // Filter chip toggle helpers
   const toggleFilter = (type: string) => {
     setActiveFilters(prev =>
       prev.includes(type) ? prev.filter(f => f !== type) : [...prev, type]
@@ -176,6 +197,7 @@ export const TicketDash = () => {
 
   const isActive = (type: string) => activeFilters.includes(type);
 
+  // Limit visible tickets based on logged-in user role
   const visibleTickets = tickets.filter(ticket =>
     userRole === 'user' ? ticket.userId === loggedInUserId : true
   );
@@ -186,6 +208,7 @@ export const TicketDash = () => {
     low: 3,
   };
 
+  // Apply active filters, search, then sort by status (open/inProgress first), due date, priority, id
   const sortedTickets = useMemo(() => {
     const filtered = visibleTickets.filter(ticket => {
       const statusFilters = activeFilters.filter(f => ['open', 'inProgress', 'resolved', 'closed'].includes(f));
@@ -204,6 +227,13 @@ export const TicketDash = () => {
     });
 
     return [...filtered].sort((a, b) => {
+      // Push resolved/closed tickets to the bottom
+      const isAClosed = a.status === 'resolved' || a.status === 'closed';
+      const isBClosed = b.status === 'resolved' || b.status === 'closed';
+
+      if (isAClosed && !isBClosed) return 1;
+      if (!isAClosed && isBClosed) return -1;
+
       const getPriorityValue = (priority?: string) =>
         priorityOrder[priority?.toLowerCase() as 'high' | 'medium' | 'low'] ?? 4;
 
@@ -231,14 +261,17 @@ export const TicketDash = () => {
     currentPage * itemsPerPage
   );
 
+  // Reset to first page if current page goes out of range
   useEffect(() => {
     if ((currentPage - 1) * itemsPerPage >= sortedTickets.length) setCurrentPage(1);
   }, [sortedTickets, currentPage]);
 
+  // Scroll to top when page changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
+  // stats for filters (priority / type / status)
   const priorityTicketCounts = ['high', 'medium', 'low'].reduce((acc, priority) => {
     acc[priority] = visibleTickets.filter(ticket => ticket.priority?.toLowerCase() === priority).length;
     return acc;
@@ -256,15 +289,12 @@ export const TicketDash = () => {
 
   const colorMap = { high: 'red', medium: 'orange', low: 'blue' };
   
+  // Small colored dot for priority
   const PriorityIcon = ({ priority }: { priority: 'high' | 'medium' | 'low' }) => (
     <FiberManualRecordIcon style={{ color: colorMap[priority] || 'gray' }} />
   );
 
-  const StatusIcon = ({ status }: { status: 'open' | 'inProgress' | 'resolved' | 'closed' }) => {
-    const statusColors = { open: '#1976d2', inProgress: '#ff9800', resolved: '#4caf50', closed: '#757575' };
-    return <FiberManualRecordIcon style={{ color: statusColors[status] || 'gray' }} />;
-  };
-
+  // View modal open/close helpers
   const openModal = (ticket: Ticket) => {
     setSelectedTicket(ticket);
     setShowModal(true);
@@ -275,9 +305,17 @@ export const TicketDash = () => {
     setShowModal(false);
   };
 
+  // Edit modal open/close helpers 
   const handleEditModalOpen = () => {
     if (selectedTicket) {
-      setEditTicket({ ...selectedTicket });
+      // selectedTicket.status is already typed, but guard against any legacy/raw values just in case
+      const rawStatus = (selectedTicket.status as unknown as string) || 'open';
+      const normalizedStatus: Ticket['status'] =
+        rawStatus === 'inProgress' || rawStatus === 'inprogress'
+          ? 'inProgress'
+          : (rawStatus.toLowerCase() as Ticket['status']);
+
+      setEditTicket({ ...selectedTicket, status: normalizedStatus });
       setShowEditModal(true);
     }
   };
@@ -287,15 +325,20 @@ export const TicketDash = () => {
     setEditTicket(null);
   };
 
+  //field change handler for edit ticket state
   const handleEditTicketChange = (field: keyof Ticket, value: string | File | null) => {
     setEditTicket(prev => prev ? { ...prev, [field]: value } : prev);
   };
 
+  // Save ticket changes: compute resolvedAt/dueDate, send update, then refresh ticket in list
   const handleEditTicketSave = async () => {
     if (!editTicket) return;
     
     let resolvedAtValue = editTicket.resolvedAt;
-    if ((editTicket.status === 'resolved' || editTicket.status === 'closed') && !editTicket.resolvedAt) {
+
+    if (editTicket.status === 'resolved' && !editTicket.resolvedAt) {
+      resolvedAtValue = new Date().toISOString();
+    } else if (editTicket.status === 'closed') {
       resolvedAtValue = new Date().toISOString();
     } else if (editTicket.status === 'open' || editTicket.status === 'inProgress') {
       resolvedAtValue = null;
@@ -327,38 +370,34 @@ export const TicketDash = () => {
     
     try {
       await ticketApi.updateTicket(editTicket.id, updatePayload, attachmentFile);
-      
-      const updatedTicketFromBackend = await ticketApi.getTickets();
-      const refreshedTicket = updatedTicketFromBackend.find((t: any) => (t.Id ?? t.id) === editTicket.id);
-      
-      if (refreshedTicket) {
-        const mappedTicket = {
-          id: refreshedTicket.Id ?? refreshedTicket.id,
-          userId: refreshedTicket.UserID ?? refreshedTicket.userId ?? refreshedTicket.userid ?? refreshedTicket.userID,
-          summary: refreshedTicket.Summary ?? refreshedTicket.summary,
-          name: users.find((u: any) => u.Id === refreshedTicket.UserID)?.Name || '',
-          assignee: users.find((u: any) => u.Id === refreshedTicket.AgentID)?.Name || 'Unassigned',
-          status: (refreshedTicket.Status ?? refreshedTicket.status ?? 'open').toLowerCase(),
-          resolvedAt: refreshedTicket.ResolvedAt && new Date(refreshedTicket.ResolvedAt).getFullYear() < 9999 ? new Date(refreshedTicket.ResolvedAt).toISOString() : null,
-          type: refreshedTicket.Type ?? refreshedTicket.type ?? '',
-          description: refreshedTicket.Description ?? refreshedTicket.description ?? '',
-          dueDate: refreshedTicket.DueDate && new Date(refreshedTicket.DueDate).getFullYear() < 9999 ? new Date(refreshedTicket.DueDate).toISOString().slice(0, 10) : '',
-          priority: refreshedTicket.Priority ?? refreshedTicket.priority ?? '',
-          category: refreshedTicket.Category ?? refreshedTicket.category ?? '',
-          attachment: refreshedTicket.AttachmentPath ?? refreshedTicket.attachmentPath ?? null,
-        };
-        
-        setTickets(prev => prev.map(t => t.id === mappedTicket.id ? mappedTicket : t));
-        setSelectedTicket(mappedTicket);
+
+      // refresh to latest data
+      const updatedTicketsFromBackend = await ticketApi.getTickets();
+      const mappedTickets = updatedTicketsFromBackend.map((t: any) => mapApiTicketToTicket(t, users));
+      setTickets(mappedTickets);
+
+      // update currently selected ticket from this fresh list before opening view modal
+      const latest = mappedTickets.find((t: Ticket) => t.id === editTicket.id);
+      if (latest) {
+        setSelectedTicket(latest);
       }
-      
+
       setShowEditModal(false);
       setShowViewModal(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update ticket:', error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data ||
+        error?.message ||
+        'Failed to update ticket.';
+
+      setErrorMessage(message);
     }
   };
 
+  // delete ticket
   const handleDeleteTicket = async (ticketToDelete?: Ticket) => {
     const ticket = ticketToDelete || editTicket;
     if (!ticket) return;
@@ -854,6 +893,14 @@ export const TicketDash = () => {
         </DialogActions>
       </Dialog>
       </div>
+
+      <Snackbar
+        open={!!errorMessage}
+        autoHideDuration={6000}
+        onClose={() => setErrorMessage(null)}
+        message={errorMessage}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      />
     </Layout>
   );
 };
