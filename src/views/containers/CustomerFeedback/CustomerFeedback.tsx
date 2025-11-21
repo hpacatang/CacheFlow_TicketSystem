@@ -38,7 +38,7 @@ interface FeedbackDetails {
   feedback: string
 }
 
-const API_BASE_URL = "https://localhost:51811/api"
+const API_BASE_URL = "/api"
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   borderRadius: "20px",

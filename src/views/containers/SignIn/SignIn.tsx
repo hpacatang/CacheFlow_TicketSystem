@@ -50,7 +50,7 @@ export const SignIn = () => {
         setError("");
         try {
             // Check if username or email already exists (fetch from backend)
-            const response = await fetch("https://localhost:51811/users", {
+            const response = await fetch("/api/users", {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             });
@@ -74,7 +74,7 @@ export const SignIn = () => {
                 status: "Active"
             };
             // POST to backend
-            const createResponse = await fetch("https://localhost:51811/users", {
+            const createResponse = await fetch("/api/users", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newUser),

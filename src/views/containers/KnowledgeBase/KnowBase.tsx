@@ -73,8 +73,8 @@ const KnowBase = () => {
 
   //Axios and db.json implementation for permanent data storage
   useEffect(() => {
-    // Fetch articles from JSON Server
-    axios.get('https://localhost:44310/api/article')
+    // Fetch articles from backend
+    axios.get('/api/article')
       .then((response) => {
         setArticles(response.data);
       })
@@ -146,7 +146,7 @@ const KnowBase = () => {
 
     console.log('New article data:', newArticleWithId);
 
-    axios.post('https://localhost:44310/api/article', newArticleWithId)
+    axios.post('/api/article', newArticleWithId)
       .then((response) => {
         console.log('Article created successfully:', response.data);
         setArticles([...articles, response.data]);
@@ -162,7 +162,7 @@ const KnowBase = () => {
   const handleUpdateArticle = () => {
     if (selectedArticle) {
       const updatedArticle = { ...selectedArticle, lastUpdated: new Date().toLocaleDateString() };
-      axios.put(`https://localhost:44310/api/article/${selectedArticle.id}`, updatedArticle)
+      axios.put(`/api/article/${selectedArticle.id}`, updatedArticle)
         .then(() => {
           setArticles(
             articles.map((article) =>
@@ -186,7 +186,7 @@ const KnowBase = () => {
 
   const confirmDeleteArticle = () => {
     if (selectedArticle) {
-      axios.delete(`https://localhost:44310/api/article/${selectedArticle.id}`)
+      axios.delete(`/api/article/${selectedArticle.id}`)
         .then(() => {
           setArticles(articles.filter((article) => article.id !== selectedArticle.id));
           setIsEditModalOpen(false); // Close edit modal if open

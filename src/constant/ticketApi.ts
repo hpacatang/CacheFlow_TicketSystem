@@ -2,7 +2,7 @@ const BASE_URL = '/api';
 
 export const ticketApi = {
   getUsers: async () => {
-    const response = await fetch(`https://localhost:51811/users`);
+    const response = await fetch(`${BASE_URL}/users`);
     if (!response.ok) {
       throw new Error('Failed to fetch users');
     }
@@ -11,18 +11,31 @@ export const ticketApi = {
 
 
   getTickets: async () => {
-    const response = await fetch(`https://localhost:51811/api/ticket`);
+    const response = await fetch(`${BASE_URL}/ticket`);
     if (!response.ok) {
       throw new Error('Failed to fetch tickets');
     }
     return response.json();
   },
 
-  createTicket: async (ticketData: any) => {
-    const response = await fetch(`https://localhost:51811/api/ticket`, {
+  createTicket: async (ticketData: any, attachment?: File | null) => {
+    const formData = new FormData();
+    
+    // Add all ticket fields to FormData
+    Object.keys(ticketData).forEach(key => {
+      if (ticketData[key] !== null && ticketData[key] !== undefined) {
+        formData.append(key, ticketData[key].toString());
+      }
+    });
+    
+    // Add attachment if provided
+    if (attachment) {
+      formData.append('attachment', attachment);
+    }
+    
+    const response = await fetch(`${BASE_URL}/ticket`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(ticketData),
+      body: formData, // Don't set Content-Type - browser will set it with boundary
     });
     if (!response.ok) {
       const errorText = await response.text();
@@ -32,11 +45,20 @@ export const ticketApi = {
     return response.json();
   },
 
-  updateTicket: async (ticketId: number, ticketData: any) => {
-    const response = await fetch(`https://localhost:51811/api/ticket/${ticketId}`, {
+  updateTicket: async (ticketId: number, ticketData: any, attachment?: File | null) => {
+    const formData = new FormData();
+    
+    // Add JSON data as a string
+    formData.append('jsonData', JSON.stringify(ticketData));
+    
+    // Add attachment if provided
+    if (attachment) {
+      formData.append('attachment', attachment);
+    }
+    
+    const response = await fetch(`${BASE_URL}/ticket/${ticketId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(ticketData),
+      body: formData, // Don't set Content-Type - browser will set it with boundary
     });
     if (!response.ok) {
       const errorText = await response.text();
@@ -48,12 +70,23 @@ export const ticketApi = {
   },
 
   deleteTicket: async (ticketId: number) => {
-    const response = await fetch(`https://localhost:51811/api/ticket/${ticketId}`, {
+    const response = await fetch(`${BASE_URL}/ticket/${ticketId}`, {
       method: 'DELETE',
     });
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`Failed to delete ticket: ${response.status} ${errorText}`);
+    }
+    return response.ok;
+  },
+
+  deleteAttachment: async (ticketId: number) => {
+    const response = await fetch(`${BASE_URL}/ticket/${ticketId}/attachment`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to delete attachment: ${response.status} ${errorText}`);
     }
     return response.ok;
   },
