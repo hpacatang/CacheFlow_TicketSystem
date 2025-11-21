@@ -93,7 +93,7 @@ export const TicketDash = () => {
           dueDate: t.DueDate ? new Date(t.DueDate).toISOString().slice(0, 10) : '',
           priority: t.Priority ?? t.priority ?? '',
           category: t.Category ?? t.category ?? '',
-          attachment: null,
+          attachment: t.AttachmentPath ?? t.attachmentPath ?? null,
         }));
         console.log('Mapped tickets:', mappedTickets);
         setTickets(mappedTickets);
@@ -127,7 +127,7 @@ export const TicketDash = () => {
     };
 
     try {
-      const createdTicket = await ticketApi.createTicket(ticketToCreate);
+      const createdTicket = await ticketApi.createTicket(ticketToCreate, newTicket.attachment);
       setTickets(prev => [...prev, createdTicket]);
     } catch (error) {
       console.error('Failed to create ticket:', error);
@@ -299,11 +299,15 @@ const sortedTickets = useMemo(() => {
       name: updatedTicket.name,
       type: updatedTicket.type,
       resolvedAt: updatedTicket.resolvedAt,
-      attachment: typeof updatedTicket.attachment === 'string' ? updatedTicket.attachment : (updatedTicket.attachment && 'name' in updatedTicket.attachment ? updatedTicket.attachment.name : null),
     };
+
+    // Only pass attachment if it's a new File object
+    const attachmentFile = (updatedTicket.attachment && typeof updatedTicket.attachment !== 'string')
+      ? updatedTicket.attachment as File
+      : null;
     
     try {
-      await ticketApi.updateTicket(updatedTicket.id, updatePayload);
+      await ticketApi.updateTicket(updatedTicket.id, updatePayload, attachmentFile);
     } catch (error) {
       console.error('Failed to update ticket:', error);
     }
@@ -539,6 +543,10 @@ const sortedTickets = useMemo(() => {
           <div style={{ border: '2px dashed black', borderRadius: '8px', padding: '16px', textAlign: 'center', marginBottom: '5px', backgroundColor: '#f9f9f9' }} onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); const files = Array.from(e.dataTransfer.files); handleNewTicketChange('attachment', files[0] || null); }}>
             Drag and drop files here, or click to upload
             <input type="file" style={{ display: 'none' }} id="ticket-attachment-input" onChange={e => handleNewTicketChange('attachment', e.target.files ? e.target.files[0] : null)} />
+            <Button variant="outlined" component="label" htmlFor="ticket-attachment-input" sx={{ mt: 1 }}>Browse Files</Button>
+            {newTicket.attachment && 'name' in newTicket.attachment && (
+              <div style={{ marginTop: 8 }}>Selected: {newTicket.attachment.name}</div>
+            )}
           </div>
         </DialogContent>
         <DialogActions>
@@ -647,9 +655,20 @@ const sortedTickets = useMemo(() => {
               <div style={{ border: '2px dashed black', borderRadius: '8px', padding: '16px', textAlign: 'center', marginBottom: '5px', backgroundColor: '#f9f9f9' }} onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); const files = Array.from(e.dataTransfer.files); handleEditTicketChange('attachment', files[0] || null); }}>
                 Drag and drop files here, or click to upload
                 <input type="file" style={{ display: 'none' }} id="edit-ticket-attachment-input" onChange={e => handleEditTicketChange('attachment', e.target.files ? e.target.files[0] : null)} />
+                <Button variant="outlined" component="label" htmlFor="edit-ticket-attachment-input" sx={{ mt: 1 }}>Browse Files</Button>
                 {editTicket.attachment && (typeof editTicket.attachment === 'string'
-                  ? <div style={{ marginTop: 8 }}><a href={editTicket.attachment} target="_blank" rel="noopener noreferrer">Current Attachment</a></div>
-                  : (editTicket.attachment && 'name' in editTicket.attachment ? <div style={{ marginTop: 8 }}>{editTicket.attachment.name}</div> : null))}
+                  ? <div style={{ marginTop: 8, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                      <a href={editTicket.attachment} target="_blank" rel="noopener noreferrer">Current Attachment</a>
+                      <Button size="small" onClick={async () => { 
+                        try { 
+                          await ticketApi.deleteAttachment(editTicket.id); 
+                          handleEditTicketChange('attachment', null); 
+                        } catch (error) { 
+                          console.error('Failed to delete attachment:', error); 
+                        } 
+                      }} sx={{ color: 'red' }}>Delete</Button>
+                    </div>
+                  : (editTicket.attachment && 'name' in editTicket.attachment ? <div style={{ marginTop: 8 }}>New: {editTicket.attachment.name}</div> : null))}
               </div>
             </>
           )}

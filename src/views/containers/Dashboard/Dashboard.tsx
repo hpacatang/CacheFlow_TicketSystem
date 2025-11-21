@@ -3,9 +3,9 @@ import { useEffect } from "react";
 import Layout from '../../Layout';
 
 export const Dashboard = () => {
-  // Run json-server --watch db.json --port 3000
+  // Backend API endpoint
   const getEmployees = async () => {
-    return axios.get("http://localhost:3000/statistics");
+    return axios.get("/api/statistics");
   };
 
   useEffect(() => {

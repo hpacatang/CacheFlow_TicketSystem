@@ -27,7 +27,7 @@ export const Login = () => {
     setError("");
     try {
       // POST credentials to backend (ideally /api/auth/login, fallback: fetch users and check)
-      const response = await fetch("https://localhost:51811/users", {
+      const response = await fetch("/api/users", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });

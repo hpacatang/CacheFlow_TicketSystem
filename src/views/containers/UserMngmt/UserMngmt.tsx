@@ -21,7 +21,7 @@ export const UserMngmt: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('https://localhost:51811/users')
+    fetch('/api/users')
       .then(res => res.json())
       .then(data => {
         // Map backend users to expected User interface

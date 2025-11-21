@@ -68,7 +68,7 @@ const SubmitButton = styled(Button)(({ theme }) => ({
 }))
 
 export const SubmitFeedback: React.FC = () => {
-  const API_BASE_URL = 'https://localhost:51811/api'
+  const API_BASE_URL = '/api'
   
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [loading, setLoading] = useState<boolean>(true)
