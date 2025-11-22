@@ -22,13 +22,14 @@ import EditIcon from '@mui/icons-material/Edit'
 interface Ticket {
   id: string
   summary: string
-  name: string
-  assignee: string
+  userID: number      
+  agentID: number     
   status: string
   resolvedAt: string | null
   dueDate: string
   priority: string
   category: string
+  feedbackCount: number
 }
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
@@ -69,7 +70,7 @@ const SubmitButton = styled(Button)(({ theme }) => ({
 
 export const SubmitFeedback: React.FC = () => {
   const API_BASE_URL = '/api'
-  
+
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
@@ -83,7 +84,7 @@ export const SubmitFeedback: React.FC = () => {
     const fetchTickets = async () => {
       try {
         setLoading(true)
-        
+
         const response = await fetch(`${API_BASE_URL}/ticket`)
         if (!response.ok) throw new Error('Failed to fetch tickets!')
         const data = await response.json()
@@ -105,8 +106,6 @@ export const SubmitFeedback: React.FC = () => {
 
       const feedbackData = {
         ticketId: parseInt(selectedTicketId),
-        userID: 1,
-        agentID: 1,
         rating: rating,
         comment: feedback,
         feedbackDate: new Date().toISOString(),
@@ -145,7 +144,7 @@ export const SubmitFeedback: React.FC = () => {
         <UserSidebar />
         <Box p={3} flexGrow={1}>
           <Typography marginTop="2rem" marginLeft="2rem" variant="h4" gutterBottom fontWeight="bold">
-            Submit Feedback
+            Submit Customer Feedback
           </Typography>
           <Box display="flex" justifyContent="center" my={4}>
             <Typography color="error">{error}</Typography>
@@ -173,8 +172,8 @@ export const SubmitFeedback: React.FC = () => {
                 <TableRow>
                   <StyledTableHeaderCell>ID</StyledTableHeaderCell>
                   <StyledTableHeaderCell>Summary</StyledTableHeaderCell>
-                  <StyledTableHeaderCell>Reporter</StyledTableHeaderCell>
-                  <StyledTableHeaderCell>Assignee</StyledTableHeaderCell>
+                  <StyledTableHeaderCell>User ID</StyledTableHeaderCell>
+                  <StyledTableHeaderCell>Agent ID</StyledTableHeaderCell>
                   <StyledTableHeaderCell>Status</StyledTableHeaderCell>
                   <StyledTableHeaderCell>Due Date</StyledTableHeaderCell>
                   <StyledTableHeaderCell>Resolved at</StyledTableHeaderCell>
@@ -186,8 +185,8 @@ export const SubmitFeedback: React.FC = () => {
                   <TableRow key={ticket.id} hover>
                     <StyledTableCell>{ticket.id}</StyledTableCell>
                     <StyledTableCell>{ticket.summary}</StyledTableCell>
-                    <StyledTableCell>{ticket.name}</StyledTableCell>
-                    <StyledTableCell>{ticket.assignee}</StyledTableCell>
+                    <StyledTableCell>{ticket.userID}</StyledTableCell>
+                    <StyledTableCell>{ticket.agentID}</StyledTableCell>
                     <StyledTableCell>{ticket.status}</StyledTableCell>
                     <StyledTableCell>{ticket.dueDate}</StyledTableCell>
                     <StyledTableCell>{ticket.resolvedAt || ''}</StyledTableCell>

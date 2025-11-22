@@ -71,10 +71,9 @@ const KnowBase = () => {
     body: '',
   });
 
-  //Axios and db.json implementation for permanent data storage
   useEffect(() => {
     // Fetch articles from backend
-    axios.get('/api/article')
+    axios.get('/api/articles')
       .then((response) => {
         setArticles(response.data);
       })
@@ -102,6 +101,34 @@ const KnowBase = () => {
   const handleViewArticle = (article: Article) => {
     setSelectedArticle(article);
     setIsViewModalOpen(true);
+    
+    // Increment the view count
+    const updatedArticle = {
+      ...article,
+      views: (article.views || 0) + 1,
+      lastUpdated: new Date().toISOString(),
+    };
+    
+    console.log('Sending updated article:', updatedArticle);
+    console.log('Current views:', article.views, 'New views:', updatedArticle.views);
+    
+    axios.put(`/api/articles/${article.id}`, updatedArticle)
+      .then((putResponse) => {
+        console.log('PUT Response:', putResponse);
+        console.log('PUT Response Data:', putResponse.data);
+        console.log('View count update sent successfully');
+        return axios.get('/api/articles');
+      })
+      .then((response) => {
+        console.log('Articles refetched:', response.data);
+        const updatedArticleFromBackend = response.data.find((a: Article) => a.id === article.id);
+        console.log('Updated article from backend:', updatedArticleFromBackend);
+        setArticles(response.data);
+      })
+      .catch((error) => {
+        console.error('Error incrementing view count:', error);
+        console.error('Error response:', error.response);
+      });
   };
 
   const handleViewModalClose = () => {
@@ -134,19 +161,18 @@ const KnowBase = () => {
   const handleCreateArticle = () => {
     console.log('Create Article button clicked');
 
-    // Generate a unique integer ID based on the current articles
-    const newId = articles.length > 0 ? Math.max(...articles.map(article => parseInt(article.id))) + 1 : 1;
-
-    const newArticleWithId = {
-      ...newArticle,
-      id: newId, // Use the generated integer ID
+    // Don't send the ID - let the backend generate it
+    const newArticleData = {
+      title: newArticle.title?.trim() || '',
+      category: newArticle.category?.trim() || '',
+      body: newArticle.body?.trim() || '',
       views: 0,
       lastUpdated: new Date().toISOString(), // Use ISO format for the date
     };
 
-    console.log('New article data:', newArticleWithId);
+    console.log('New article data:', newArticleData);
 
-    axios.post('/api/article', newArticleWithId)
+    axios.post('/api/articles', newArticleData)
       .then((response) => {
         console.log('Article created successfully:', response.data);
         setArticles([...articles, response.data]);
@@ -161,41 +187,54 @@ const KnowBase = () => {
   //Update article function
   const handleUpdateArticle = () => {
     if (selectedArticle) {
-      const updatedArticle = { ...selectedArticle, lastUpdated: new Date().toLocaleDateString() };
-      axios.put(`/api/article/${selectedArticle.id}`, updatedArticle)
-        .then(() => {
-          setArticles(
-            articles.map((article) =>
-              article.id === selectedArticle.id ? updatedArticle : article
-            )
-          );
+      const updatedArticleData = {
+        id: selectedArticle.id,
+        title: selectedArticle.title?.trim() || '',
+        category: selectedArticle.category?.trim() || '',
+        views: selectedArticle.views || 0,
+        lastUpdated: new Date().toISOString(), // Use ISO format for the date
+        body: selectedArticle.body?.trim() || '',
+      };
+      
+      console.log('Updating article with data:', updatedArticleData);
+      
+      axios.put(`/api/articles/${selectedArticle.id}`, updatedArticleData)
+        .then((response) => {
+          console.log('Article updated successfully:', response.data);
+          // Refetch articles from backend to ensure we have the latest data
+          return axios.get('/api/articles');
+        })
+        .then((response) => {
+          setArticles(response.data);
           setIsEditModalOpen(false);
           setSelectedArticle(null);
         })
         .catch((error) => {
           console.error('Error updating article:', error);
+          console.error('Error response:', error.response?.data);
+          console.error('Error status:', error.response?.status);
         });
     }
   };
   
   const handleDeleteArticle = () => {
     if (selectedArticle) {
-      handleDeleteConfirmModalOpen(); // Open confirmation modal
+      handleDeleteConfirmModalOpen(); 
     }
   };
 
   const confirmDeleteArticle = () => {
     if (selectedArticle) {
-      axios.delete(`/api/article/${selectedArticle.id}`)
+      axios.delete(`/api/articles/${selectedArticle.id}`)
         .then(() => {
           setArticles(articles.filter((article) => article.id !== selectedArticle.id));
-          setIsEditModalOpen(false); // Close edit modal if open
+          setIsEditModalOpen(false); 
           setSelectedArticle(null);
-          handleDeleteConfirmModalClose(); // Close confirmation modal
+          handleDeleteConfirmModalClose(); 
         })
         .catch((error) => {
           console.error('Error deleting article:', error);
-          handleDeleteConfirmModalClose(); // Close confirmation modal on error too
+          handleDeleteConfirmModalClose();
         });
     }
   };
@@ -211,7 +250,7 @@ const KnowBase = () => {
       <h1 className="knowledge-base-title">Knowledge Base</h1>
       <div className="knowledge-base-container">
         
-        {/* Tabs - Only for agents/admins who can manage */}
+        {/* Tabs - Only for agents/admins who can manage
         {canManageKnowledgeBase && (
           <Tabs
             value={activeTab}
@@ -233,7 +272,7 @@ const KnowBase = () => {
               className={activeTab === 2 ? 'active-tab' : 'inactive-tab'}
             />
           </Tabs>
-        )}
+        )} */}
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <TextField
@@ -399,9 +438,9 @@ const KnowBase = () => {
                   gutterBottom={false}
                   sx={{ marginBottom: '4px' }}
                 >
-                  Attachments
+                  {/* Attachments */}
                 </Typography>
-                <div
+                {/* <div
                   style={{
                     border: '2px dashed black',
                     borderRadius: '8px',
@@ -418,7 +457,7 @@ const KnowBase = () => {
                   }}
                 >
                   Drag and drop files here, or click to upload
-                </div>
+                </div> */}
               </DialogContent>
               <DialogActions>
                 <Button 
@@ -464,8 +503,8 @@ const KnowBase = () => {
               <TableBody>
                 {articles
                   .filter((article) =>
-                    article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    article.category.toLowerCase().includes(searchQuery.toLowerCase())
+                    (article.title?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+                    (article.category?.toLowerCase() || '').includes(searchQuery.toLowerCase())
                   )
                   .map((article, index) => (
                     <TableRow key={index}>
@@ -475,9 +514,9 @@ const KnowBase = () => {
                       >
                         {article.title}
                       </TableCell>
-                      <TableCell>{article.category}</TableCell>
-                      <TableCell>{article.views}</TableCell>
-                      <TableCell>{article.lastUpdated.split('T')[0]}</TableCell>
+                      <TableCell>{article.category || 'N/A'}</TableCell>
+                      <TableCell>{article.views || 0}</TableCell>
+                      <TableCell>{article.lastUpdated?.split('T')[0] || 'N/A'}</TableCell>
                       
                       {/* Actions - Only for agents/admins who can edit/delete */}
                       {canManageKnowledgeBase && (
@@ -571,17 +610,12 @@ const KnowBase = () => {
               <strong>Category:</strong> {selectedArticle?.category}
             </Typography>
             <Typography variant="subtitle1" sx={{ marginBottom: '8px' }}>
-              <strong>Last Updated:</strong> {selectedArticle?.lastUpdated}
+              <strong>Last Updated:</strong> {selectedArticle?.lastUpdated?.split('T')[0] || 'N/A'}
             </Typography>
             <Typography variant="body1" sx={{ marginBottom: '16px', whiteSpace: 'pre-line' }}>
               {selectedArticle?.body || 'No content available.'}
             </Typography>
             <div style={{ textAlign: 'center', marginTop: '16px' }}>
-              <img
-                src="/placeholder-image.png"
-                alt="Article"
-                style={{ width: '100%', maxWidth: '400px', borderRadius: '8px' }}
-              />
             </div>
           </DialogContent>
         </Dialog>
@@ -712,9 +746,9 @@ const KnowBase = () => {
               gutterBottom={false}
               sx={{ marginBottom: '4px' }}
             >
-              Attachments
+              {/* Attachments */}
             </Typography>
-            <div
+            {/* <div
               style={{
                 border: '2px dashed black',
                 borderRadius: '8px',
@@ -731,7 +765,7 @@ const KnowBase = () => {
               }}
             >
               Drag and drop files here, or click to upload
-            </div>
+            </div> */}
           </DialogContent>
           <DialogActions>
             <Button
