@@ -21,7 +21,7 @@ export const UserMngmt: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('https://localhost:51811/api/users')
+    fetch('/api/users')
       .then(res => res.json())
       .then(data => {
         // Map backend users to expected User interface
@@ -51,7 +51,7 @@ export const UserMngmt: React.FC = () => {
       status: updatedUser.status
     };
     
-    fetch(`https://localhost:51811/api/users/${updatedUser.username}`, {
+    fetch(`/api/users/${updatedUser.username}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -232,7 +232,7 @@ const AddUserModal: React.FC<{
       status: "Active"
     };
     
-    fetch('https://localhost:51811/api/users', {
+    fetch('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
