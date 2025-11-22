@@ -85,9 +85,9 @@ export const UserMngmt: React.FC = () => {
       <div className="user-mngmt-container">
         <div className="user-mngmt-header">
           <h2>Users</h2>
-          {/* <button className="add-user-btn" onClick={() => setShowModal(true)}>
+          <button className="add-user-btn" onClick={() => setShowModal(true)}>
             Add User
-          </button> */}
+          </button>
         </div>
         <div className="user-mngmt-controls">
             <div className="search-box">
@@ -222,15 +222,40 @@ const AddUserModal: React.FC<{
       );
       return;
     }
-    setError('');
-    onAddUser({
-      username,
-      email,
-      role,
-      password,
+    
+    // Send to backend
+    const payload = {
+      name: username,
+      email: email,
+      role: role,
+      password: password,
       status: "Active"
+    };
+    
+    fetch('https://localhost:51811/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to create user');
+      return res.json();
+    })
+    .then(data => {
+      setError('');
+      onAddUser({
+        username,
+        email,
+        role,
+        password,
+        status: "Active"
+      });
+      onClose();
+    })
+    .catch(err => {
+      console.error('Error creating user:', err);
+      setError('Failed to create user. Please try again.');
     });
-    onClose();
   };
 
   return (
@@ -248,9 +273,9 @@ const AddUserModal: React.FC<{
           <label>Role</label>
           <select value={role} onChange={e => setRole(e.target.value)}>
             <option value="">Select Role</option>
-            <option value="user">User</option>
-            <option value="agent">Agent</option>
-            <option value="admin">Admin</option>
+            <option value="User">User</option>
+            <option value="Agent">Agent</option>
+            <option value="Admin">Admin</option>
           </select>
           <label>Password</label>
           <input
