@@ -21,10 +21,10 @@ export const AppRoutes = () => {
         <Route path={PATHS.DASHBOARD.path} element={<Views.TicketDash />} />
         <Route path={PATHS.CUSTOMERFEEDBACK.path} element={<Views.CustomerFeedback />} />
         <Route path={PATHS.ANALYTICS.path} element={<Views.Analytics />} />
-        <Route path={PATHS.SETTINGS.path} element={<Views.Settings />} />
-        <Route path={PATHS.NOTIFICATION.path} element={<Views.Notifications />} />
+        {/* <Route path={PATHS.SETTINGS.path} element={<Views.Settings />} />
+        <Route path={PATHS.NOTIFICATION.path} element={<Views.Notifications />} /> */}
         <Route path={PATHS.USER_MNGMT.path} element={<Views.UserMngmt />} />
-        <Route path={PATHS.ACCESS_CNTRL.path} element={<Views.AccessCntrl />} />
+        {/* <Route path={PATHS.ACCESS_CNTRL.path} element={<Views.AccessCntrl />} /> */}
         <Route path={PATHS.SUBMITFEEDBACK.path} element={<Views.SubmitFeedback />} />
         
         {/* 404 catch-all route */}

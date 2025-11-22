@@ -37,6 +37,11 @@
   font-size: 1.3rem;
   font-weight: bolder;
 }
+
+.role {
+  padding-top: 5rem;
+}
+
 .logo {
   width: 100%;         
   max-width: 180px;    

@@ -42,6 +42,22 @@ export const UserMngmt: React.FC = () => {
   };
 
   const handleUpdateUser = (updatedUser: User, originalUsername: string) => {
+    // Persist role change to backend
+    const payload = {
+      name: updatedUser.username,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      password: updatedUser.password,
+      status: updatedUser.status
+    };
+    
+    fetch(`/api/users/${updatedUser.username}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(err => console.error('Failed to update user:', err));
+
+    // Update local state
     setUsers(prev =>
       prev.map(u =>
         u.username === originalUsername ? updatedUser : u
@@ -82,12 +98,12 @@ export const UserMngmt: React.FC = () => {
                 onChange={e => setSearch(e.target.value)}
               />
             </div>
-            <button
+            {/* <button
               className="manage-permissions-btn"
               onClick={() => navigate("/AccessControl")}
             >
               Manage Permissions
-            </button>
+            </button> */}
           </div>
           <table className="user-table">
             <thead>
@@ -166,8 +182,9 @@ export const UserMngmt: React.FC = () => {
   );
 };
 
-// Password validation
+// Password validation (optional, only validate if provided)
 const isValidPassword = (password: string) => {
+  if (!password || password.length === 0) return true; // Allow empty password
   return (
     password.length >= 12 &&
     /[A-Z]/.test(password) &&
@@ -205,15 +222,40 @@ const AddUserModal: React.FC<{
       );
       return;
     }
-    setError('');
-    onAddUser({
-      username,
-      email,
-      role,
-      password,
+    
+    // Send to backend
+    const payload = {
+      name: username,
+      email: email,
+      role: role,
+      password: password,
       status: "Active"
+    };
+    
+    fetch('/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to create user');
+      return res.json();
+    })
+    .then(data => {
+      setError('');
+      onAddUser({
+        username,
+        email,
+        role,
+        password,
+        status: "Active"
+      });
+      onClose();
+    })
+    .catch(err => {
+      console.error('Error creating user:', err);
+      setError('Failed to create user. Please try again.');
     });
-    onClose();
   };
 
   return (
@@ -231,9 +273,9 @@ const AddUserModal: React.FC<{
           <label>Role</label>
           <select value={role} onChange={e => setRole(e.target.value)}>
             <option value="">Select Role</option>
-            <option value="user">User</option>
-            <option value="agent">Agent</option>
-            <option value="admin">Admin</option>
+            <option value="User">User</option>
+            <option value="Agent">Agent</option>
+            <option value="Admin">Admin</option>
           </select>
           <label>Password</label>
           <input
@@ -274,7 +316,7 @@ const EditUserModal: React.FC<{
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username || !role) return;
-    if (!isValidPassword(password)) {
+    if (password && !isValidPassword(password)) {
       setError(
         "Password must be at least 12 characters, include an uppercase letter, a number, and a special character."
       );
@@ -319,7 +361,7 @@ const EditUserModal: React.FC<{
             value={password}
             onChange={e => setPassword(e.target.value)}
             minLength={12}
-            required
+            placeholder="Leave blank to keep current password"
           />
           {error && <div style={{ color: 'red', fontSize: '0.95em' }}>{error}</div>}
           <button className="modal-add-btn" type="submit">Update User</button>

@@ -17,17 +17,16 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
   return (
     <div className="sidebar">
       {/* Notification Icon */}
-      <div className="notif-icon">
+      {/* <div className="notif-icon">
         <button onClick={() => navigate("/notifications")}>
           <NotificationsIcon className="icon" sx={{ fontSize: '2.5rem' }} />
         </button>
-      </div>
+      </div> */}
 
       {/* Role Section */}
       <div className="role">
         <img className="logo" src="/cacheflowlogo.png" alt="LOGO" />
        <p>{role.charAt(0).toUpperCase() + role.slice(1)}</p>
-
       </div>
 
       {/* Links Section (Children content) */}
@@ -39,9 +38,9 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
       <div className="footer">
         <button onClick={handleLogout} className="logout">⬅ Log Out</button>
         <div className="settings-icon">
-          <button onClick={() => navigate("/settings")}>
+          {/* <button onClick={() => navigate("/settings")}>
             <SettingsIcon className="icon" sx={{ fontSize: '2.5rem' }} />
-          </button>
+          </button> */}
         </div>
       </div>
     </div>
