@@ -71,10 +71,9 @@ const KnowBase = () => {
     body: '',
   });
 
-  //Axios and db.json implementation for permanent data storage
   useEffect(() => {
     // Fetch articles from backend
-    axios.get('https://localhost:51811/api/articles')
+    axios.get('/api/articles')
       .then((response) => {
         setArticles(response.data);
       })
@@ -113,13 +112,12 @@ const KnowBase = () => {
     console.log('Sending updated article:', updatedArticle);
     console.log('Current views:', article.views, 'New views:', updatedArticle.views);
     
-    axios.put(`https://localhost:51811/api/articles/${article.id}`, updatedArticle)
+    axios.put(`/api/articles/${article.id}`, updatedArticle)
       .then((putResponse) => {
         console.log('PUT Response:', putResponse);
         console.log('PUT Response Data:', putResponse.data);
         console.log('View count update sent successfully');
-        // Refetch all articles to get the latest data from backend
-        return axios.get('https://localhost:51811/api/articles');
+        return axios.get('/api/articles');
       })
       .then((response) => {
         console.log('Articles refetched:', response.data);
@@ -174,7 +172,7 @@ const KnowBase = () => {
 
     console.log('New article data:', newArticleData);
 
-    axios.post('https://localhost:51811/api/articles', newArticleData)
+    axios.post('/api/articles', newArticleData)
       .then((response) => {
         console.log('Article created successfully:', response.data);
         setArticles([...articles, response.data]);
@@ -200,11 +198,11 @@ const KnowBase = () => {
       
       console.log('Updating article with data:', updatedArticleData);
       
-      axios.put(`https://localhost:51811/api/articles/${selectedArticle.id}`, updatedArticleData)
+      axios.put(`/api/articles/${selectedArticle.id}`, updatedArticleData)
         .then((response) => {
           console.log('Article updated successfully:', response.data);
           // Refetch articles from backend to ensure we have the latest data
-          return axios.get('https://localhost:51811/api/articles');
+          return axios.get('/api/articles');
         })
         .then((response) => {
           setArticles(response.data);
@@ -227,7 +225,7 @@ const KnowBase = () => {
 
   const confirmDeleteArticle = () => {
     if (selectedArticle) {
-      axios.delete(`https://localhost:51811/api/articles/${selectedArticle.id}`)
+      axios.delete(`/api/articles/${selectedArticle.id}`)
         .then(() => {
           setArticles(articles.filter((article) => article.id !== selectedArticle.id));
           setIsEditModalOpen(false); 

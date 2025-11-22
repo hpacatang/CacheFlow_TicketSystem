@@ -43,7 +43,7 @@ const KnowBaseUser = () => {
 
   // Fetch articles from the backend
   useEffect(() => {
-    axios.get('https://localhost:51811/api/articles')
+    axios.get('/api/articles')
       .then((response) => {
         setArticles(response.data);
       })
@@ -66,13 +66,13 @@ const KnowBaseUser = () => {
     console.log('Sending updated article:', updatedArticle);
     console.log('Current views:', article.views, 'New views:', updatedArticle.views);
     
-    axios.put(`https://localhost:51811/api/articles/${article.id}`, updatedArticle)
+    axios.put(`/api/articles/${article.id}`, updatedArticle)
       .then((putResponse) => {
         console.log('PUT Response:', putResponse);
         console.log('PUT Response Data:', putResponse.data);
         console.log('View count update sent successfully');
-        // Refetch all articles to get the latest data from backend
-        return axios.get('https://localhost:51811/api/articles');
+        // Refetch all articles to get the latest data from backend 
+        return axios.get('/api/articles');
       })
       .then((response) => {
         console.log('Articles refetched:', response.data);
